@@ -1,0 +1,17 @@
+{
+  "_comment": "Tier assignment by professional id. Everyone not listed is Standard. This file is a stand-in for the back office until tiers are assigned there for real \u2014 nothing here reflects a real agreement.",
+  "_provisional": true,
+  "13893": {
+    "tier": "platinum",
+    "introVideo": "1:48",
+    "webinars": 2,
+    "podcasts": 3,
+    "articles": 3
+  },
+  "13285": {
+    "tier": "premium",
+    "webinars": 0,
+    "podcasts": 1,
+    "articles": 2
+  }
+}

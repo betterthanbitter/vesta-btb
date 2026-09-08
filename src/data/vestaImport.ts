@@ -33,7 +33,13 @@ export interface DirectoryRecord {
   phone?: string;
   photo?: string;
   tier: Tier;
+  /** Total content items. Zero for everyone until PAC.MP produces anything. */
   contentCount: number;
+  webinars: number;
+  podcasts: number;
+  articles: number;
+  /** Duration string once an introduction video exists, e.g. "1:48". */
+  introVideo?: string;
   /** True when the live site has no coordinates — invisible on the map today. */
   invisibleOnMap: boolean;
 }
@@ -104,6 +110,17 @@ export function loadDirectory(dataDir = join(process.cwd(), 'data')): DirectoryR
   if (cache) return cache;
   const read = (f: string) => JSON.parse(readFileSync(join(dataDir, f), 'utf8'));
 
+  /**
+   * Provisional tier assignment. Replaced by the back office; until then it
+   * lets the real tier rendering be reviewed against real professionals.
+   */
+  let overrides: Record<string, any> = {};
+  try {
+    overrides = read('tiers.json');
+  } catch {
+    // No overrides file — everyone is Standard, which is the truth today.
+  }
+
   const terms: Record<string, string> = read('wpsl_terms.json');
   const withCats: any[] = read('wpsl_cats.json');
   const raw: any[] = read('wpsl_raw.json');
@@ -141,8 +158,15 @@ export function loadDirectory(dataDir = join(process.cwd(), 'data')): DirectoryR
       website: g?.url || undefined,
       phone: g?.phone || undefined,
       photo: extractSrc(g?.thumb),
-      tier: 'standard',
-      contentCount: 0,
+      tier: overrides[String(p.id)]?.tier ?? 'standard',
+      contentCount:
+        (overrides[String(p.id)]?.webinars ?? 0) +
+        (overrides[String(p.id)]?.podcasts ?? 0) +
+        (overrides[String(p.id)]?.articles ?? 0),
+      webinars: overrides[String(p.id)]?.webinars ?? 0,
+      podcasts: overrides[String(p.id)]?.podcasts ?? 0,
+      articles: overrides[String(p.id)]?.articles ?? 0,
+      introVideo: overrides[String(p.id)]?.introVideo,
       invisibleOnMap: !g,
     });
   }
