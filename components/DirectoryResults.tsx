@@ -35,9 +35,12 @@ function Platinum({ r, catLabel, place }: { r: DirectoryRecord; catLabel: string
         <span className="only">The only {catLabel} partner in {place}</span>
       </div>
       <div className="pbody">
-        <div>
+        <div className="mediacol">
           {r.introVideo ? (
-            <div className="vid">
+            <div className="vid mediafill">
+              {/* A poster frame goes here once one exists; the portrait crop is
+                  deliberate, so the face is large on the page. */}
+              {r.photo && <img className="vposter" src={r.photo} alt="" />}
               <div className="play"><i /></div>
               <div className="vlab">
                 <span>Meet {r.name.split(' ')[0]}</span>
@@ -45,7 +48,7 @@ function Platinum({ r, catLabel, place }: { r: DirectoryRecord; catLabel: string
               </div>
             </div>
           ) : (
-            <div className="vid vempty">
+            <div className="vid vempty mediafill">
               Introduction video not produced yet — included at Platinum
             </div>
           )}
@@ -82,9 +85,11 @@ function Premium({ r, place }: { r: DirectoryRecord; place: string }) {
     <div className="card prem">
       <div className="tierlab">Premium Member</div>
       <div className="pbody">
-        {r.photo
-          ? <img className="avatar" src={r.photo} alt="" width={104} height={104} />
-          : <div className="avatar">{initials(r.name)}</div>}
+        <div className="mediacol">
+          {r.photo
+            ? <img className="avatar mediafill" src={r.photo} alt={r.name} />
+            : <div className="avatar mediafill">{initials(r.name)}</div>}
+        </div>
         <div>
           <div className="pn">{r.name}</div>
           {r.roleLabel && <div className="pcr">{r.roleLabel}</div>}
