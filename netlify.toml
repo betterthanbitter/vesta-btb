@@ -1,0 +1,16 @@
+# Netlify picks up Next.js automatically and installs its Next runtime, which
+# handles the App Router, middleware and server rendering. Nothing else needed.
+
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# Keep the preview out of search results entirely. Remove this block on the
+# real launch, when the per-page robots rules in the app should take over.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
