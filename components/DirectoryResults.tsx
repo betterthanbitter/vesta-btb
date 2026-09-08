@@ -3,6 +3,7 @@ import type { DirectoryRecord } from '../src/data/vestaImport.ts';
 import { CATEGORY_LABELS } from '../src/data/vestaImport.ts';
 import { ENTITLEMENTS, type Tier } from '../src/directory/tiers.ts';
 import { orderForPage } from '../src/directory/pageModel.ts';
+import { parseSchedulerLink } from '../src/directory/schedulerLink.ts';
 import type { PracticeCategory } from '../src/pricing/catalog.ts';
 
 function initials(name: string) {
@@ -28,6 +29,7 @@ function ContentStrip({ r }: { r: DirectoryRecord }) {
 }
 
 function Platinum({ r, catLabel, place }: { r: DirectoryRecord; catLabel: string; place: string }) {
+  const scheduler = parseSchedulerLink(r.schedulerUrl);
   return (
     <div className="card plat">
       <div className="ribbon">
@@ -70,7 +72,21 @@ function Platinum({ r, catLabel, place }: { r: DirectoryRecord; catLabel: string
       </div>
       <div className="pfoot">
         <Link className="prof" href={`/profile/${r.id}`}>View full profile →</Link>
-        <button className="ghost">Schedule free consult</button>
+        {scheduler && (
+          <a
+            className="ghost"
+            href={`/go/consult/${r.id}?from=/${r.hub}/${r.category}`}
+            /* Opens the professional's own booking page. rel is required:
+               without noopener the opened page can reach back through
+               window.opener and navigate this tab somewhere else. */
+            target="_blank"
+            rel="noopener noreferrer nofollow"
+          >
+            Schedule free consult<span style={{ opacity: .6, marginLeft: 7, fontSize: 12 }}>
+              {scheduler.host}
+            </span>
+          </a>
+        )}
         <div className="sp" />
         <div className="tierlab" style={{ padding: 0 }}>
           Video introduction, full content library, live event host

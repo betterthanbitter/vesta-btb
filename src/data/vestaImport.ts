@@ -40,6 +40,8 @@ export interface DirectoryRecord {
   articles: number;
   /** Duration string once an introduction video exists, e.g. "1:48". */
   introVideo?: string;
+  /** The professional's own booking page. Validated before it reaches an href. */
+  schedulerUrl?: string;
   /** True when the live site has no coordinates — invisible on the map today. */
   invisibleOnMap: boolean;
 }
@@ -167,6 +169,7 @@ export function loadDirectory(dataDir = join(process.cwd(), 'data')): DirectoryR
       podcasts: overrides[String(p.id)]?.podcasts ?? 0,
       articles: overrides[String(p.id)]?.articles ?? 0,
       introVideo: overrides[String(p.id)]?.introVideo,
+      schedulerUrl: overrides[String(p.id)]?.schedulerUrl,
       invisibleOnMap: !g,
     });
   }

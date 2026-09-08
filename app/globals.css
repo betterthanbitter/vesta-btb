@@ -232,3 +232,6 @@ a { color: inherit; }
   object-fit: cover; object-position: center top; filter: brightness(.72) saturate(.9); }
 .vid .play, .vid .vlab { position: relative; z-index: 1; }
 .vid .vlab { position: absolute; }
+
+/* The ghost button is an anchor when it carries a scheduler link. */
+a.ghost { text-decoration: none; display: inline-flex; align-items: center; }

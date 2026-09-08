@@ -6,7 +6,8 @@
     "introVideo": "1:48",
     "webinars": 2,
     "podcasts": 3,
-    "articles": 3
+    "articles": 3,
+    "schedulerUrl": "https://calendly.com/example-vesta/30min"
   },
   "13285": {
     "tier": "premium",
