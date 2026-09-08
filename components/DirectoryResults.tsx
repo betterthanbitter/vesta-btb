@@ -4,6 +4,7 @@ import { CATEGORY_LABELS } from '../src/data/vestaImport.ts';
 import { ENTITLEMENTS, type Tier } from '../src/directory/tiers.ts';
 import { orderForPage } from '../src/directory/pageModel.ts';
 import { parseSchedulerLink } from '../src/directory/schedulerLink.ts';
+import ConsultCta from './ConsultCta.tsx';
 import type { PracticeCategory } from '../src/pricing/catalog.ts';
 
 function initials(name: string) {
@@ -72,21 +73,12 @@ function Platinum({ r, catLabel, place }: { r: DirectoryRecord; catLabel: string
       </div>
       <div className="pfoot">
         <Link className="prof" href={`/profile/${r.id}`}>View full profile →</Link>
-        {scheduler && (
-          <a
-            className="ghost"
-            href={`/go/consult/${r.id}?from=/${r.hub}/${r.category}`}
-            /* Opens the professional's own booking page. rel is required:
-               without noopener the opened page can reach back through
-               window.opener and navigate this tab somewhere else. */
-            target="_blank"
-            rel="noopener noreferrer nofollow"
-          >
-            Schedule free consult<span style={{ opacity: .6, marginLeft: 7, fontSize: 12 }}>
-              {scheduler.host}
-            </span>
-          </a>
-        )}
+        <ConsultCta
+          professionalId={r.id}
+          firstName={r.name.split(' ')[0]}
+          schedulerHost={scheduler?.host}
+          sourcePath={`/${r.hub}/${r.category}`}
+        />
         <div className="sp" />
         <div className="tierlab" style={{ padding: 0 }}>
           Video introduction, full content library, live event host
@@ -97,6 +89,7 @@ function Platinum({ r, catLabel, place }: { r: DirectoryRecord; catLabel: string
 }
 
 function Premium({ r, place }: { r: DirectoryRecord; place: string }) {
+  const scheduler = parseSchedulerLink(r.schedulerUrl);
   return (
     <div className="card prem">
       <div className="tierlab">Premium Member</div>
@@ -119,6 +112,12 @@ function Premium({ r, place }: { r: DirectoryRecord; place: string }) {
       </div>
       <div className="pfoot">
         <Link className="prof" href={`/profile/${r.id}`}>View profile →</Link>
+        <ConsultCta
+          professionalId={r.id}
+          firstName={r.name.split(' ')[0]}
+          schedulerHost={scheduler?.host}
+          sourcePath={`/${r.hub}/${r.category}`}
+        />
         <div className="sp" />
         <div className="tierlab" style={{ padding: 0 }}>Photo, bio and content library</div>
       </div>

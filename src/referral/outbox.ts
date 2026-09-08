@@ -11,7 +11,9 @@ export type OutboxKind =
   | 'consumer.routed'
   | 'professional.assigned'
   | 'assignment.stage_changed'
-  | 'referral.closed';
+  | 'referral.closed'
+  /** Nothing has happened for a week. Ontraport starts the nurture. */
+  | 'referral.went_cold';
 
 export interface OutboxEntry {
   /**

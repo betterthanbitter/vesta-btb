@@ -235,3 +235,33 @@ a { color: inherit; }
 
 /* The ghost button is an anchor when it carries a scheduler link. */
 a.ghost { text-decoration: none; display: inline-flex; align-items: center; }
+
+/* "Didn't find a time?" prompt, shown after someone returns from a scheduler. */
+.fallback { display: inline-flex; align-items: center; gap: 8px; font-size: 13px;
+  color: var(--gold); background: var(--gold-bg); border: 1px solid var(--gold-br);
+  border-radius: 9px; padding: 8px 12px; }
+.fallback a { color: var(--acc); font-weight: 680; }
+.fallback button { background: none; border: none; color: var(--gold); font-size: 15px;
+  line-height: 1; padding: 0 2px; opacity: .6; }
+.fallback button:hover { opacity: 1; }
+
+/* consult request form */
+.formwrap { max-width: 560px; margin: 0 auto; background: var(--card);
+  border: 1px solid var(--line); border-radius: 14px; padding: 26px 28px 24px; }
+.formwrap h1 { font-size: 24px; letter-spacing: -.025em; margin: 0 0 6px; }
+.formwrap .lede { font-size: 14.5px; color: var(--ink2); margin: 0 0 20px; line-height: 1.55; }
+.field { margin-bottom: 15px; }
+.field label { display: block; font-size: 11px; font-weight: 750; letter-spacing: .09em;
+  text-transform: uppercase; color: var(--ink3); margin-bottom: 6px; }
+.field input, .field textarea { width: 100%; font: inherit; font-size: 15px;
+  border: 1px solid var(--line2); border-radius: 10px; padding: 11px 13px; background: #fff;
+  color: var(--ink); }
+.field input:focus, .field textarea:focus { outline: none; border-color: var(--acc);
+  box-shadow: 0 0 0 3px var(--soft); }
+.field .hint { font-size: 12.2px; color: var(--ink3); margin-top: 5px; }
+.field .err { font-size: 12.6px; color: #a3271b; margin-top: 5px; font-weight: 600; }
+.submit { width: 100%; background: var(--acc); color: #fff; border: none; border-radius: 10px;
+  padding: 13px; font-size: 15.5px; font-weight: 700; margin-top: 6px; }
+.submit:hover { background: var(--acc2); }
+.submit:disabled { opacity: .55; cursor: default; }
+.privacy { font-size: 12.2px; color: var(--ink3); margin-top: 14px; line-height: 1.55; }
