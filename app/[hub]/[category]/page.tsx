@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import Finder from '../../../components/Finder.tsx';
 import DirectoryResults from '../../../components/DirectoryResults.tsx';
-import TierExplainer from '../../../components/TierExplainer.tsx';
+import InternalNote from '../../../components/InternalNote.tsx';
 import { loadDirectory, hubsWithCounts, CATEGORY_LABELS } from '../../../src/data/vestaImport.ts';
 import { classify } from '../../../src/directory/pageModel.ts';
 import type { PracticeCategory } from '../../../src/pricing/catalog.ts';
@@ -83,18 +83,15 @@ export default async function CategoryPage(
       </div>
 
       <div className="wrap">
-        <p style={{ fontSize: 12.4, color: 'var(--ink3)', margin: '0 0 14px' }}>
+        <InternalNote>
           Serving <code style={{
-            background: 'var(--soft)', border: '1px solid var(--br)', borderRadius: 6,
-            padding: '2px 8px', color: 'var(--acc2)',
+            background: '#fff', border: '1px solid var(--gold-br)', borderRadius: 6,
+            padding: '2px 8px',
           }}>/{hub}/{category}/</code>
           {' · '}
-          <b style={{ color: state === 'publish' ? 'var(--ok)' : 'var(--gold)' }}>
-            {state === 'publish' ? 'indexable' : 'noindex'}
-          </b>{' '}— {reason}
-        </p>
+          <b>{state === 'publish' ? 'indexable' : 'noindex'}</b> — {reason}
+        </InternalNote>
         <DirectoryResults records={here} category={category as PracticeCategory} place={place} />
-        <TierExplainer />
       </div>
     </>
   );

@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import Finder from '../components/Finder.tsx';
 import DirectoryResults from '../components/DirectoryResults.tsx';
-import TierExplainer from '../components/TierExplainer.tsx';
+import InternalNote from '../components/InternalNote.tsx';
 import { loadDirectory, hubsWithCounts, CATEGORY_LABELS } from '../src/data/vestaImport.ts';
 import type { PracticeCategory } from '../src/pricing/catalog.ts';
 
@@ -17,6 +17,8 @@ export default function DirectoryHome() {
     (r) => r.hub === DEFAULT_HUB && r.allCategories.includes(DEFAULT_CATEGORY),
   );
   const place = hubs.find((h) => h.hub === DEFAULT_HUB)?.label ?? DEFAULT_HUB;
+  // Records with no coordinates have no hub, so they appear on no page at all.
+  const unplaced = all.filter((r) => r.hub === 'unplaced');
 
   return (
     <>
@@ -51,8 +53,15 @@ export default function DirectoryHome() {
       </div>
 
       <div className="wrap">
+        {unplaced.length > 0 && (
+          <InternalNote tone="warn">
+            <b>{unplaced.length} professionals cannot be placed anywhere.</b> They have no location
+            in the source data, so no consumer can find them today and they appear on no page
+            here either: {unplaced.map((r) => r.name).join(', ')}. Fixing their addresses is a
+            migration task, not a code change.
+          </InternalNote>
+        )}
         <DirectoryResults records={here} category={DEFAULT_CATEGORY} place={place} />
-        <TierExplainer />
       </div>
     </>
   );

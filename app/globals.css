@@ -1,9 +1,30 @@
 :root {
-  --acc: #5B4B8A; --acc2: #3d3160; --soft: #f0edf8; --br: #d8d0ec;
-  --ink: #191822; --ink2: #4b4959; --ink3: #807d90;
-  --bg: #f6f5f9; --card: #fff; --line: #e7e5ef; --line2: #d9d6e4;
-  --gold: #8a6a24; --gold-bg: #fbf4e4; --gold-br: #e6d4a8;
-  --ok: #2f6b4f; --ok-bg: #eff6f2; --ok-br: #bed7c9;
+  /* Vesta brand, sampled from vestadivorce.com on 8 Sep 2026.
+     Navy wordmark, teal/aqua sunburst, gold accent. */
+  --acc: #0c4777;        /* navy — primary. The wordmark colour. */
+  --acc2: #072446;       /* deeper navy — hover and headings */
+  --teal: #0098a8;       /* the sunburst teal, used across their hero panels */
+  --mint: #5bc9c3;       /* aqua — their lightest brand tone */
+  --brand-gold: #ffc91f; /* the gold in the mark. Background only, never text. */
+
+  --soft: #e8f1f5;       /* pale navy tint for panels */
+  --br: #c2d8e3;         /* border on soft panels */
+  --ink: #16202b;
+  --ink2: #4a4a4a;       /* their body copy grey */
+  --ink3: #7b8794;
+  --bg: #f6fafb;
+  --card: #fff;
+  --line: #e4ecf0;
+  --line2: #d3e0e7;
+
+  /* Gold needs a dark text tone — #ffc91f on white fails contrast badly. */
+  --gold: #7a5a10;
+  --gold-bg: #fff8e3;
+  --gold-br: #f0dca8;
+
+  --ok: #0f6b62;
+  --ok-bg: #eef7f6;
+  --ok-br: #b9dbd7;
 }
 * { box-sizing: border-box; }
 body {
@@ -50,12 +71,12 @@ a { color: inherit; }
 .hero p { margin: 0 0 22px; font-size: 15.5px; color: var(--ink2); max-width: 60ch; }
 .finder { display: grid; grid-template-columns: 1fr 1fr auto; gap: 12px; background: var(--card);
   border: 1px solid var(--br); border-radius: 14px; padding: 14px;
-  box-shadow: 0 6px 22px rgba(60,45,110,.09); }
+  box-shadow: 0 6px 22px rgba(12,71,119,.10); }
 .fg label { display: block; font-size: 10.6px; font-weight: 750; letter-spacing: .1em;
   text-transform: uppercase; color: var(--ink3); margin: 0 0 6px 2px; }
 .fg select { width: 100%; appearance: none; font: inherit; font-size: 15.5px; font-weight: 640;
   color: var(--ink);
-  background: #fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8'><path d='M1 1l5 5 5-5' stroke='%235B4B8A' stroke-width='2' fill='none' stroke-linecap='round'/></svg>") no-repeat right 14px center;
+  background: #fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8'><path d='M1 1l5 5 5-5' stroke='%230c4777' stroke-width='2' fill='none' stroke-linecap='round'/></svg>") no-repeat right 14px center;
   border: 1px solid var(--line2); border-radius: 10px; padding: 12px 40px 12px 14px; cursor: pointer; }
 .fg select:focus { outline: none; border-color: var(--acc); box-shadow: 0 0 0 3px var(--soft); }
 .fbtn { align-self: end; background: var(--acc); color: #fff; border: none; border-radius: 10px;
@@ -74,8 +95,8 @@ a { color: inherit; }
   margin-bottom: 14px; overflow: hidden; }
 
 /* platinum */
-.plat { border: 1px solid var(--br); box-shadow: 0 4px 18px rgba(60,45,110,.10); }
-.ribbon { background: linear-gradient(90deg, var(--acc) 0%, #7a67ad 100%); color: #fff;
+.plat { border: 1px solid var(--br); box-shadow: 0 4px 18px rgba(12,71,119,.12); }
+.ribbon { background: linear-gradient(90deg, var(--acc) 0%, var(--teal) 100%); color: #fff;
   padding: 9px 20px; display: flex; align-items: center; gap: 10px; font-size: 11.6px;
   font-weight: 750; letter-spacing: .07em; text-transform: uppercase; }
 .ribbon .only { background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.32);
@@ -83,7 +104,7 @@ a { color: inherit; }
   font-size: 11.4px; font-weight: 650; }
 .pbody { display: grid; grid-template-columns: 320px 1fr; gap: 24px; padding: 22px 22px 18px; }
 .vid { position: relative; border-radius: 11px; overflow: hidden; aspect-ratio: 16/9;
-  background: linear-gradient(135deg, #4a3d75 0%, #7a67ad 55%, #a892d4 100%);
+  background: linear-gradient(135deg, var(--acc2) 0%, var(--acc) 45%, var(--teal) 100%);
   display: flex; align-items: center; justify-content: center; }
 .play { width: 56px; height: 56px; border-radius: 50%; background: rgba(255,255,255,.94);
   display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(0,0,0,.25); }
@@ -112,13 +133,13 @@ a { color: inherit; }
 .cbtn { display: inline-flex; align-items: center; gap: 8px; background: var(--soft);
   border: 1px solid var(--br); color: var(--acc2); border-radius: 9px; padding: 9px 14px;
   font-size: 13.4px; font-weight: 680; }
-.cbtn .n { font-size: 11.4px; font-weight: 780; background: rgba(91,75,138,.14);
+.cbtn .n { font-size: 11.4px; font-weight: 780; background: rgba(12,71,119,.12);
   border-radius: 99px; padding: 1px 7px; }
 .cbtn[disabled] { opacity: .42; cursor: default; background: var(--bg);
   border-color: var(--line); color: var(--ink3); }
 
 .pfoot { display: flex; align-items: center; gap: 14px; padding: 14px 22px;
-  border-top: 1px solid var(--line); background: #fcfbfe; flex-wrap: wrap; }
+  border-top: 1px solid var(--line); background: #fafdfe; flex-wrap: wrap; }
 .prof { background: var(--acc); color: #fff; border: none; border-radius: 9px; padding: 11px 20px;
   font-size: 14px; font-weight: 700; text-decoration: none; display: inline-block; }
 .prof:hover { background: var(--acc2); }
@@ -130,7 +151,7 @@ a { color: inherit; }
 .prem .pbody { grid-template-columns: 104px 1fr; gap: 18px; padding: 19px 22px 15px; }
 .avatar { width: 104px; height: 104px; border-radius: 12px; display: flex; align-items: center;
   justify-content: center; font-size: 31px; font-weight: 750; color: #fff; letter-spacing: -.02em;
-  background: linear-gradient(140deg, #6a5a9e 0%, #9b86c9 100%); object-fit: cover; }
+  background: linear-gradient(140deg, var(--acc) 0%, var(--teal) 100%); object-fit: cover; }
 .prem .pn { font-size: 19.5px; }
 .prem .pbio { font-size: 13.7px; margin-bottom: 10px; }
 .tierlab { font-size: 10.4px; font-weight: 780; letter-spacing: .1em; text-transform: uppercase;
@@ -172,7 +193,7 @@ a { color: inherit; }
   border-radius: 10px; overflow: hidden; }
 .exp th { text-align: left; font-size: 10.3px; font-weight: 780; letter-spacing: .08em;
   text-transform: uppercase; color: var(--ink3); padding: 10px 13px;
-  border-bottom: 1px solid var(--line); background: #fbfafd; }
+  border-bottom: 1px solid var(--line); background: #f8fbfc; }
 .exp td { padding: 11px 13px; border-bottom: 1px solid var(--line); color: var(--ink2);
   vertical-align: top; line-height: 1.5; }
 .exp tr:last-child td { border-bottom: none; }
