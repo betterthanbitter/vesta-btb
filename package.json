@@ -1,0 +1,10 @@
+{
+  "name": "vesta-btb",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Vesta / Better Than Bitter — referral routing and Ontraport delivery",
+  "scripts": {
+    "test": "node --test test/"
+  }
+}
