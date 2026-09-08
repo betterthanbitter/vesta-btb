@@ -70,7 +70,7 @@ function Platinum({ r, catLabel, place }: { r: DirectoryRecord; catLabel: string
       </div>
       <div className="pfoot">
         <Link className="prof" href={`/profile/${r.id}`}>View full profile →</Link>
-        <button className="ghost">Request an introduction</button>
+        <button className="ghost">Schedule free consult</button>
         <div className="sp" />
         <div className="tierlab" style={{ padding: 0 }}>
           Video introduction, full content library, live event host
