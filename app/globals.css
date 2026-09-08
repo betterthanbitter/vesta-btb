@@ -1,0 +1,50 @@
+:root {
+  --acc: #5B4B8A; --acc2: #3d3160; --soft: #f0edf8; --br: #d8d0ec;
+  --ink: #191822; --ink2: #4b4959; --ink3: #807d90;
+  --bg: #f6f5f9; --card: #fff; --line: #e7e5ef; --line2: #d9d6e4;
+  --gold: #8a6a24; --gold-bg: #fbf4e4; --gold-br: #e6d4a8;
+  --ok: #2f6b4f; --ok-bg: #eff6f2; --ok-br: #bed7c9;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 15px/1.55 ui-sans-serif, -apple-system, "Segoe UI", Inter, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; }
+button, select { font: inherit; }
+
+/* build banner — a standing reminder this is not the live site */
+.buildbar { background: #26232f; color: #cfcbdb; font-size: 12.4px; }
+.buildbar .in {
+  max-width: 1180px; margin: 0 auto; padding: 8px 24px;
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+}
+.buildbar b { color: #fff; }
+.buildbar nav { display: flex; gap: 3px; background: #2a2636; border: 1px solid #423c58;
+  border-radius: 9px; padding: 3px; flex-wrap: wrap; }
+.buildbar nav a { text-decoration: none; color: #c9c4da; font-size: 12.5px; font-weight: 650;
+  padding: 5px 12px; border-radius: 6px; white-space: nowrap; }
+.buildbar nav a:hover { background: #39324e; color: #fff; }
+.buildbar nav a.on { background: #fff; color: #1d1a26; }
+.spacer { flex: 1; }
+.urlchip { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11.8px;
+  background: #151320; border: 1px solid #45405a; border-radius: 6px; padding: 3px 9px; color: #c9b9f0; }
+
+/* masthead */
+.top { background: var(--card); border-bottom: 1px solid var(--line); }
+.top .in { max-width: 1180px; margin: 0 auto; padding: 0 24px; height: 64px;
+  display: flex; align-items: center; gap: 26px; }
+.logo { font-weight: 800; font-size: 20px; letter-spacing: .13em; color: var(--acc);
+  text-decoration: none; }
+.wrap { max-width: 1180px; margin: 0 auto; padding: 26px 24px 80px; }
+
+.hero { background: linear-gradient(180deg, #fff 0%, var(--soft) 100%);
+  border-bottom: 1px solid var(--line); }
+.hero .in { max-width: 1180px; margin: 0 auto; padding: 38px 24px 30px; }
+.hero h1 { font-size: 33px; letter-spacing: -.03em; margin: 0 0 8px; line-height: 1.15; }
+.hero p { margin: 0 0 22px; font-size: 15.5px; color: var(--ink2); max-width: 62ch; }
+
+.notice { border: 1px solid var(--gold-br); background: var(--gold-bg); border-radius: 12px;
+  padding: 14px 18px; font-size: 13.4px; color: #6a5418; line-height: 1.55; margin-bottom: 18px; }
+.notice b { color: #4a3a0e; }
