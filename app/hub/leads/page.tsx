@@ -2,7 +2,7 @@ import Link from 'next/link';
 import LeadCard from '../../../components/LeadCard.tsx';
 import { getDb } from '../../../src/leads/store.ts';
 import { LeadRepository } from '../../../src/db/leadRepository.ts';
-import { loadDirectory } from '../../../src/data/vestaImport.ts';
+import { loadPublishedDirectory } from '../../../src/professionals/directory.ts';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Your leads — Vesta', robots: { index: false, follow: false } };
@@ -11,11 +11,28 @@ export default async function LeadDashboard({
   searchParams,
 }: { searchParams: Promise<{ as?: string }> }) {
   const { as } = await searchParams;
-  const directory = loadDirectory();
-  // Until sign-in exists, who you are is a query parameter. See the note below.
-  const me = directory.find((d) => d.id === as) ?? directory.find((d) => d.id === '13285')!;
+  const db = await getDb();
+  const directory = await loadPublishedDirectory(db);
+  const repo = new LeadRepository(db);
 
-  const leads = await new LeadRepository(await getDb()).forProfessional(me.id);
+  // Until sign-in exists, who you are is a query parameter. Falling back to
+  // whoever actually has leads makes the review page useful without one; the
+  // note at the foot of the page says so plainly.
+  const withLeads = (await repo.all()).map((l) => l.professionalId);
+  const me = directory.find((d) => d.id === as)
+    ?? directory.find((d) => withLeads.includes(d.id))
+    ?? directory[0];
+
+  if (!me) {
+    return (
+      <div className="wrap">
+        <div className="empty"><b>No published professionals yet.</b><br />
+          Approve an application in the back office and it will appear here.</div>
+      </div>
+    );
+  }
+
+  const leads = await repo.forProfessional(me.id);
   const open = leads.filter((l) => !['hired', 'dead_lead'].includes(l.stage));
   const isNew = open.filter((l) => l.stage === 'new');
   const won = leads.filter((l) => l.stage === 'hired');

@@ -2,15 +2,21 @@ import Link from 'next/link';
 import Finder from '../components/Finder.tsx';
 import DirectoryResults from '../components/DirectoryResults.tsx';
 import InternalNote from '../components/InternalNote.tsx';
-import { loadDirectory, hubsWithCounts, CATEGORY_LABELS } from '../src/data/vestaImport.ts';
+import { hubsWithCounts, CATEGORY_LABELS } from '../src/data/vestaImport.ts';
+import { loadPublishedDirectory } from '../src/professionals/directory.ts';
+import { getDb } from '../src/leads/store.ts';
 import type { PracticeCategory } from '../src/pricing/catalog.ts';
 
 /** Where the finder starts, matching the prototype. */
 const DEFAULT_HUB = 'boston-ma';
 const DEFAULT_CATEGORY: PracticeCategory = 'family-law';
 
-export default function DirectoryHome() {
-  const all = loadDirectory();
+/* Rebuilt every few minutes so an approval in the back office reaches the
+ * public site without a deploy, while pages stay cached for consumers. */
+export const revalidate = 120;
+
+export default async function DirectoryHome() {
+  const all = await loadPublishedDirectory(await getDb());
   const placeable = all.filter((r) => r.hub !== 'unplaced');
   const hubs = hubsWithCounts(placeable);
   const here = placeable.filter(

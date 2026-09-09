@@ -3,13 +3,14 @@ import LeadCard from '../../components/LeadCard.tsx';
 import RouteLeadForm from '../../components/RouteLeadForm.tsx';
 import { getDb } from '../../src/leads/store.ts';
 import { LeadRepository } from '../../src/db/leadRepository.ts';
-import { loadDirectory, CATEGORY_LABELS, hubsWithCounts } from '../../src/data/vestaImport.ts';
+import { CATEGORY_LABELS, hubsWithCounts } from '../../src/data/vestaImport.ts';
+import { loadPublishedDirectory } from '../../src/professionals/directory.ts';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Vesta — Concierge', robots: { index: false, follow: false } };
 
 export default async function BackOffice() {
-  const directory = loadDirectory().filter((d) => d.hub !== 'unplaced');
+  const directory = (await loadPublishedDirectory(await getDb())).filter((d) => d.hub !== 'unplaced');
   const repo = new LeadRepository(await getDb());
   const leads = await repo.all();
   const needingReview = await repo.ledger().needingReview();

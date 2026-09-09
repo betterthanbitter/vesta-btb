@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { getDb } from '../src/leads/store.ts';
 import { LeadRepository } from '../src/db/leadRepository.ts';
-import { loadDirectory } from '../src/data/vestaImport.ts';
+import { loadPublishedDirectory } from '../src/professionals/directory.ts';
 import type { Professional, Stage } from '../src/referral/types.ts';
 
 export async function advanceLead(formData: FormData) {
@@ -28,7 +28,7 @@ export async function routeLead(formData: FormData) {
     throw new Error('A lead needs a name, an email address and at least one professional.');
   }
 
-  const directory = loadDirectory();
+  const directory = await loadPublishedDirectory(await getDb());
   const professionals: Professional[] = chosen.flatMap((id) => {
     const r = directory.find((d) => d.id === id);
     if (!r) return [];

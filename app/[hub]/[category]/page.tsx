@@ -3,13 +3,24 @@ import { notFound } from 'next/navigation';
 import Finder from '../../../components/Finder.tsx';
 import DirectoryResults from '../../../components/DirectoryResults.tsx';
 import InternalNote from '../../../components/InternalNote.tsx';
-import { loadDirectory, hubsWithCounts, CATEGORY_LABELS } from '../../../src/data/vestaImport.ts';
+import { hubsWithCounts, CATEGORY_LABELS } from '../../../src/data/vestaImport.ts';
+import { loadPublishedDirectory } from '../../../src/professionals/directory.ts';
+import { getDb } from '../../../src/leads/store.ts';
 import { classify } from '../../../src/directory/pageModel.ts';
 import type { PracticeCategory } from '../../../src/pricing/catalog.ts';
 
+/**
+ * Pages are revalidated rather than frozen at build time, so approving an
+ * application publishes it without waiting for a deploy. Unknown combinations
+ * are still rendered on demand and 404 if nobody is there.
+ */
+export const revalidate = 120;
+export const dynamicParams = true;
+
 export async function generateStaticParams() {
   const seen = new Set<string>();
-  return loadDirectory()
+  const all = await loadPublishedDirectory(await getDb());
+  return all
     .filter((r) => r.hub !== 'unplaced')
     .flatMap((r) => r.allCategories.map((c) => ({ hub: r.hub, category: c })))
     .filter((p) => !seen.has(`${p.hub}/${p.category}`) && seen.add(`${p.hub}/${p.category}`));
@@ -19,7 +30,7 @@ export async function generateMetadata(
   { params }: { params: Promise<{ hub: string; category: string }> },
 ) {
   const { hub, category } = await params;
-  const all = loadDirectory().filter(
+  const all = (await loadPublishedDirectory(await getDb())).filter(
     (r) => r.hub === hub && r.allCategories.includes(category as PracticeCategory),
   );
   if (!all.length) return {};
@@ -40,7 +51,7 @@ export default async function CategoryPage(
   const { hub, category } = await params;
   if (hub === 'unplaced') notFound();
 
-  const all = loadDirectory().filter((r) => r.hub !== 'unplaced');
+  const all = (await loadPublishedDirectory(await getDb())).filter((r) => r.hub !== 'unplaced');
   const here = all.filter(
     (r) => r.hub === hub && r.allCategories.includes(category as PracticeCategory),
   );

@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import ConsultForm from '../../../components/ConsultForm.tsx';
-import { loadDirectory } from '../../../src/data/vestaImport.ts';
+import { loadPublishedDirectory } from '../../../src/professionals/directory.ts';
+import { getDb } from '../../../src/leads/store.ts';
 import { parseSchedulerLink } from '../../../src/directory/schedulerLink.ts';
 
 export const metadata = { robots: { index: false, follow: false } };
@@ -14,7 +15,7 @@ export default async function ConsultPage({
 }) {
   const { id } = await params;
   const { from } = await searchParams;
-  const professional = loadDirectory().find((r) => r.id === id);
+  const professional = (await loadPublishedDirectory(await getDb())).find((r) => r.id === id);
   if (!professional) notFound();
 
   // Only ever return somewhere on this site.

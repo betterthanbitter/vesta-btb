@@ -19,7 +19,14 @@ export interface ConsultRequestStore {
 let dbPromise: Promise<Db> | null = null;
 
 export function getDb(): Promise<Db> {
-  dbPromise ??= openDb();
+  dbPromise ??= openDb().then(async (db) => {
+    // First boot on an empty database: bring the legacy listings across so the
+    // directory has something to show. Skips anyone already present.
+    const { seedLegacyProfessionals } = await import('../professionals/seed.ts');
+    const { added } = await seedLegacyProfessionals(db);
+    if (added) console.log(`[db] seeded ${added} legacy professionals`);
+    return db;
+  });
   return dbPromise;
 }
 

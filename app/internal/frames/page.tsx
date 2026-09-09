@@ -1,5 +1,7 @@
 import DirectoryResults from '../../../components/DirectoryResults.tsx';
-import { loadDirectory, CATEGORY_LABELS } from '../../../src/data/vestaImport.ts';
+import { CATEGORY_LABELS } from '../../../src/data/vestaImport.ts';
+import { loadPublishedDirectory } from '../../../src/professionals/directory.ts';
+import { getDb } from '../../../src/leads/store.ts';
 import type { PracticeCategory } from '../../../src/pricing/catalog.ts';
 
 export const metadata = { robots: { index: false, follow: false } };
@@ -8,8 +10,10 @@ export const metadata = { robots: { index: false, follow: false } };
  * The three tiers together, so the hierarchy can be judged as a consumer sees
  * it — one after another down a page — rather than as three swatches.
  */
-export default function Frames() {
-  const all = loadDirectory().filter((d) => d.hub !== 'unplaced');
+export const dynamic = 'force-dynamic';
+
+export default async function Frames() {
+  const all = (await loadPublishedDirectory(await getDb())).filter((d) => d.hub !== 'unplaced');
   const platinum = all.find((d) => d.tier === 'platinum')!;
   const premium = all.find((d) => d.tier === 'premium')!;
   const standard = all.filter((d) => d.tier === 'standard' && d.hub === platinum.hub).slice(0, 3);

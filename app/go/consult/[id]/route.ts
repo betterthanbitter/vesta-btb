@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { randomUUID } from 'node:crypto';
-import { loadDirectory } from '../../../../src/data/vestaImport.ts';
+import { loadPublishedDirectory } from '../../../../src/professionals/directory.ts';
+import { getDb } from '../../../../src/leads/store.ts';
 import { parseSchedulerLink } from '../../../../src/directory/schedulerLink.ts';
 import { recordConsultIntent } from '../../../../src/leads/consultIntent.ts';
 import { getConsultIntentStore } from '../../../../src/leads/store.ts';
@@ -23,7 +24,7 @@ export async function GET(
 ) {
   const { id } = await params;
 
-  const professional = loadDirectory().find((r) => r.id === id);
+  const professional = (await loadPublishedDirectory(await getDb())).find((r) => r.id === id);
   const link = parseSchedulerLink(professional?.schedulerUrl);
 
   if (!professional || !link) {

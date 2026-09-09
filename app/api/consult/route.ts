@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { loadDirectory } from '../../../src/data/vestaImport.ts';
-import { validateConsultRequest } from '../../../src/leads/consultRequest.ts';
+import { loadPublishedDirectory } from '../../../src/professionals/directory.ts';
 import { getDb } from '../../../src/leads/store.ts';
+import { validateConsultRequest } from '../../../src/leads/consultRequest.ts';
 import { LeadRepository } from '../../../src/db/leadRepository.ts';
 import type { Professional } from '../../../src/referral/types.ts';
 
@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
   const result = validateConsultRequest(body as any);
   if (!result.ok) return NextResponse.json({ errors: result.errors }, { status: 422 });
 
-  const record = loadDirectory().find((r) => r.id === result.value.professionalId);
+  const record = (await loadPublishedDirectory(await getDb())).find((r) => r.id === result.value.professionalId);
   if (!record) return NextResponse.json({ message: 'Unknown professional.' }, { status: 404 });
 
   const [firstName, ...rest] = result.value.name.trim().split(/\s+/);
