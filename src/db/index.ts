@@ -52,7 +52,23 @@ export async function openTestDb(): Promise<Db> {
  * serverless host where there is no deploy step to hang a migration off.
  */
 export async function migrate(db: Db): Promise<void> {
-  await db.exec(SCHEMA_SQL);
+  // Statement at a time rather than one big exec. Supabase's transaction
+  // pooler and some other proxies reject multi-statement queries, and the
+  // resulting error is impenetrable if you are not a database person.
+  for (const statement of splitStatements(SCHEMA_SQL)) {
+    await db.exec(statement);
+  }
+}
+
+/** Split on semicolons that end a statement, ignoring those inside comments. */
+function splitStatements(sql: string): string[] {
+  return sql
+    .split('\n')
+    .filter((line) => !line.trim().startsWith('--'))
+    .join('\n')
+    .split(';')
+    .map((s) => s.trim())
+    .filter(Boolean);
 }
 
 export type { Db } from './client.ts';
