@@ -1,52 +1,47 @@
 import { NextResponse, type NextRequest } from 'next/server';
+import { GATE_COOKIE, safeNext, timingSafeEqual, verifyToken } from './src/auth/gate.ts';
 
 /**
- * Password gate for the preview deployment.
+ * Keeps the preview private.
  *
- * The directory shows real professionals — their photos, bios and contact
- * details — alongside tier labels nobody has agreed to. That must not be
- * reachable by anyone who happens on the URL while it is being reviewed.
- *
- * Set SITE_PASSWORD in the host's environment to switch the gate on. With no
- * password set the site is open, which is what we want locally and what we
- * will want on the real launch.
+ * The directory shows real professionals — photos, bios, contact details —
+ * alongside tier labels nobody has agreed to. Unset SITE_PASSWORD and the gate
+ * disappears, which is what we want locally and at launch.
  */
-export function middleware(req: NextRequest) {
+export async function middleware(req: NextRequest) {
   const password = process.env.SITE_PASSWORD;
   if (!password) return NextResponse.next();
 
+  const { pathname, search } = req.nextUrl;
+
+  // The password page itself must stay reachable, or there is no way in.
+  if (pathname === '/enter' || pathname === '/api/enter') return NextResponse.next();
+
+  if (await verifyToken(req.cookies.get(GATE_COOKIE)?.value, password)) {
+    return noindex(NextResponse.next());
+  }
+
+  // Basic auth still works, for scripts and for checking the site from a
+  // terminal. Browsers get the page.
   const header = req.headers.get('authorization');
   if (header?.startsWith('Basic ')) {
-    // atob rather than Buffer — middleware runs on the edge runtime.
     const decoded = atob(header.slice(6));
-    const supplied = decoded.slice(decoded.indexOf(':') + 1);
-    if (timingSafeEqual(supplied, password)) {
-      const res = NextResponse.next();
-      // A gated site is a preview. Keep it out of search results even if a
-      // crawler is somehow given the credentials.
-      res.headers.set('x-robots-tag', 'noindex, nofollow');
-      return res;
+    if (timingSafeEqual(decoded.slice(decoded.indexOf(':') + 1), password)) {
+      return noindex(NextResponse.next());
     }
   }
 
-  return new NextResponse('Authentication required.', {
-    status: 401,
-    headers: {
-      'WWW-Authenticate': 'Basic realm="Vesta preview", charset="UTF-8"',
-      'x-robots-tag': 'noindex, nofollow',
-    },
-  });
+  const to = req.nextUrl.clone();
+  to.pathname = '/enter';
+  to.search = `?next=${encodeURIComponent(safeNext(pathname + search))}`;
+  return noindex(NextResponse.redirect(to));
 }
 
-/** Constant-time comparison, so the password cannot be guessed by timing. */
-function timingSafeEqual(a: string, b: string): boolean {
-  if (a.length !== b.length) return false;
-  let diff = 0;
-  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
-  return diff === 0;
+function noindex(res: NextResponse): NextResponse {
+  res.headers.set('x-robots-tag', 'noindex, nofollow');
+  return res;
 }
 
 export const config = {
-  // Everything except Next's own assets and the favicon.
   matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
 };

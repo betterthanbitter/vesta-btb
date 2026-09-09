@@ -265,3 +265,26 @@ a.ghost { text-decoration: none; display: inline-flex; align-items: center; }
 .submit:hover { background: var(--acc2); }
 .submit:disabled { opacity: .55; cursor: default; }
 .privacy { font-size: 12.2px; color: var(--ink3); margin-top: 14px; line-height: 1.55; }
+
+/* preview password page */
+.gate { min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  padding: 24px; background: linear-gradient(160deg, var(--soft) 0%, var(--bg) 60%); }
+.gatecard { width: 100%; max-width: 400px; background: var(--card);
+  border: 1px solid var(--line); border-radius: 16px; padding: 32px 32px 26px;
+  box-shadow: 0 10px 34px rgba(12,71,119,.10); }
+.gatelogo { font-weight: 800; font-size: 20px; letter-spacing: .13em; color: var(--acc);
+  margin-bottom: 20px; }
+.gatecard h1 { font-size: 21px; letter-spacing: -.02em; margin: 0 0 7px; }
+.gatecard p { font-size: 14px; color: var(--ink2); line-height: 1.55; margin: 0 0 20px; }
+.gatecard label { display: block; font-size: 11px; font-weight: 750; letter-spacing: .09em;
+  text-transform: uppercase; color: var(--ink3); margin-bottom: 6px; }
+.gatecard input[type="password"] { width: 100%; font: inherit; font-size: 16px;
+  border: 1px solid var(--line2); border-radius: 10px; padding: 12px 14px; }
+.gatecard input[type="password"]:focus { outline: none; border-color: var(--acc);
+  box-shadow: 0 0 0 3px var(--soft); }
+.gatecard button { width: 100%; margin-top: 16px; background: var(--acc); color: #fff;
+  border: none; border-radius: 10px; padding: 13px; font-size: 15.5px; font-weight: 700; }
+.gatecard button:hover { background: var(--acc2); }
+.gatecard button:disabled { opacity: .6; cursor: default; }
+.gateerr { margin-top: 10px; font-size: 13.4px; font-weight: 600; color: #a3271b; }
+.gatefoot { font-size: 12.3px; color: var(--ink3); margin: 18px 0 0; line-height: 1.55; }
