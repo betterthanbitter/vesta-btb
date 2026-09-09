@@ -7,4 +7,6 @@ dist/
 .next/
 next-env.d.ts
 *.tsbuildinfo
-data/vesta.db
+# The local SQLite database and its WAL siblings (-wal, -shm), which WAL
+# mode creates alongside it.
+data/vesta.db*

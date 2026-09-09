@@ -20,6 +20,8 @@ export interface Db {
   transaction<T>(fn: (tx: Db) => Promise<T>): Promise<T>;
   /** Execute raw SQL — used only by the migration runner. */
   exec(sql: string): Promise<void>;
+  /** Column names on a table, or an empty list if the table does not exist. */
+  tableColumns(table: string): Promise<string[]>;
   close(): Promise<void>;
 }
 

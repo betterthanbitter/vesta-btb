@@ -3,6 +3,7 @@ import type { Db } from './client.ts';
 import { SqliteDb } from './sqlite.ts';
 import { PostgresDb } from './postgres.ts';
 import { SCHEMA_SQL } from './schema.ts';
+import { addMissingColumns } from './columns.ts';
 
 /**
  * Pick a database and make sure the schema is present.
@@ -57,6 +58,14 @@ export async function migrate(db: Db): Promise<void> {
   // resulting error is impenetrable if you are not a database person.
   for (const statement of splitStatements(SCHEMA_SQL)) {
     await db.exec(statement);
+  }
+
+  // CREATE TABLE IF NOT EXISTS leaves an existing table exactly as it was, so
+  // anything added to the schema since that table was created is missing.
+  const added = await addMissingColumns(db);
+  if (added.length) {
+    console.log(`[db] added ${added.length} missing columns: ` +
+      added.map((c) => `${c.table}.${c.name}`).join(', '));
   }
 }
 

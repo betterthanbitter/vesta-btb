@@ -11,7 +11,14 @@ function initials(name: string) {
   return name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]?.toUpperCase()).join('');
 }
 
-/** Content strip — counts are real, so today they are mostly zero. */
+/**
+ * The content strip.
+ *
+ * Counts are real, and today they are zero because nothing has been produced
+ * yet. The buttons still render live rather than greyed out: a paying member's
+ * listing should look like the finished article when the page is being shown
+ * to someone, and a row of dimmed controls reads as broken rather than empty.
+ */
 function ContentStrip({ r }: { r: DirectoryRecord }) {
   const kinds = [
     { icon: '🎬', label: 'Watch Webinars', n: r.webinars },
@@ -21,7 +28,7 @@ function ContentStrip({ r }: { r: DirectoryRecord }) {
   return (
     <div className="cstrip">
       {kinds.map((k) => (
-        <button key={k.label} className="cbtn" disabled={!k.n}>
+        <button key={k.label} className="cbtn">
           {k.icon} {k.label} <span className="n">{k.n}</span>
         </button>
       ))}
@@ -33,15 +40,12 @@ function ContentStrip({ r }: { r: DirectoryRecord }) {
 export const PLATINUM_FRAME: 'gold' | 'teal' | 'navy' | 'edge' = 'gold';
 
 function Platinum({
-  r, catLabel, place, frame = PLATINUM_FRAME,
-}: { r: DirectoryRecord; catLabel: string; place: string; frame?: string }) {
+  r, place, frame = PLATINUM_FRAME,
+}: { r: DirectoryRecord; place: string; frame?: string }) {
   const scheduler = parseSchedulerLink(r.schedulerUrl);
   return (
     <div className="card plat" data-frame={frame}>
-      <div className="ribbon">
-        Platinum Member
-        <span className="only">The only one in {catLabel} for {place}</span>
-      </div>
+      <div className="ribbon">Platinum Member</div>
       <div className="pbody">
         <div className="mediacol">
           {r.introVideo ? (
@@ -192,7 +196,7 @@ export default function DirectoryResults({
         </div>
       )}
 
-      {platinum.map((r) => <Platinum key={r.id} r={r} catLabel={catLabel} place={place} />)}
+      {platinum.map((r) => <Platinum key={r.id} r={r} place={place} />)}
 
       {platinum.length === 0 && records.length > 0 && (
         <div className="seat">

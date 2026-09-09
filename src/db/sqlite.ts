@@ -50,6 +50,13 @@ export class SqliteDb implements Db {
     this.db.exec(sql);
   }
 
+  async tableColumns(table: string): Promise<string[]> {
+    const rows = await this.query<{ name: string }>(
+      'SELECT name FROM pragma_table_info(?)', [table],
+    );
+    return rows.map((r) => r.name);
+  }
+
   async transaction<T>(fn: (tx: Db) => Promise<T>): Promise<T> {
     // Nested calls join the outer transaction rather than starting a second
     // one, which SQLite does not support.

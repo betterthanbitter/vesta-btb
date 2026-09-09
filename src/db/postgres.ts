@@ -40,6 +40,15 @@ export class PostgresDb implements Db {
     await this.executor.query(sql);
   }
 
+  async tableColumns(table: string): Promise<string[]> {
+    const rows = await this.query<{ column_name: string }>(
+      'SELECT column_name FROM information_schema.columns' +
+      ' WHERE table_schema = current_schema() AND table_name = ?',
+      [table],
+    );
+    return rows.map((r) => r.column_name);
+  }
+
   async transaction<T>(fn: (tx: Db) => Promise<T>): Promise<T> {
     if (this.client) return fn(this);
     const client = await this.pool.connect();
