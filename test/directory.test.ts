@@ -14,9 +14,10 @@ const pro = (
 ): DirectoryProfessional => ({ id, hub, category, tier, contentCount });
 
 describe('what a tier actually buys', () => {
-  test('Standard is a listing and nothing else', () => {
+  test('Standard is a listing, a photo, and nothing else', () => {
     const e = ENTITLEMENTS.standard;
     assert.equal(e.listing, true);
+    assert.equal(e.photo, true, 'a face is not a paid privilege');
     assert.equal(e.contentLibrary, false);
     assert.equal(e.introVideo, false);
     assert.equal(e.exclusiveSeat, false);
@@ -37,8 +38,10 @@ describe('what a tier actually buys', () => {
   });
 
   test('the upgrade gap is a list of things, not a price', () => {
+    // A photograph is not one of them. Everyone gets a face; Premium buys the
+    // bio, the content library and the community placement.
     assert.deepEqual(whatUpgradingAdds('standard', 'premium'),
-      ['photo', 'contentLibrary', 'communityPlacement']);
+      ['contentLibrary', 'communityPlacement']);
     assert.deepEqual(whatUpgradingAdds('premium', 'platinum'),
       ['introVideo', 'hostsEvents', 'exclusiveSeat', 'hubHostingIncluded']);
   });

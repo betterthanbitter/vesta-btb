@@ -34,7 +34,11 @@ export interface Entitlements {
 export const ENTITLEMENTS: Record<Tier, Entitlements> = {
   standard: {
     listing: true,
-    photo: false,
+    // A face is not a paid privilege. Someone choosing who to trust with their
+    // divorce should see who they are looking at, whatever the professional
+    // pays. What Premium buys above this is the bio, the content library and
+    // the size of the card — not the existence of a photograph.
+    photo: true,
     contentLibrary: false,
     introVideo: false,
     communityPlacement: false,

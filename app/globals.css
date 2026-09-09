@@ -174,10 +174,12 @@ a { color: inherit; }
   overflow: hidden; margin-bottom: 14px; }
 .lhead { padding: 12px 22px; background: var(--bg); border-bottom: 1px solid var(--line);
   font-size: 11px; font-weight: 780; letter-spacing: .1em; text-transform: uppercase; color: var(--ink3); }
-.lrow { display: grid; grid-template-columns: 40px 1fr 200px 150px auto; gap: 16px;
+.lrow { display: grid; grid-template-columns: 56px 1fr 200px 150px auto; gap: 16px;
   align-items: center; padding: 14px 22px; border-bottom: 1px solid var(--line); background: #fff; }
 .lrow:last-child { border-bottom: none; }
-.lini { width: 40px; height: 40px; border-radius: 9px; background: var(--bg);
+.lphoto { width: 56px; height: 56px; border-radius: 10px; object-fit: cover;
+  object-position: center top; border: 1px solid var(--line2); display: block; }
+.lini { width: 56px; height: 56px; border-radius: 10px; background: var(--bg);
   border: 1px solid var(--line2); display: flex; align-items: center; justify-content: center;
   font-size: 13px; font-weight: 750; color: var(--ink3); }
 .ln { font-size: 15px; font-weight: 680; }
@@ -222,7 +224,7 @@ a { color: inherit; }
   /* Stacked, the media should not become a full-width slab. */
   .pbody { grid-template-columns: 1fr !important; }
   .mediacol { max-width: 280px; min-height: 240px; }
-  .lrow { grid-template-columns: 40px 1fr; row-gap: 4px; }
+  .lrow { grid-template-columns: 56px 1fr; row-gap: 4px; }
   .lrow > :nth-child(n+3) { grid-column: 2; }
 }
 

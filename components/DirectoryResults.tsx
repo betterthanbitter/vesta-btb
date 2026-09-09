@@ -130,7 +130,9 @@ function Listings({ rows, place }: { rows: DirectoryRecord[]; place: string }) {
       <div className="lhead">Also in {place} — {rows.length} listed</div>
       {rows.map((r) => (
         <div className="lrow" key={r.id}>
-          <div className="lini">{initials(r.name)}</div>
+          {r.photo
+            ? <img className="lphoto" src={r.photo} alt={r.name} loading="lazy" />
+            : <div className="lini">{initials(r.name)}</div>}
           <div>
             <div className="ln">{r.name}</div>
             {r.roleLabel && <div className="lc">{r.roleLabel}</div>}
