@@ -56,8 +56,8 @@ export default function LeadCapture({
         {schedulerHost ? (
           <>
             <p>
-              You can book a time now, or wait for {firstName} to be in touch — either works,
-              and we have your details either way.
+              {firstName} offers instant booking — pick a time now, or wait to be contacted.
+              Either works; we have your details either way.
             </p>
             <a
               className="prof big"
@@ -65,7 +65,7 @@ export default function LeadCapture({
               target="_blank"
               rel="noopener noreferrer nofollow"
             >
-              Schedule a consult
+              Instant Book
               <span className="host">{schedulerHost}</span>
             </a>
           </>
@@ -81,10 +81,10 @@ export default function LeadCapture({
 
   return (
     <form className="capture" onSubmit={onSubmit} noValidate>
-      <h3>Talk to {firstName}</h3>
+      <h3>Schedule a free consult with {firstName}</h3>
       <p className="capintro">
         Leave your details and {firstName} will be in touch.
-        {schedulerHost && ' You can book a time straight afterwards.'}
+        {schedulerHost && ' If you would rather pick a time yourself, you can do that on the next step.'}
       </p>
 
       {errors._ && <div className="err">{errors._}</div>}
@@ -122,7 +122,7 @@ export default function LeadCapture({
       </div>
 
       <button className="prof big" type="submit" disabled={sending}>
-        {sending ? 'Sending…' : `Send to ${firstName}`}
+        {sending ? 'Sending…' : 'Request my free consult'}
       </button>
       <p className="capfoot">
         Your details go to {firstName} and to Vesta’s concierge team, who follow up if you do not

@@ -739,3 +739,17 @@ a.ghost { text-decoration: none; display: inline-flex; align-items: center; }
 .socialfield { display: flex; align-items: center; gap: 10px; }
 .socialfield span { flex: 0 0 78px; font-size: 12.6px; font-weight: 650; color: var(--ink2); }
 .socialfield input { flex: 1; font-size: 14px !important; padding: 9px 11px !important; }
+
+/* the standalone capture page */
+.capturepage { max-width: 620px; margin: 0 auto; padding: 36px 20px 70px; }
+.capwho { display: flex; gap: 16px; align-items: center; margin-bottom: 20px; }
+.capwho img, .capinitials { width: 84px; height: 84px; border-radius: 12px; object-fit: cover;
+  object-position: center top; flex: none; }
+.capinitials { display: flex; align-items: center; justify-content: center; font-size: 28px;
+  font-weight: 750; color: #fff; background: linear-gradient(140deg, var(--acc), var(--teal)); }
+.capname { font-size: 21px; font-weight: 730; letter-spacing: -.022em; }
+.caprole { font-size: 14px; color: var(--acc); font-weight: 650; }
+.capwhere { font-size: 13.4px; color: var(--ink3); margin-bottom: 5px; }
+.caplink { font-size: 13.2px; color: var(--acc); font-weight: 650; text-decoration: none; }
+.caplink:hover { text-decoration: underline; }
+.lctas { display: flex; gap: 12px; align-items: center; white-space: nowrap; }

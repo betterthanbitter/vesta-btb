@@ -3,8 +3,7 @@ import type { DirectoryRecord } from '../src/data/vestaImport.ts';
 import { CATEGORY_LABELS } from '../src/data/vestaImport.ts';
 import { ENTITLEMENTS, type Tier } from '../src/directory/tiers.ts';
 import { orderForPage } from '../src/directory/pageModel.ts';
-import { parseSchedulerLink } from '../src/directory/schedulerLink.ts';
-import ConsultCta from './ConsultCta.tsx';
+import ScheduleCta from './ScheduleCta.tsx';
 import type { PracticeCategory } from '../src/pricing/catalog.ts';
 
 function initials(name: string) {
@@ -42,7 +41,6 @@ export const PLATINUM_FRAME: 'gold' | 'teal' | 'navy' | 'edge' = 'gold';
 function Platinum({
   r, place, frame = PLATINUM_FRAME,
 }: { r: DirectoryRecord; place: string; frame?: string }) {
-  const scheduler = parseSchedulerLink(r.schedulerUrl);
   return (
     <div className="card plat" data-frame={frame}>
       <div className="ribbon">Platinum Member</div>
@@ -88,19 +86,13 @@ function Platinum({
       </div>
       <div className="pfoot">
         <Link className="prof" href={`/profile/${r.id}`}>View full profile →</Link>
-        <ConsultCta
-          professionalId={r.id}
-          firstName={r.name.split(' ')[0]}
-          schedulerHost={scheduler?.host}
-          sourcePath={`/${r.hub}/${r.category}`}
-        />
+        <ScheduleCta professionalId={r.id} from={`/${r.hub}/${r.category}`} variant="ghost" />
       </div>
     </div>
   );
 }
 
 function Premium({ r, place }: { r: DirectoryRecord; place: string }) {
-  const scheduler = parseSchedulerLink(r.schedulerUrl);
   return (
     <div className="card prem">
       <div className="tierlab">Premium Member</div>
@@ -128,12 +120,7 @@ function Premium({ r, place }: { r: DirectoryRecord; place: string }) {
       </div>
       <div className="pfoot">
         <Link className="prof" href={`/profile/${r.id}`}>View profile →</Link>
-        <ConsultCta
-          professionalId={r.id}
-          firstName={r.name.split(' ')[0]}
-          schedulerHost={scheduler?.host}
-          sourcePath={`/${r.hub}/${r.category}`}
-        />
+        <ScheduleCta professionalId={r.id} from={`/${r.hub}/${r.category}`} variant="ghost" />
       </div>
     </div>
   );
@@ -156,7 +143,10 @@ function Listings({ rows, place }: { rows: DirectoryRecord[]; place: string }) {
           </div>
           <div className="lf">{r.firm || <span style={{ color: 'var(--ink3)' }}>—</span>}</div>
           <div className="lh">{place}</div>
-          <Link className="llink" href={`/profile/${r.id}`}>Contact →</Link>
+          <div className="lctas">
+            <Link className="llink" href={`/profile/${r.id}`}>Profile</Link>
+            <ScheduleCta professionalId={r.id} from={`/${r.hub}/${r.category}`} variant="link" />
+          </div>
         </div>
       ))}
     </div>

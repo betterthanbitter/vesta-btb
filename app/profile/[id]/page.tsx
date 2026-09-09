@@ -82,7 +82,7 @@ export default async function Profile({ params }: { params: Promise<{ id: string
           <div className="pname">{r.name}{r.roleLabel ? <span>, {r.roleLabel}</span> : null}</div>
           <span className="verified">Verified · Vesta network</span>
           <span className="sp" />
-          <a className="prof" href="#talk">Talk to {first}</a>
+          <a className="prof" href="#talk">Schedule Free Consult</a>
         </div>
       </header>
 
@@ -99,7 +99,7 @@ export default async function Profile({ params }: { params: Promise<{ id: string
               {(c.lede ?? r.bio) && <p className="plede">{c.lede ?? r.bio}</p>}
 
               <div className="hactions">
-                <a className="prof" href="#talk">Talk to {first}</a>
+                <a className="prof" href="#talk">Schedule Free Consult</a>
                 {c.questions?.length
                   ? <a className="ghost" href="#answers">Start with the questions</a>
                   : grouped.length
