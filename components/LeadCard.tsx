@@ -1,35 +1,68 @@
 import { advanceLead } from '../app/actions.ts';
 import type { LeadView } from '../src/db/leadRepository.ts';
-import type { Stage } from '../src/referral/types.ts';
+import { STAGE_LABELS, type Stage } from '../src/referral/types.ts';
+import { nextStages } from '../src/referral/stateMachine.ts';
 
-const NEXT_STAGES: Partial<Record<Stage, { to: Stage; label: string }[]>> = {
-  routed: [
-    { to: 'contacted', label: 'I’ve contacted them' },
-    { to: 'declined', label: 'Not for me' },
-  ],
-  viewed: [
-    { to: 'contacted', label: 'I’ve contacted them' },
-    { to: 'declined', label: 'Not for me' },
-  ],
-  contacted: [
-    { to: 'consulted', label: 'We’ve met' },
-    { to: 'no_response', label: 'No reply' },
-  ],
-  consulted: [
-    { to: 'retained', label: 'They hired me' },
-    { to: 'no_response', label: 'Went quiet' },
-  ],
+/**
+ * What each button says. Derived from the state machine rather than a second
+ * list, so a stage can never be legal in one place and missing in the other.
+ */
+const ACTION_LABELS: Record<Stage, string> = {
+  new: 'New',
+  contacted: 'I’ve contacted them',
+  responded: 'They responded',
+  did_not_respond: 'No response',
+  followed_up: 'I followed up',
+  interested: 'They’re interested',
+  hired: 'They hired me',
+  dead_lead: 'Dead lead',
 };
 
-const STAGE_LABEL: Record<Stage, string> = {
-  routed: 'New', viewed: 'Viewed', contacted: 'Contacted', consulted: 'Consulted',
-  retained: 'Retained', declined: 'Declined', no_response: 'No response',
-  withdrawn: 'Withdrawn',
-};
+/**
+ * What the concierge learned, laid out for the professional.
+ *
+ * Only answered questions appear. A grid of "—" tells a professional nothing
+ * and makes the useful answers harder to find.
+ */
+function Brief({ lead }: { lead: LeadView }) {
+  const c = lead.consumer;
+  const facts: Array<[string, string | undefined]> = [
+    ['Stage', c.stageOfDivorce],
+    ['Married', c.lengthOfMarriage],
+    ['Children', c.hasChildren === 'Yes' && c.childrenAges ? `Yes — ${c.childrenAges}` : c.hasChildren],
+    ['Home', c.homeStatus],
+    ['Business', c.ownsBusiness],
+    ['Assets', c.assetRange],
+    ['Location', [c.city, c.state].filter(Boolean).join(', ') || undefined],
+    ['Came from', c.leadSource],
+  ].filter((f): f is [string, string] => Boolean(f[1]));
+
+  if (!facts.length && !c.questions && !c.professionalsWanted) return null;
+
+  return (
+    <div className="brief">
+      {facts.length > 0 && (
+        <dl>
+          {facts.map(([k, v]) => (
+            <div key={k}><dt>{k}</dt><dd>{v}</dd></div>
+          ))}
+        </dl>
+      )}
+      {c.professionalsWanted && (
+        <p className="briefwanted">
+          <b>Also looking for:</b> {c.professionalsWanted}
+        </p>
+      )}
+      {c.questions && (
+        <p className="briefq">“{c.questions}”</p>
+      )}
+    </div>
+  );
+}
 
 export default function LeadCard({ lead, showWho }: { lead: LeadView; showWho?: string }) {
-  const actions = NEXT_STAGES[lead.stage] ?? [];
-  const isNew = lead.stage === 'routed';
+  const actions = nextStages(lead.stage);
+  const isNew = lead.stage === 'new';
   const cold = lead.daysSinceActivity >= 7 && actions.length > 0;
 
   return (
@@ -37,7 +70,7 @@ export default function LeadCard({ lead, showWho }: { lead: LeadView; showWho?: 
       <div className="leadmain">
         <div className="leadtop">
           <span className="leadname">{lead.consumer.name}</span>
-          <span className={`pill pill-${lead.stage}`}>{STAGE_LABEL[lead.stage]}</span>
+          <span className={`pill pill-${lead.stage}`}>{STAGE_LABELS[lead.stage]}</span>
           {lead.shortlistSize > 1 && (
             <span className="pill pill-shared" title="This consumer was shown a shortlist">
               Shortlisted with {lead.shortlistSize - 1} other{lead.shortlistSize > 2 ? 's' : ''}
@@ -54,18 +87,28 @@ export default function LeadCard({ lead, showWho }: { lead: LeadView; showWho?: 
           {showWho && <> · <b>{showWho}</b></>}
         </div>
 
-        {lead.message && <p className="leadmsg">{lead.message}</p>}
+        <Brief lead={lead} />
+
+        {lead.message && (
+          <p className="leadmsg">
+            <span className="leadmsglabel">From the concierge</span>
+            {lead.message}
+          </p>
+        )}
       </div>
 
       {actions.length > 0 && (
         <div className="leadactions">
-          {actions.map((a) => (
-            <form action={advanceLead} key={a.to}>
+          {actions.map((to) => (
+            <form action={advanceLead} key={to}>
               <input type="hidden" name="referralId" value={lead.referralId} />
               <input type="hidden" name="professionalId" value={lead.professionalId} />
-              <input type="hidden" name="stage" value={a.to} />
-              <button type="submit" className={a.to === 'retained' ? 'won' : undefined}>
-                {a.label}
+              <input type="hidden" name="stage" value={to} />
+              <button
+                type="submit"
+                className={to === 'hired' ? 'won' : to === 'dead_lead' ? 'dead' : undefined}
+              >
+                {ACTION_LABELS[to]}
               </button>
             </form>
           ))}

@@ -361,38 +361,72 @@ a.ghost { text-decoration: none; display: inline-flex; align-items: center; }
 .prometa { color: var(--ink3); font-size: 12.6px; margin-left: auto; }
 .prolist .none { padding: 18px; text-align: center; color: var(--ink3); font-size: 13.5px; }
 
-/* ── Platinum frame options ───────────────────────────────────────────────
-   The frame is what separates a Platinum listing at a glance, before anyone
-   reads the ribbon. Set data-frame on .card.plat to switch.
-   All four use colours sampled from vestadivorce.com.                      */
+/* ── Tier frames ──────────────────────────────────────────────────────────
+   Gold for Platinum, teal for Premium, navy for Standard. All three sampled
+   from vestadivorce.com.
 
-/* A — Gold. The sunburst gold from the logo mark. The strongest "this one is
-   different" signal, and the convention people already read as premium. */
-.plat[data-frame="gold"] {
+   The colours are yours; the weights are chosen to keep the hierarchy right.
+   Navy is the darkest of the three and a 2px navy border would out-shout the
+   teal above it, so Standard gets a thin one and no glow. Prominence has to
+   fall as the tier falls, or the frame argues against the price list.        */
+
+.plat, .card.plat {
   border: 2px solid var(--brand-gold);
   box-shadow: 0 4px 20px rgba(255,201,31,.20);
 }
-.plat[data-frame="gold"] .ribbon {
-  background: linear-gradient(90deg, var(--acc) 0%, var(--teal) 100%);
+
+.card.prem {
+  border: 2px solid var(--teal);
+  box-shadow: 0 3px 14px rgba(0,152,168,.13);
 }
 
-/* B — Teal. The brand's secondary. Calmer than gold, unmistakably Vesta. */
+.lwrap {
+  border: 1px solid var(--acc);
+  box-shadow: none;
+}
+.lwrap .lhead {
+  background: var(--soft);
+  color: var(--acc2);
+  border-bottom-color: var(--br);
+}
+
+/* Kept so the comparison page can still show each colour on its own. */
 .plat[data-frame="teal"] {
-  border: 2px solid var(--teal);
+  border-color: var(--teal);
   box-shadow: 0 4px 20px rgba(0,152,168,.18);
 }
-
-/* C — Navy. The wordmark colour. Most serious and least decorative; reads as
-   authority rather than promotion, which may suit a divorce audience. */
 .plat[data-frame="navy"] {
-  border: 2px solid var(--acc);
+  border-color: var(--acc);
   box-shadow: 0 4px 20px rgba(12,71,119,.18);
 }
-
-/* D — Aqua edge. A thick left-hand bar in the sunburst aqua rather than a full
-   border. Quietest of the four; marks the card without boxing it in. */
 .plat[data-frame="edge"] {
   border: 1px solid var(--line);
   border-left: 6px solid var(--mint);
   box-shadow: 0 4px 18px rgba(12,71,119,.10);
 }
+
+.qgroup { border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px 6px;
+  margin: 4px 0 16px; background: var(--bg); }
+.qgroup legend { font-size: 11.5px; font-weight: 780; letter-spacing: .09em;
+  text-transform: uppercase; color: var(--ink3); padding: 0 8px; }
+.qhint { font-size: 12.6px; color: var(--ink3); margin: 0 0 14px; line-height: 1.5; }
+.ticks { display: flex; flex-wrap: wrap; gap: 6px; }
+.tick { display: inline-flex; align-items: center; gap: 6px; font-size: 13px;
+  background: #fff; border: 1px solid var(--line2); border-radius: 99px;
+  padding: 6px 12px; cursor: pointer; }
+.tick:hover { border-color: var(--acc); }
+.tick.on { background: var(--soft); border-color: var(--acc); color: var(--acc2); font-weight: 650; }
+.tick input { margin: 0; }
+
+.brief { margin-top: 11px; }
+.brief dl { display: flex; flex-wrap: wrap; gap: 6px 8px; margin: 0 0 8px; }
+.brief dl > div { display: flex; gap: 6px; align-items: baseline; background: var(--bg);
+  border: 1px solid var(--line); border-radius: 8px; padding: 5px 10px; }
+.brief dt { font-size: 11px; font-weight: 750; letter-spacing: .05em; text-transform: uppercase;
+  color: var(--ink3); margin: 0; }
+.brief dd { margin: 0; font-size: 13.2px; font-weight: 600; color: var(--ink); }
+.briefwanted { font-size: 13px; color: var(--ink2); margin: 0 0 6px; }
+.briefq { font-size: 14px; color: var(--ink); font-style: italic; margin: 0;
+  border-left: 3px solid var(--mint); padding-left: 12px; line-height: 1.55; }
+.leadmsglabel { display: block; font-size: 10.5px; font-weight: 780; letter-spacing: .09em;
+  text-transform: uppercase; color: var(--ink3); margin-bottom: 5px; }

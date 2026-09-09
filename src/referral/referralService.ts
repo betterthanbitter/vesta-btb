@@ -71,7 +71,7 @@ export class ReferralService {
       routedAt,
       assignments: params.professionals.map((p) => ({
         professionalId: p.id,
-        stage: 'routed' as Stage,
+        stage: 'new' as Stage,
         stageChangedAt: routedAt,
       })),
     };
@@ -133,7 +133,7 @@ export class ReferralService {
       ),
     );
 
-    if (to === 'retained') {
+    if (to === 'hired') {
       referral.closedAt = at;
       // The reason for every outstanding sequence is now gone. Tell the
       // delivery engine to stop chasing everyone, including the consumer.

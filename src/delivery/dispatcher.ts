@@ -118,14 +118,14 @@ export class Dispatcher {
             referral_id: p.referralId,
             professionals_shortlisted: (p.shortlist as string[]).join(', '),
             routing_mode: p.mode,
-            referral_status: 'routed',
+            referral_status: 'new',
           }
         : {
             city_hub: p.professional.hub,
             category: p.professional.category,
             tier: p.professional.tier,
             referral_id: p.referralId,
-            referral_status: 'routed',
+            referral_status: 'new',
             lead_first_name: p.consumer.firstName,
           },
     ));

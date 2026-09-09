@@ -2,6 +2,10 @@
 
 import { useMemo, useState } from 'react';
 import { routeLead } from '../app/actions.ts';
+import {
+  ASSET_RANGE, CHILDREN_AGES, HOME_STATUS, LEAD_SOURCE,
+  LENGTH_OF_MARRIAGE, PROFESSIONALS_WANTED, STAGE_OF_DIVORCE,
+} from '../src/leads/consumerProfile.ts';
 
 export interface ProOption {
   id: string; label: string; hub: string; hubLabel: string;
@@ -57,16 +61,62 @@ export default function RouteLeadForm({
         </div>
       </div>
 
-      <div className="field">
-        <label htmlFor="stageOfDivorce">Where they are</label>
-        <input id="stageOfDivorce" name="stageOfDivorce"
-          placeholder="Considering · Filed · Post-decree" />
+      <div className="row">
+        <div className="field">
+          <label htmlFor="phone">Phone</label>
+          <input id="phone" name="phone" type="tel" />
+        </div>
+        <div className="field">
+          <label htmlFor="city">City</label>
+          <input id="city" name="city" />
+        </div>
+        <div className="field" style={{ maxWidth: 120 }}>
+          <label htmlFor="state">State</label>
+          <input id="state" name="state" maxLength={20} />
+        </div>
       </div>
 
+      <fieldset className="qgroup">
+        <legend>Their situation</legend>
+        <p className="qhint">
+          The concierge questionnaire. Every field is optional — a half-captured lead beats one
+          abandoned because a question could not be answered on the call.
+        </p>
+
+        <div className="row">
+          <Select name="stageOfDivorce" label="Stage of divorce" options={STAGE_OF_DIVORCE} />
+          <Select name="lengthOfMarriage" label="Length of marriage" options={LENGTH_OF_MARRIAGE} />
+        </div>
+
+        <div className="row">
+          <Select name="hasChildren" label="Children" options={['Yes', 'No']} />
+          <Multi name="childrenAges" label="Children’s ages" options={CHILDREN_AGES} />
+        </div>
+
+        <div className="row">
+          <Select name="homeStatus" label="Home" options={HOME_STATUS} />
+          <Select name="ownsBusiness" label="Owns a business" options={['Yes', 'No']} />
+          <Select name="assetRange" label="Assets" options={ASSET_RANGE} />
+        </div>
+
+        <Multi name="professionalsWanted" label="Professionals they want to speak to"
+          options={PROFESSIONALS_WANTED} wide />
+
+        <div className="row">
+          <Select name="leadSource" label="Where they came from" options={LEAD_SOURCE} />
+        </div>
+
+        <div className="field">
+          <label htmlFor="questions">What they asked</label>
+          <textarea id="questions" name="questions" rows={2}
+            placeholder="Their question in their own words — this is what the professional answers." />
+        </div>
+      </fieldset>
+
       <div className="field">
-        <label htmlFor="notes">What they said</label>
-        <textarea id="notes" name="notes" rows={3}
-          placeholder="The context the professional needs before calling." />
+        <label htmlFor="notes">Call notes for the professional</label>
+        <textarea id="notes" name="notes" rows={4}
+          placeholder="The context they need before picking up the phone." />
       </div>
 
       <div className="row">
@@ -120,5 +170,53 @@ export default function RouteLeadForm({
         <button type="button" className="ghost" onClick={() => setOpen(false)}>Cancel</button>
       </div>
     </form>
+  );
+}
+
+
+/** A plain dropdown with a blank first option, because nothing is required. */
+function Select({
+  name, label, options,
+}: { name: string; label: string; options: readonly string[] }) {
+  return (
+    <div className="field">
+      <label htmlFor={name}>{label}</label>
+      <select id={name} name={name} defaultValue="">
+        <option value="">—</option>
+        {options.map((o) => <option key={o} value={o}>{o}</option>)}
+      </select>
+    </div>
+  );
+}
+
+/**
+ * Tick-boxes joined into one comma-separated value.
+ *
+ * A hidden empty field goes first so that unticking everything clears the
+ * answer rather than leaving the previous one in place.
+ */
+function Multi({
+  name, label, options, wide,
+}: { name: string; label: string; options: readonly string[]; wide?: boolean }) {
+  const [picked, setPicked] = useState<string[]>([]);
+  return (
+    <div className="field" style={wide ? undefined : { flex: 1, minWidth: 240 }}>
+      <label>{label}</label>
+      <input type="hidden" name={name} value={picked.join(', ')} />
+      <div className={wide ? 'ticks wide' : 'ticks'}>
+        {options.map((o) => (
+          <label key={o} className={picked.includes(o) ? 'tick on' : 'tick'}>
+            <input
+              type="checkbox"
+              checked={picked.includes(o)}
+              onChange={(e) => setPicked(
+                e.target.checked ? [...picked, o] : picked.filter((x) => x !== o),
+              )}
+            />
+            {o}
+          </label>
+        ))}
+      </div>
+    </div>
   );
 }

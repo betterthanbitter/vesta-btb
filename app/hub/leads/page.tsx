@@ -16,9 +16,9 @@ export default async function LeadDashboard({
   const me = directory.find((d) => d.id === as) ?? directory.find((d) => d.id === '13285')!;
 
   const leads = await new LeadRepository(await getDb()).forProfessional(me.id);
-  const open = leads.filter((l) => !['retained', 'declined', 'no_response', 'withdrawn'].includes(l.stage));
-  const isNew = open.filter((l) => l.stage === 'routed');
-  const won = leads.filter((l) => l.stage === 'retained');
+  const open = leads.filter((l) => !['hired', 'dead_lead'].includes(l.stage));
+  const isNew = open.filter((l) => l.stage === 'new');
+  const won = leads.filter((l) => l.stage === 'hired');
   const cold = open.filter((l) => l.daysSinceActivity >= 7);
 
   return (

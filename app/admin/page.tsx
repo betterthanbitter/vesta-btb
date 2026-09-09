@@ -16,10 +16,10 @@ export default async function BackOffice() {
 
   const nameOf = (id: string) => directory.find((d) => d.id === id)?.name ?? id;
   const open = leads.filter(
-    (l) => !['retained', 'declined', 'no_response', 'withdrawn'].includes(l.stage),
+    (l) => !['hired', 'dead_lead'].includes(l.stage),
   );
   const cold = open.filter((l) => l.daysSinceActivity >= 7);
-  const untouched = open.filter((l) => l.stage === 'routed');
+  const untouched = open.filter((l) => l.stage === 'new');
 
   return (
     <>

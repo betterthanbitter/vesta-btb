@@ -153,8 +153,61 @@ describe('stage changes', () => {
 
   test('a professional cannot move a lead backwards', () => {
     service.route({ referralId: 'R1', consumer: sarah, professionals: [marcus], mode: 'direct' });
-    service.advance('R1', 'marcus-reyes', 'consulted');
-    assert.throws(() => service.advance('R1', 'marcus-reyes', 'viewed'), IllegalTransitionError);
+    service.advance('R1', 'marcus-reyes', 'contacted');
+    service.advance('R1', 'marcus-reyes', 'responded');
+    assert.throws(() => service.advance('R1', 'marcus-reyes', 'contacted'), IllegalTransitionError);
+  });
+
+  test('chasing someone twice is normal and can be recorded', () => {
+    service.route({ referralId: 'R1', consumer: sarah, professionals: [marcus], mode: 'direct' });
+    // contacted -> no reply -> chase -> still no reply -> chase again
+    service.advance('R1', 'marcus-reyes', 'contacted');
+    service.advance('R1', 'marcus-reyes', 'did_not_respond');
+    service.advance('R1', 'marcus-reyes', 'followed_up');
+    service.advance('R1', 'marcus-reyes', 'did_not_respond');
+    service.advance('R1', 'marcus-reyes', 'followed_up');
+    assert.equal(service.get('R1')!.assignments[0].stage, 'followed_up');
+  });
+
+  test('"did not respond" is not the end — the lead can still come good', () => {
+    service.route({ referralId: 'R1', consumer: sarah, professionals: [marcus], mode: 'direct' });
+    service.advance('R1', 'marcus-reyes', 'contacted');
+    service.advance('R1', 'marcus-reyes', 'did_not_respond');
+    service.advance('R1', 'marcus-reyes', 'followed_up');
+    service.advance('R1', 'marcus-reyes', 'responded');
+    service.advance('R1', 'marcus-reyes', 'interested');
+    service.advance('R1', 'marcus-reyes', 'hired');
+    assert.equal(service.get('R1')!.assignments[0].stage, 'hired');
+  });
+
+  test('responding is not the same as being interested', () => {
+    // Someone can reply promptly and still not want to hire you. A professional
+    // asked to conflate the two records neither accurately.
+    service.route({ referralId: 'R1', consumer: sarah, professionals: [marcus], mode: 'direct' });
+    service.advance('R1', 'marcus-reyes', 'contacted');
+    service.advance('R1', 'marcus-reyes', 'responded');
+    service.advance('R1', 'marcus-reyes', 'dead_lead');
+    assert.equal(service.get('R1')!.assignments[0].stage, 'dead_lead');
+  });
+
+  test('a lead can be closed as dead from any stage', () => {
+    const from: any[] = ['new', 'contacted', 'did_not_respond', 'followed_up', 'responded', 'interested'];
+    for (const stage of from) {
+      const o = new Outbox();
+      const svc = new ReferralService(o);
+      svc.route({ referralId: 'R', consumer: sarah, professionals: [marcus], mode: 'direct' });
+      // walk to `stage`
+      const path: Record<string, string[]> = {
+        new: [], contacted: ['contacted'],
+        did_not_respond: ['contacted', 'did_not_respond'],
+        followed_up: ['contacted', 'did_not_respond', 'followed_up'],
+        responded: ['contacted', 'responded'],
+        interested: ['contacted', 'responded', 'interested'],
+      };
+      for (const step of path[stage]) svc.advance('R', 'marcus-reyes', step as any);
+      svc.advance('R', 'marcus-reyes', 'dead_lead');
+      assert.equal(svc.get('R')!.assignments[0].stage, 'dead_lead', `from ${stage}`);
+    }
   });
 
   test('re-clicking the current stage is harmless', () => {
@@ -169,7 +222,13 @@ describe('stage changes', () => {
   test('a closed referral cannot be reopened', () => {
     service.route({ referralId: 'R1', consumer: sarah, professionals: [marcus], mode: 'direct' });
     service.advance('R1', 'marcus-reyes', 'contacted');
-    service.advance('R1', 'marcus-reyes', 'retained');
+    service.advance('R1', 'marcus-reyes', 'hired');
+    assert.throws(() => service.advance('R1', 'marcus-reyes', 'contacted'), IllegalTransitionError);
+  });
+
+  test('a dead lead stays dead', () => {
+    service.route({ referralId: 'R1', consumer: sarah, professionals: [marcus], mode: 'direct' });
+    service.advance('R1', 'marcus-reyes', 'dead_lead');
     assert.throws(() => service.advance('R1', 'marcus-reyes', 'contacted'), IllegalTransitionError);
   });
 
@@ -179,7 +238,7 @@ describe('stage changes', () => {
     outbox.drain();
 
     service.advance('R1', 'marcus-reyes', 'contacted');
-    service.advance('R1', 'marcus-reyes', 'retained');
+    service.advance('R1', 'marcus-reyes', 'hired');
 
     const closed = outbox.drain().find((e) => e.kind === 'referral.closed');
     assert.ok(closed, 'a close intent must be emitted');

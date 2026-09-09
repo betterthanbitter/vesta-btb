@@ -23,7 +23,6 @@ export async function routeLead(formData: FormData) {
   const email = String(formData.get('email') ?? '').trim().toLowerCase();
   const chosen = formData.getAll('professionalId').map(String).filter(Boolean);
   const notes = String(formData.get('notes') ?? '').trim();
-  const stageOfDivorce = String(formData.get('stageOfDivorce') ?? '').trim();
 
   if (!name || !email || chosen.length === 0) {
     throw new Error('A lead needs a name, an email address and at least one professional.');
@@ -48,13 +47,30 @@ export async function routeLead(formData: FormData) {
 
   const [firstName, ...rest] = name.split(/\s+/);
   const repo = new LeadRepository(await getDb());
+  const field = (k: string) => {
+    const v = String(formData.get(k) ?? '').trim();
+    return v || undefined;
+  };
+
   const consumer = await repo.upsertConsumer({
     email,
     firstName,
     lastName: rest.join(' '),
     hub: professionals[0].hub,
     categoryNeeded: professionals[0].category,
-    stageOfDivorce: stageOfDivorce || undefined,
+    phone: field('phone'),
+    city: field('city'),
+    state: field('state'),
+    stageOfDivorce: field('stageOfDivorce'),
+    lengthOfMarriage: field('lengthOfMarriage'),
+    hasChildren: field('hasChildren'),
+    childrenAges: field('childrenAges'),
+    homeStatus: field('homeStatus'),
+    ownsBusiness: field('ownsBusiness'),
+    assetRange: field('assetRange'),
+    professionalsWanted: field('professionalsWanted'),
+    leadSource: field('leadSource'),
+    questions: field('questions'),
   });
 
   await repo.route({

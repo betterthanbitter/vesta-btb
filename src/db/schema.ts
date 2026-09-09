@@ -26,7 +26,23 @@ CREATE TABLE IF NOT EXISTS consumers (
   last_name        TEXT NOT NULL DEFAULT '',
   hub              TEXT NOT NULL,
   category_needed  TEXT NOT NULL,
-  stage_of_divorce TEXT,
+  phone            TEXT,
+  city             TEXT,
+  state            TEXT,
+
+  -- The concierge questionnaire. These are the questions Vesta already asks;
+  -- field names follow the wording on the live form so the two do not drift.
+  stage_of_divorce      TEXT,   -- Considering | Separated | Recently filed | Filed, not complete | Divorced
+  length_of_marriage    TEXT,
+  has_children          TEXT,   -- yes | no
+  children_ages         TEXT,   -- comma separated bands: 1-5, 6-10, 11-17, 18-22, 23+
+  home_status           TEXT,   -- own | rent | staying with family
+  owns_business         TEXT,   -- yes | no
+  asset_range           TEXT,
+  professionals_wanted  TEXT,   -- comma separated, from the questionnaire's list
+  lead_source           TEXT,   -- event code, Facebook lead ad, referral, search
+  questions             TEXT,   -- what they asked at the event or on the call
+
   created_at       TEXT NOT NULL
 );
 -- One consumer per email. Two rows for the same person means two contacts in

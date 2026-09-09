@@ -2,19 +2,13 @@
  * Domain types for the referral system.
  *
  * The hub is the system of record for referrals. Ontraport is the delivery
- * engine. Nothing in this file knows how to send an email, and that is
- * deliberate — see docs/architecture.md.
+ * engine. Nothing in this file knows how to send an email.
  */
 
-/** A city hub, e.g. "boston". Slugs are the SEO URL segment. */
 export type HubSlug = string;
-
-/** A professional category, e.g. "family-law-mediation". */
 export type CategorySlug = string;
-
 export type Tier = 'platinum' | 'premium' | 'standard';
 
-/** How the concierge routed this referral. */
 export type RoutingMode =
   /** Consumer was shown a shortlist and picks who to talk to. */
   | 'consumer-choice'
@@ -22,32 +16,50 @@ export type RoutingMode =
   | 'direct';
 
 /**
- * Stage of one professional's work on one referral.
+ * Where a professional has got to with one lead.
  *
- * This is what the professional clicks in their dashboard. It is owned by the
- * hub and pushed to Ontraport as a single field — never as a pile of tags.
+ * These are the words the concierge desk already uses, not invented ones. Two
+ * distinctions matter and are easy to lose:
+ *
+ *   - "did not respond" is NOT the end. It is the state that prompts a follow
+ *     up, and a lead can go round that loop more than once.
+ *   - "responded" and "interested" are different. Someone can reply promptly
+ *     and still not want to hire you, and a professional who is asked to
+ *     conflate the two will stop recording either accurately.
  */
 export type Stage =
-  | 'routed'
-  | 'viewed'
+  /** Sent to the professional; nothing has happened yet. */
+  | 'new'
   | 'contacted'
-  | 'consulted'
-  | 'retained'
-  | 'declined'
-  | 'no_response'
-  | 'withdrawn';
+  | 'responded'
+  | 'did_not_respond'
+  | 'followed_up'
+  | 'interested'
+  | 'hired'
+  | 'dead_lead';
+
+export const STAGE_LABELS: Record<Stage, string> = {
+  new: 'New',
+  contacted: 'Contacted',
+  responded: 'Responded',
+  did_not_respond: 'Did not respond',
+  followed_up: 'Followed up',
+  interested: 'Interested',
+  hired: 'Hired',
+  dead_lead: 'Dead lead',
+};
 
 /** Stages after which nothing more happens for this professional. */
-export const TERMINAL_STAGES: readonly Stage[] = [
-  'retained',
-  'declined',
-  'no_response',
-  'withdrawn',
-] as const;
+export const TERMINAL_STAGES: readonly Stage[] = ['hired', 'dead_lead'] as const;
 
 export function isTerminal(stage: Stage): boolean {
   return TERMINAL_STAGES.includes(stage);
 }
+
+/** Stages where the ball is in the professional's court. */
+export const AWAITING_PROFESSIONAL: readonly Stage[] = [
+  'new', 'did_not_respond', 'responded',
+] as const;
 
 export interface Consumer {
   id: string;
@@ -56,7 +68,6 @@ export interface Consumer {
   lastName: string;
   hub: HubSlug;
   categoryNeeded: CategorySlug;
-  /** Free text from the concierge questionnaire, e.g. "considering", "filed". */
   stageOfDivorce?: string;
 }
 
@@ -71,11 +82,9 @@ export interface Professional {
   tier: Tier;
 }
 
-/** One professional's assignment on a referral. */
 export interface Assignment {
   professionalId: string;
   stage: Stage;
-  /** ISO timestamp of the most recent stage change. */
   stageChangedAt: string;
 }
 
@@ -88,6 +97,6 @@ export interface Referral {
   /** When the concierge clicked Route. Every response-time metric starts here. */
   routedAt: string;
   assignments: Assignment[];
-  /** Set when a professional reaches `retained`. */
+  /** Set when a professional reaches `hired`. */
   closedAt?: string;
 }

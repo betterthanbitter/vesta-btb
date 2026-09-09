@@ -77,7 +77,7 @@ describe('the database layer', () => {
     await assert.rejects(() => db.run(
       'INSERT INTO referral_assignments (referral_id, professional_id, stage, stage_changed_at)' +
       ' VALUES (?, ?, ?, ?)',
-      ['nope', 'marcus', 'routed', '2026-09-08T00:00:00Z'],
+      ['nope', 'marcus', 'new', '2026-09-08T00:00:00Z'],
     ), 'foreign keys must be enforced');
     await db.close();
   });

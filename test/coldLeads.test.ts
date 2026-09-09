@@ -59,14 +59,14 @@ describe('leads that go cold', () => {
   test('a lead someone already won is never chased', () => {
     const { svc } = routedOn('2026-09-01T09:00:00Z', ['marcus', 'rachel']);
     svc.advance('R1', 'marcus', 'contacted');
-    svc.advance('R1', 'marcus', 'retained');
+    svc.advance('R1', 'marcus', 'hired');
     outbox.drain();
     assert.deepEqual(findColdLeads([svc.get('R1')!], new Date('2026-10-01T09:00:00Z')), []);
   });
 
   test('a declined lead is not cold, it is finished', () => {
     const { svc } = routedOn('2026-09-01T09:00:00Z');
-    svc.advance('R1', 'marcus', 'declined');
+    svc.advance('R1', 'marcus', 'dead_lead');
     outbox.drain();
     assert.equal(findColdLeads([svc.get('R1')!], new Date('2026-10-01T09:00:00Z')).length, 0);
   });

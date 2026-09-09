@@ -23,7 +23,7 @@ export interface ColdLeadPolicy {
 
 export const DEFAULT_COLD_POLICY: ColdLeadPolicy = {
   staleAfterMs: 7 * 24 * 60 * 60 * 1000, // one week
-  watchedStages: ['routed', 'viewed', 'contacted'],
+  watchedStages: ['new', 'contacted'],
 };
 
 export interface ColdLead {
@@ -65,7 +65,7 @@ export function findColdLeads(
 /**
  * Write the nurture triggers.
  *
- * The dedup key includes the stage, so a lead that has sat at "routed" for
+ * The dedup key includes the stage, so a lead that has sat at "new" for
  * three weeks triggers nurture once rather than every time this runs. Moving
  * to "contacted" and going cold again is a different key, and triggers again —
  * which is correct, because it is a different situation.
