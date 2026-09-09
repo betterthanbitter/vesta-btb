@@ -7,5 +7,4 @@ dist/
 .next/
 next-env.d.ts
 *.tsbuildinfo
-data/consult-intents.jsonl
-data/consult-requests.jsonl
+data/vesta.db

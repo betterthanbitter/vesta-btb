@@ -36,7 +36,7 @@ export async function GET(
   if (!visitorKey) visitorKey = randomUUID();
 
   try {
-    await recordConsultIntent(getConsultIntentStore(), {
+    await recordConsultIntent(await getConsultIntentStore(), {
       id: randomUUID(),
       professionalId: professional.id,
       sourcePath: req.nextUrl.searchParams.get('from') ?? '/',

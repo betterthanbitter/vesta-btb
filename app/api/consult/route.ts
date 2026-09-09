@@ -25,7 +25,8 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    await getConsultRequestStore().record({
+    const store = await getConsultRequestStore();
+    await store.record({
       ...result.value,
       id: randomUUID(),
       at: new Date().toISOString(),

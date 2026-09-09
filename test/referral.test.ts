@@ -128,7 +128,7 @@ describe('the double-send guarantees', () => {
 
     const report = await d2.dispatch(e2);
     assert.equal(report.flaggedForReview.length, 1);
-    assert.equal(l2.needingReview().length, 1);
+    assert.equal((await l2.needingReview()).length, 1);
 
     // And a retry does NOT quietly send it anyway.
     const retry = await d2.dispatch(e2);

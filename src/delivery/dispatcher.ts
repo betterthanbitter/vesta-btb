@@ -1,4 +1,4 @@
-import { type OutboxEntry, type SentLedger } from '../referral/outbox.ts';
+import { type LedgerStore, type OutboxEntry } from '../referral/outbox.ts';
 import { type DeliveryEngine } from './port.ts';
 
 /** Sequence ids configured in the delivery engine. */
@@ -33,10 +33,10 @@ export interface DispatchReport {
  */
 export class Dispatcher {
   private readonly engine: DeliveryEngine;
-  private readonly ledger: SentLedger;
+  private readonly ledger: LedgerStore;
   private readonly sequences: SequenceMap;
 
-  constructor(engine: DeliveryEngine, ledger: SentLedger, sequences: SequenceMap) {
+  constructor(engine: DeliveryEngine, ledger: LedgerStore, sequences: SequenceMap) {
     this.engine = engine;
     this.ledger = ledger;
     this.sequences = sequences;
@@ -158,18 +158,18 @@ export class Dispatcher {
     sequenceId: string,
     report: DispatchReport,
   ): Promise<void> {
-    if (!this.ledger.claim(key)) {
+    if (!(await this.ledger.claim(key))) {
       report.skippedAsDuplicate++;
       return;
     }
     try {
       await this.engine.startSequence(contactId, sequenceId);
-      this.ledger.confirm(key);
+      await this.ledger.confirm(key);
       report.delivered++;
     } catch {
       // We do not know whether the engine acted. Never guess in this
       // direction — hand it to a person.
-      this.ledger.flagForReview(key);
+      await this.ledger.flagForReview(key);
       report.flaggedForReview.push(key);
     }
   }
