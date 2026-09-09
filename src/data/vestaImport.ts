@@ -51,6 +51,7 @@ export interface DirectoryRecord {
   linkedin?: string;
   headline?: string;
   profileContent?: string;
+  socialLinks?: string;
   /** True when the live site has no coordinates — invisible on the map today. */
   invisibleOnMap: boolean;
 }

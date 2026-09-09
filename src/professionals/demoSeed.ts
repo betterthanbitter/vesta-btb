@@ -29,12 +29,13 @@ export async function seedDemoProfile(db: Db): Promise<boolean> {
   );
   if (existing.length) return false;
 
-  const { profileContent, _comment, ...rest } = raw;
+  const { profileContent, socialLinks, _comment, ...rest } = raw;
   await new ProfessionalRepository(db).receiveApplication({
     ...rest,
     status: 'published',
     hub: `${String(raw.city).toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${String(raw.state).toLowerCase()}`,
     profileContent: JSON.stringify(profileContent),
+    socialLinks: socialLinks ? JSON.stringify(socialLinks) : undefined,
     appliedAt: new Date().toISOString(),
   } as any);
   return true;

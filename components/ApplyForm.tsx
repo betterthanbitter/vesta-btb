@@ -6,6 +6,7 @@ import {
   SPECIALTY_GROUPS, SPECIALTY_NEEDING_DETAIL, groupsForProfession,
 } from '../src/professionals/specialties.ts';
 import { PHOTO_RULES } from '../src/professionals/photo.ts';
+import { SOCIAL_PLATFORMS } from '../src/professionals/social.ts';
 
 type Prices = Record<string, Record<TierKey, number>>;
 
@@ -25,6 +26,7 @@ export default function ApplyForm({
   const [photo, setPhoto] = useState<
     { dataUrl: string; width: number; height: number; name: string; size: number } | null>(null);
   const [photoNote, setPhotoNote] = useState<string | null>(null);
+  const [social, setSocial] = useState<Record<string, string>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [sending, setSending] = useState(false);
   const [done, setDone] = useState(false);
@@ -84,6 +86,7 @@ export default function ApplyForm({
       profession, tier,
       statesLicensed: states.join(', '),
       specialties,
+      social,
       photoDataUrl: photo?.dataUrl ?? '',
       photoWidth: photo?.width,
       photoHeight: photo?.height,
@@ -294,6 +297,15 @@ export default function ApplyForm({
 
         <h2>6 · Your listing</h2>
         <div className="field">
+          <label htmlFor="headline">Headline <span className="opt">optional</span></label>
+          <input id="headline" name="headline"
+            placeholder="One line at the top of your page — what you do for people" />
+          <div className="hint">
+            Not your job title. “The money questions, answered before you have to ask them.”
+          </div>
+        </div>
+
+        <div className="field">
           <label htmlFor="bio">Bio</label>
           <textarea id="bio" name="bio" rows={4}
             placeholder="Two to four sentences. This is what a stranger reads before deciding whether to call you." />
@@ -326,6 +338,26 @@ export default function ApplyForm({
               listing, and every click reaches your lead dashboard.
             </div>
             <Err k="schedulerUrl" /></div>
+        </div>
+
+        <div className="field">
+          <label>Where people can follow you <span className="opt">optional</span></label>
+          <div className="hint" style={{ marginBottom: 10 }}>
+            These become links on your profile. Paste the address or just the page —
+            “linkedin.com/in/you” is fine.
+          </div>
+          <div className="sociallist">
+            {SOCIAL_PLATFORMS.map((p) => (
+              <div className="socialfield" key={p.key}>
+                <span>{p.name}</span>
+                <input
+                  value={social[p.key] ?? ''}
+                  placeholder={p.placeholder}
+                  onChange={(e) => setSocial({ ...social, [p.key]: e.target.value })}
+                />
+              </div>
+            ))}
+          </div>
         </div>
 
         <h2>7 · Earn on our consumer products <span className="opt">optional</span></h2>

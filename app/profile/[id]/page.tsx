@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import ConsultCta from '../../../components/ConsultCta.tsx';
+import LeadCapture from '../../../components/LeadCapture.tsx';
+import LibrarySections from '../../../components/LibrarySections.tsx';
+import SocialLinksRow from '../../../components/SocialLinks.tsx';
 import { loadPublishedDirectory } from '../../../src/professionals/directory.ts';
 import { getDb } from '../../../src/leads/store.ts';
 import { CATEGORY_LABELS } from '../../../src/data/vestaImport.ts';
@@ -8,6 +10,7 @@ import { ENTITLEMENTS } from '../../../src/directory/tiers.ts';
 import { parseSchedulerLink } from '../../../src/directory/schedulerLink.ts';
 import { SPECIALTY_GROUPS } from '../../../src/professionals/specialties.ts';
 import { parseProfileContent } from '../../../src/professionals/profileContent.ts';
+import { parseSocialLinks } from '../../../src/professionals/social.ts';
 import type { PracticeCategory } from '../../../src/pricing/catalog.ts';
 
 /**
@@ -52,6 +55,7 @@ export default async function Profile({ params }: { params: Promise<{ id: string
   const e = ENTITLEMENTS[r.tier];
   const c = parseProfileContent(r.profileContent);
   const scheduler = parseSchedulerLink(r.schedulerUrl);
+  const social = parseSocialLinks(r.socialLinks);
   const first = r.name.split(' ')[0];
   const where = [r.city, r.state].filter(Boolean).join(', ');
   const states = (r.statesLicensed ?? '').split(',').map((s) => s.trim()).filter(Boolean);
@@ -78,8 +82,7 @@ export default async function Profile({ params }: { params: Promise<{ id: string
           <div className="pname">{r.name}{r.roleLabel ? <span>, {r.roleLabel}</span> : null}</div>
           <span className="verified">Verified · Vesta network</span>
           <span className="sp" />
-          <ConsultCta professionalId={r.id} firstName={first} schedulerHost={scheduler?.host}
-            sourcePath={`/profile/${r.id}`} variant="primary" />
+          <a className="prof" href="#talk">Talk to {first}</a>
         </div>
       </header>
 
@@ -96,9 +99,7 @@ export default async function Profile({ params }: { params: Promise<{ id: string
               {(c.lede ?? r.bio) && <p className="plede">{c.lede ?? r.bio}</p>}
 
               <div className="hactions">
-                <ConsultCta professionalId={r.id} firstName={first}
-                  schedulerHost={scheduler?.host} sourcePath={`/profile/${r.id}`}
-                  variant="primary" />
+                <a className="prof" href="#talk">Talk to {first}</a>
                 {c.questions?.length
                   ? <a className="ghost" href="#answers">Start with the questions</a>
                   : grouped.length
@@ -200,48 +201,8 @@ export default async function Profile({ params }: { params: Promise<{ id: string
         </div>
       </section>
 
-      {e.contentLibrary && (
-        <section id="library" className="pblock">
-          <div className="in">
-            <div className="stitle">The library</div>
-            {libraryCount === 0 ? (
-              <>
-                <h2>Everything {first} makes, free to read, watch and download.</h2>
-                <p className="pmuted">
-                  {first}’s library is in production. Webinars, podcast episodes, worksheets and
-                  written pieces will appear here as they are published.
-                </p>
-              </>
-            ) : (
-              <>
-                <h2>Everything {first} has made, free to read, watch and download.</h2>
-                {library.map((shelf) => (
-                  <div className="shelf" key={shelf.name}>
-                    <div className="shh">
-                      <h3>{shelf.name}</h3>
-                      <span className="n">{shelf.items.length}</span>
-                    </div>
-                    {shelf.items.map((it) => (
-                      <div className="item" key={it.title}>
-                        <h4>{it.title}</h4>
-                        {it.meta && <div className="m">{it.meta}</div>}
-                        {it.summary && <p>{it.summary}</p>}
-                        {it.actions?.length ? (
-                          <div className="acts">
-                            {it.actions.map((a, i) => (
-                              <button key={a} className={i === 0 ? 'pri' : undefined}>{a}</button>
-                            ))}
-                          </div>
-                        ) : null}
-                      </div>
-                    ))}
-                  </div>
-                ))}
-              </>
-            )}
-          </div>
-        </section>
-      )}
+      <LibrarySections first={first} shelves={library} showLibrary={e.contentLibrary} />
+
 
       {c.stat && (
         <section className="pblock">
@@ -273,17 +234,25 @@ export default async function Profile({ params }: { params: Promise<{ id: string
         </section>
       )}
 
-      <section className="pclose">
+      <section id="talk" className="pblock talkblock">
         <div className="in">
-          <h2>{c.questions?.length ? 'Read everything first. Then decide.' : `Talk to ${first}.`}</h2>
-          <p>
-            {scheduler
-              ? 'Book a time directly, or ask for one that suits you better.'
-              : `${first} arranges consultations directly — leave your details and they will be in touch.`}
-          </p>
-          <div className="pctas">
-            <ConsultCta professionalId={r.id} firstName={first} schedulerHost={scheduler?.host}
-              sourcePath={`/profile/${r.id}`} variant="primary" />
+          <div className="talkgrid">
+            <div>
+              <div className="stitle">Get in touch</div>
+              <h2>{c.questions?.length ? 'Read everything first. Then decide.' : `Talk to ${first}.`}</h2>
+              <p className="ssub">
+                {scheduler
+                  ? `Leave your details and you can book a time with ${first} straight afterwards.`
+                  : `${first} arranges consultations directly. Leave your details and they will be in touch.`}
+              </p>
+              <SocialLinksRow links={social} name={r.name} />
+            </div>
+            <LeadCapture
+              professionalId={r.id}
+              firstName={first}
+              schedulerHost={scheduler?.host}
+              sourcePath={`/profile/${r.id}`}
+            />
           </div>
         </div>
       </section>

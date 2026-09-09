@@ -16,6 +16,7 @@ import {
 } from './tiers.ts';
 import { sanitizeSpecialties, SPECIALTY_NEEDING_DETAIL } from './specialties.ts';
 import { decodePhoto, PhotoError, type DecodedPhoto } from './photo.ts';
+import { sanitizeSocialLinks, type SocialLinks } from './social.ts';
 
 export interface UnifiedApplicationInput {
   // Who they are
@@ -26,6 +27,8 @@ export interface UnifiedApplicationInput {
   street?: string; city?: string; state?: string; zip?: string;
   // Listing
   bio?: string; photoUrl?: string; schedulerUrl?: string;
+  headline?: string;
+  social?: Record<string, string>;
   specialties?: string[] | string; specialtyOther?: string;
   photoDataUrl?: string; photoWidth?: number; photoHeight?: number;
   // Level
@@ -49,6 +52,8 @@ export interface ValidatedApplication {
   hub: string;
   bio?: string; photoUrl?: string; schedulerUrl?: string;
   specialties: string[]; specialtyOther?: string;
+  headline?: string;
+  socialLinks: SocialLinks;
   photo?: DecodedPhoto;
   tier: TierKey;
   affiliateOptin: boolean; paypalEmail?: string;
@@ -150,6 +155,8 @@ export function validateUnifiedApplication(
       photoUrl: t(input.photoUrl) || undefined,
       specialties,
       specialtyOther: specialtyOther || undefined,
+      headline: t(input.headline) || undefined,
+      socialLinks: sanitizeSocialLinks(input.social),
       photo,
       schedulerUrl: schedulerRaw ? parseSchedulerLink(schedulerRaw)!.href : undefined,
       tier,

@@ -51,13 +51,21 @@
             "title": "Am I going to be okay? Reading your own numbers",
             "meta": "58 min · recorded May 2026",
             "summary": "A walk through the four documents that tell you where you actually stand, and how to read each one without a financial background.",
-            "actions": ["Watch", "Companion PDF", "Share"]
+            "actions": [
+              "Watch",
+              "Companion PDF",
+              "Share"
+            ]
           },
           {
             "title": "RSUs, options and the vesting date problem",
             "meta": "49 min · recorded February 2026",
             "summary": "What happens to equity awarded during the marriage that vests after the separation date — and why the answer changes by state.",
-            "actions": ["Watch", "Companion PDF", "Share"]
+            "actions": [
+              "Watch",
+              "Companion PDF",
+              "Share"
+            ]
           }
         ]
       },
@@ -68,12 +76,20 @@
             "title": "“Am I going to be okay?” — taking control of your finances",
             "meta": "Better Than Bitter™ Divorce Podcast · Season 2, Episode 3 · 46 min",
             "summary": "Recorded with the Better Than Bitter founder.",
-            "actions": ["Listen", "Transcript", "Share"]
+            "actions": [
+              "Listen",
+              "Transcript",
+              "Share"
+            ]
           },
           {
             "title": "The house, the pension, and which one to fight for",
             "meta": "Season 1, Episode 11 · 39 min",
-            "actions": ["Listen", "Transcript", "Share"]
+            "actions": [
+              "Listen",
+              "Transcript",
+              "Share"
+            ]
           }
         ]
       },
@@ -84,12 +100,18 @@
             "title": "The document-gathering checklist",
             "meta": "PDF · 4 pages",
             "summary": "Everything to bring to a first meeting, in the order a professional will ask for it.",
-            "actions": ["Download", "Share"]
+            "actions": [
+              "Download",
+              "Share"
+            ]
           },
           {
             "title": "Full episode transcript — S2E3",
             "meta": "PDF · 10 pages",
-            "actions": ["Download", "Share"]
+            "actions": [
+              "Download",
+              "Share"
+            ]
           }
         ]
       },
@@ -99,12 +121,18 @@
           {
             "title": "Is $100,000 in a 401(k) the same as $100,000 in cash?",
             "meta": "900 words · 4 min read",
-            "actions": ["Read", "Share"]
+            "actions": [
+              "Read",
+              "Share"
+            ]
           },
           {
             "title": "QDROs in plain English",
             "meta": "1,200 words · 5 min read",
-            "actions": ["Read", "Share"]
+            "actions": [
+              "Read",
+              "Share"
+            ]
           }
         ]
       }
@@ -122,5 +150,12 @@
       "The Quality of Money (2025)",
       "After the Decree: a financial handbook (2023)"
     ]
+  },
+  "socialLinks": {
+    "linkedin": "https://www.linkedin.com/company/better-than-bitter",
+    "facebook": "https://www.facebook.com/betterthanbitter",
+    "instagram": "https://www.instagram.com/betterthanbitter",
+    "youtube": "https://www.youtube.com/@betterthanbitter",
+    "podcast": "https://podcasts.apple.com/us/podcast/better-than-bitter"
   }
 }

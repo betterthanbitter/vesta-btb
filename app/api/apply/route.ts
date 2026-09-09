@@ -31,6 +31,8 @@ export async function POST(req: NextRequest) {
       occupation: v.profession, category: v.category,
       specialties: v.specialties.join(', '),
       specialtyOther: v.specialtyOther,
+      headline: v.headline,
+      socialLinks: Object.keys(v.socialLinks).length ? JSON.stringify(v.socialLinks) : undefined,
       signupPath: v.signupPath, partnerName: v.partnerName,
       program: v.tier === 'standard' ? undefined : 'Directory tier application',
       affiliateOptin: v.affiliateOptin ? 'yes' : 'no',

@@ -42,6 +42,7 @@ export async function loadPublishedDirectory(db: Db): Promise<DirectoryRecord[]>
     linkedin: p.linkedin,
     headline: p.headline,
     profileContent: p.profileContent,
+    socialLinks: p.socialLinks,
     invisibleOnMap: !p.hub,
   }));
 }
