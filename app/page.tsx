@@ -11,9 +11,15 @@ import type { PracticeCategory } from '../src/pricing/catalog.ts';
 const DEFAULT_HUB = 'boston-ma';
 const DEFAULT_CATEGORY: PracticeCategory = 'family-law';
 
-/* Rebuilt every few minutes so an approval in the back office reaches the
- * public site without a deploy, while pages stay cached for consumers. */
-export const revalidate = 120;
+/**
+ * Rendered per request rather than pre-rendered at build.
+ *
+ * Everything else that reads the database is already on demand; leaving the
+ * home page pre-rendered would keep a deploy dependent on the database being
+ * up, for the sake of caching one cheap list. An approval in the back office
+ * also shows here immediately instead of after a revalidation window.
+ */
+export const dynamic = 'force-dynamic';
 
 export default async function DirectoryHome() {
   const all = await loadPublishedDirectory(await getDb());
