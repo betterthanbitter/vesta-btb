@@ -1,4 +1,6 @@
 import type { Db } from '../db/client.ts';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { loadDirectory } from '../data/vestaImport.ts';
 import { ProfessionalRepository } from './repository.ts';
 
@@ -16,6 +18,20 @@ export async function seedLegacyProfessionals(db: Db): Promise<{ added: number; 
   const repo = new ProfessionalRepository(db);
   const existing = await db.query<{ email: string }>('SELECT email FROM professionals');
   const known = new Set(existing.map((r) => r.email.toLowerCase()));
+
+  /**
+   * Headshots lifted off the old site.
+   *
+   * Stored locally so a listing does not go blank the day vestadivorce.com
+   * changes, and taken from a larger crop than the 150px thumbnail the export
+   * linked, which was soft at the size the cards render.
+   */
+  let photos: Record<string, { mime: string; bytes: string; byteSize: number }> = {};
+  try {
+    photos = JSON.parse(readFileSync(join(process.cwd(), 'data', 'legacy-photos.json'), 'utf8'));
+  } catch {
+    // Not imported; listings fall back to whatever the record already had.
+  }
 
   let added = 0;
   let skipped = 0;
@@ -54,6 +70,23 @@ export async function seedLegacyProfessionals(db: Db): Promise<{ added: number; 
       } as any);
       known.add(email);
       added++;
+
+      const photo = photos[r.id];
+      if (photo) {
+        const [row] = await db.query<{ id: string }>(
+          'SELECT id FROM professionals WHERE email = ?', [email],
+        );
+        if (row) {
+          await db.run(
+            'INSERT INTO professional_photos' +
+            ' (professional_id, mime, bytes, byte_size, uploaded_at)' +
+            ' VALUES (?, ?, ?, ?, ?)',
+            [row.id, photo.mime, photo.bytes, photo.byteSize, new Date().toISOString()],
+          );
+          await db.run('UPDATE professionals SET photo_url = ? WHERE id = ?',
+            [`/api/photo/${row.id}`, row.id]);
+        }
+      }
     } catch {
       // Another process seeded this one first. The unique index on email is
       // what makes that safe, and losing the race is not an error.

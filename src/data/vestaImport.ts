@@ -52,6 +52,8 @@ export interface DirectoryRecord {
   headline?: string;
   profileContent?: string;
   socialLinks?: string;
+  /** The old vestadivorce.com post this copy came from — for the redirect map. */
+  legacyUrl?: string;
   /** True when the live site has no coordinates — invisible on the map today. */
   invisibleOnMap: boolean;
 }
@@ -126,6 +128,21 @@ export function loadDirectory(dataDir = join(process.cwd(), 'data')): DirectoryR
    * Provisional tier assignment. Replaced by the back office; until then it
    * lets the real tier rendering be reviewed against real professionals.
    */
+  /**
+   * Profile copy lifted off the old WordPress posts.
+   *
+   * The store-locator export holds a one-line excerpt and, in its "url" field,
+   * a link back to a vestadivorce.com post — so the directory was sending every
+   * professional's traffic to the old site instead of carrying their words
+   * across. This is those words, and their real website.
+   */
+  let legacy: Record<string, any> = {};
+  try {
+    legacy = read('legacy-profiles.json');
+  } catch {
+    // Not imported yet; the excerpt is all we have.
+  }
+
   let overrides: Record<string, any> = {};
   try {
     overrides = read('tiers.json');
@@ -160,14 +177,18 @@ export function loadDirectory(dataDir = join(process.cwd(), 'data')): DirectoryR
       // The live data has no firm field at all — name, role and street
       // address are all it holds. Firms must be collected during migration.
       firm: '',
-      bio: bios.get(p.id) ?? '',
+      // The full biography where we have it, the one-line excerpt otherwise.
+      bio: legacy[String(p.id)]?.bio || bios.get(p.id) || '',
       city,
       state,
       hub: city ? `${slugify(city)}-${state.toLowerCase()}` : 'unplaced',
       category: cats[0],
       allCategories: [...new Set(cats)],
       email: g?.email || undefined,
-      website: g?.url || undefined,
+      // Their own site — never the old Vesta post the export pointed at.
+      website: legacy[String(p.id)]?.website || undefined,
+      legacyUrl: legacy[String(p.id)]?.legacyUrl
+        || (g?.url && String(g.url).includes('vestadivorce.com') ? g.url : undefined),
       phone: g?.phone || undefined,
       photo: extractSrc(g?.thumb),
       tier: overrides[String(p.id)]?.tier ?? 'standard',

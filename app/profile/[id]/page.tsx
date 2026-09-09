@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import ExpandableBio from '../../../components/ExpandableBio.tsx';
 import LeadCapture from '../../../components/LeadCapture.tsx';
 import LibrarySections from '../../../components/LibrarySections.tsx';
 import SocialLinksRow from '../../../components/SocialLinks.tsx';
@@ -96,7 +97,7 @@ export default async function Profile({ params }: { params: Promise<{ id: string
               <h1>{r.headline ?? r.name}</h1>
               {r.headline && <div className="pwho">{r.name}</div>}
               <div className="psub">{r.firm && <>{r.firm} · </>}{where}</div>
-              {(c.lede ?? r.bio) && <p className="plede">{c.lede ?? r.bio}</p>}
+              {(c.lede ?? r.bio) && <ExpandableBio text={c.lede ?? r.bio} name={r.name} />}
 
               <div className="hactions">
                 <a className="prof" href="#talk">Schedule Free Consult</a>
@@ -174,6 +175,8 @@ export default async function Profile({ params }: { params: Promise<{ id: string
         </section>
       ) : null}
 
+      <LibrarySections first={first} shelves={library} showLibrary={e.contentLibrary} />
+
       <section id="specialties" className="pblock">
         <div className="in">
           <div className="stitle">What {first} handles</div>
@@ -200,8 +203,6 @@ export default async function Profile({ params }: { params: Promise<{ id: string
           )}
         </div>
       </section>
-
-      <LibrarySections first={first} shelves={library} showLibrary={e.contentLibrary} />
 
 
       {c.stat && (

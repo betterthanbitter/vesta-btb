@@ -753,3 +753,10 @@ a.ghost { text-decoration: none; display: inline-flex; align-items: center; }
 .caplink { font-size: 13.2px; color: var(--acc); font-weight: 650; text-decoration: none; }
 .caplink:hover { text-decoration: underline; }
 .lctas { display: flex; gap: 12px; align-items: center; white-space: nowrap; }
+
+.biowrap { max-width: 52ch; margin-bottom: 24px; }
+.biowrap .plede { margin-bottom: 12px; }
+.biorest { font-size: 16.5px; line-height: 1.6; color: var(--ink2); margin: 0 0 12px; }
+.biomore { background: none; border: none; padding: 0; font: inherit; font-size: 15.5px;
+  font-weight: 700; color: var(--acc); cursor: pointer; }
+.biomore:hover { text-decoration: underline; }
