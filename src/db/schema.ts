@@ -130,6 +130,9 @@ CREATE TABLE IF NOT EXISTS professionals (
 
   occupation     TEXT,            -- as chosen on the application
   category       TEXT NOT NULL,   -- the consumer-facing category it rolls up to
+  -- Finer than either: an attorney who also mediates ticks across groups.
+  specialties      TEXT,
+  specialty_other  TEXT,
 
   -- Where the application came from, and what it was for.
   signup_path    TEXT,            -- reseller | direct
@@ -153,6 +156,23 @@ CREATE TABLE IF NOT EXISTS professionals (
 );
 CREATE UNIQUE INDEX IF NOT EXISTS professionals_email ON professionals (email);
 CREATE INDEX IF NOT EXISTS professionals_listing ON professionals (status, hub, category);
+
+-- Headshots, stored as bytes.
+--
+-- In the database rather than object storage, deliberately. At a few hundred
+-- professionals and a couple of hundred kilobytes each this is tens of
+-- megabytes, and it removes a whole service to configure, a second set of
+-- credentials, and a class of "the image 404s" bug. Move it to Supabase
+-- Storage if the directory ever runs to thousands.
+CREATE TABLE IF NOT EXISTS professional_photos (
+  professional_id TEXT PRIMARY KEY,
+  mime            TEXT NOT NULL,
+  bytes           TEXT NOT NULL,   -- base64
+  byte_size       INTEGER NOT NULL,
+  width           INTEGER,
+  height          INTEGER,
+  uploaded_at     TEXT NOT NULL
+);
 
 -- Someone clicked through to a professional's own scheduler.
 CREATE TABLE IF NOT EXISTS consult_intents (

@@ -14,6 +14,8 @@ import { parseSchedulerLink } from '../directory/schedulerLink.ts';
 import {
   PROFESSION_CATEGORY, PROFESSIONS, type Profession, type TierKey,
 } from './tiers.ts';
+import { sanitiseSpecialties, SPECIALTY_NEEDING_DETAIL } from './specialties.ts';
+import { decodePhoto, PhotoError, type DecodedPhoto } from './photo.ts';
 
 export interface UnifiedApplicationInput {
   // Who they are
@@ -24,6 +26,8 @@ export interface UnifiedApplicationInput {
   street?: string; city?: string; state?: string; zip?: string;
   // Listing
   bio?: string; photoUrl?: string; schedulerUrl?: string;
+  specialties?: string[] | string; specialtyOther?: string;
+  photoDataUrl?: string; photoWidth?: number; photoHeight?: number;
   // Level
   tier?: string;
   // Affiliate
@@ -33,7 +37,7 @@ export interface UnifiedApplicationInput {
   signupPath?: string; partnerName?: string;
 }
 
-export type Errors = Partial<Record<keyof UnifiedApplicationInput, string>>;
+export type Errors = Partial<Record<keyof UnifiedApplicationInput | 'specialties', string>>;
 
 const TIERS: TierKey[] = ['standard', 'premium', 'platinum'];
 
@@ -44,6 +48,8 @@ export interface ValidatedApplication {
   street?: string; city: string; state: string; zip?: string;
   hub: string;
   bio?: string; photoUrl?: string; schedulerUrl?: string;
+  specialties: string[]; specialtyOther?: string;
+  photo?: DecodedPhoto;
   tier: TierKey;
   affiliateOptin: boolean; paypalEmail?: string;
   channelType?: string; channelUrl?: string; audience?: string;
@@ -93,6 +99,27 @@ export function validateUnifiedApplication(
     errors.schedulerUrl = 'That booking link is not a complete https:// web address.';
   }
 
+  // At least one specialty. Without it a listing says "Attorney" and nothing
+  // about what they actually do, which is the difference between a directory
+  // and a phone book.
+  const specialties = sanitiseSpecialties(input.specialties);
+  if (specialties.length === 0) {
+    errors.specialties = 'Please tick at least one thing you do.';
+  }
+  const specialtyOther = t(input.specialtyOther);
+  if (specialties.includes(SPECIALTY_NEEDING_DETAIL) && !specialtyOther) {
+    errors.specialtyOther = 'You ticked “Other” — please say what it is.';
+  }
+
+  let photo: DecodedPhoto | undefined;
+  try {
+    photo = decodePhoto({
+      dataUrl: input.photoDataUrl, width: input.photoWidth, height: input.photoHeight,
+    });
+  } catch (err) {
+    errors.photoDataUrl = err instanceof PhotoError ? err.message : 'That image could not be read.';
+  }
+
   const affiliateOptin = ['1', 'true', 'on', 'yes'].includes(t(input.affiliateOptin).toLowerCase());
   const paypalEmail = t(input.paypalEmail).toLowerCase();
   if (affiliateOptin && !paypalEmail) {
@@ -121,6 +148,9 @@ export function validateUnifiedApplication(
       hub: hubSlug(city, state),
       bio: t(input.bio) || undefined,
       photoUrl: t(input.photoUrl) || undefined,
+      specialties,
+      specialtyOther: specialtyOther || undefined,
+      photo,
       schedulerUrl: schedulerRaw ? parseSchedulerLink(schedulerRaw)!.href : undefined,
       tier,
       affiliateOptin,

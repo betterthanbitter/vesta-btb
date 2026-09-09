@@ -29,12 +29,30 @@ export async function POST(req: NextRequest) {
       street: v.street, city: v.city, state: v.state, zip: v.zip,
       hub: v.hub, statesLicensed: v.statesLicensed,
       occupation: v.profession, category: v.category,
+      specialties: v.specialties.join(', '),
+      specialtyOther: v.specialtyOther,
       signupPath: v.signupPath, partnerName: v.partnerName,
       program: v.tier === 'standard' ? undefined : 'Directory tier application',
       affiliateOptin: v.affiliateOptin ? 'yes' : 'no',
       schedulerUrl: v.schedulerUrl,
       appliedAt: new Date().toISOString(),
     } as any);
+
+    // Store the headshot and point the listing at it. Written after the
+    // professional exists so there is always a row to attach it to.
+    if (v.photo) {
+      const db = await getDb();
+      await db.run('DELETE FROM professional_photos WHERE professional_id = ?', [id]);
+      await db.run(
+        'INSERT INTO professional_photos' +
+        ' (professional_id, mime, bytes, byte_size, width, height, uploaded_at)' +
+        ' VALUES (?, ?, ?, ?, ?, ?, ?)',
+        [id, v.photo.mime, v.photo.base64, v.photo.byteSize,
+         v.photo.width ?? null, v.photo.height ?? null, new Date().toISOString()],
+      );
+      await db.run('UPDATE professionals SET photo_url = ? WHERE id = ?',
+        [`/api/photo/${id}`, id]);
+    }
 
     if (v.affiliateOptin) {
       await (await getDb()).run(

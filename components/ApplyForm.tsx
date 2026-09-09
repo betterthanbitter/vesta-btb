@@ -2,6 +2,10 @@
 
 import { useState } from 'react';
 import type { TierKey, TierSummary } from '../src/professionals/tiers.ts';
+import {
+  SPECIALTY_GROUPS, SPECIALTY_NEEDING_DETAIL, groupsForProfession,
+} from '../src/professionals/specialties.ts';
+import { PHOTO_RULES } from '../src/professionals/photo.ts';
 
 type Prices = Record<string, Record<TierKey, number>>;
 
@@ -16,11 +20,60 @@ export default function ApplyForm({
   const [tier, setTier] = useState<TierKey | ''>('');
   const [affiliate, setAffiliate] = useState(false);
   const [states, setStates] = useState<string[]>([]);
+  const [specialties, setSpecialties] = useState<string[]>([]);
+  const [openGroups, setOpenGroups] = useState<string[]>([]);
+  const [photo, setPhoto] = useState<
+    { dataUrl: string; width: number; height: number; name: string; size: number } | null>(null);
+  const [photoNote, setPhotoNote] = useState<string | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [sending, setSending] = useState(false);
   const [done, setDone] = useState(false);
 
   const priceFor = (t: TierKey) => (profession ? prices[profession]?.[t] : undefined);
+
+  function chooseProfession(value: string) {
+    setProfession(value);
+    // Open the group they are most likely to need. The rest stay available —
+    // an attorney who also mediates ticks across groups.
+    if (value) setOpenGroups(groupsForProfession(value));
+  }
+
+  /**
+   * Read the file, measure it, and say what is wrong before they submit.
+   * The server checks all of this again; this only saves them a round trip.
+   */
+  function onPhoto(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    setPhotoNote(null);
+    if (!file) { setPhoto(null); return; }
+
+    if (file.size > PHOTO_RULES.maxBytes) {
+      setPhoto(null);
+      setPhotoNote(`That file is ${(file.size / 1024 / 1024).toFixed(1)}MB. Please keep it under 5MB.`);
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const dataUrl = String(reader.result);
+      const img = new Image();
+      img.onload = () => {
+        const short = Math.min(img.width, img.height);
+        if (short < PHOTO_RULES.minShortSide) {
+          setPhoto(null);
+          setPhotoNote(
+            `That image is ${img.width}×${img.height}. We need at least ` +
+            `${PHOTO_RULES.minShortSide}px on the shorter side, or it looks blurred on your listing.`,
+          );
+          return;
+        }
+        setPhoto({ dataUrl, width: img.width, height: img.height, name: file.name, size: file.size });
+      };
+      img.onerror = () => { setPhoto(null); setPhotoNote('That file could not be read as an image.'); };
+      img.src = dataUrl;
+    };
+    reader.readAsDataURL(file);
+  }
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -30,6 +83,10 @@ export default function ApplyForm({
       ...Object.fromEntries(fd),
       profession, tier,
       statesLicensed: states.join(', '),
+      specialties,
+      photoDataUrl: photo?.dataUrl ?? '',
+      photoWidth: photo?.width,
+      photoHeight: photo?.height,
       affiliateOptin: affiliate ? 'on' : '',
     };
     try {
@@ -88,7 +145,7 @@ export default function ApplyForm({
         <div className="field">
           <label htmlFor="profession">Profession</label>
           <select id="profession" value={profession}
-            onChange={(e) => setProfession(e.target.value)}>
+            onChange={(e) => chooseProfession(e.target.value)}>
             <option value="">Select your profession…</option>
             {professions.map((p) => <option key={p} value={p}>{p}</option>)}
           </select>
@@ -158,7 +215,57 @@ export default function ApplyForm({
             <input id="linkedin" name="linkedin" /></div>
         </div>
 
-        <h2>4 · Where you practise</h2>
+        <h2>4 · What you do</h2>
+        <p className="hint">
+          Tick everything that applies — across groups if that is the truth. This is what a
+          consumer searches by, and it is the difference between your listing saying
+          “{profession || 'Attorney'}” and saying what you actually handle.
+        </p>
+        <Err k="specialties" />
+        <div className="specgroups">
+          {SPECIALTY_GROUPS.map((g) => {
+            const open = openGroups.includes(g.name);
+            const chosen = g.items.filter((i) => specialties.includes(i)).length;
+            return (
+              <div key={g.name} className={open ? 'specgroup open' : 'specgroup'}>
+                <button type="button" className="spechead"
+                  onClick={() => setOpenGroups(open
+                    ? openGroups.filter((n) => n !== g.name)
+                    : [...openGroups, g.name])}>
+                  <span className="chev">{open ? '−' : '+'}</span>
+                  {g.name}
+                  {chosen > 0 && <span className="count">{chosen}</span>}
+                </button>
+                {open && (
+                  <div className="ticks wide">
+                    {g.items.map((i) => (
+                      <label key={i} className={specialties.includes(i) ? 'tick on' : 'tick'}>
+                        <input type="checkbox" checked={specialties.includes(i)}
+                          onChange={(e) => setSpecialties(e.target.checked
+                            ? [...specialties, i]
+                            : specialties.filter((x) => x !== i))} />
+                        {i}
+                      </label>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+        {specialties.includes(SPECIALTY_NEEDING_DETAIL) && (
+          <div className="field">
+            <label htmlFor="specialtyOther">Please say what “Other” is</label>
+            <input id="specialtyOther" name="specialtyOther" />
+            <Err k="specialtyOther" />
+          </div>
+        )}
+        {specialties.length > 0 && (
+          <p className="hint"><b>{specialties.length} selected.</b> These appear on your listing
+            and are how consumers filter.</p>
+        )}
+
+        <h2>5 · Where you practise</h2>
         <div className="row">
           <div className="field"><label htmlFor="street">Street</label>
             <input id="street" name="street" autoComplete="street-address" /></div>
@@ -185,16 +292,33 @@ export default function ApplyForm({
           </div>
         </div>
 
-        <h2>5 · Your listing</h2>
+        <h2>6 · Your listing</h2>
         <div className="field">
           <label htmlFor="bio">Bio</label>
           <textarea id="bio" name="bio" rows={4}
             placeholder="Two to four sentences. This is what a stranger reads before deciding whether to call you." />
         </div>
         <div className="row">
-          <div className="field"><label htmlFor="photoUrl">Headshot URL</label>
-            <input id="photoUrl" name="photoUrl" placeholder="https://" />
-            <div className="hint">Or reply to our email with a file. 800px or larger, please.</div></div>
+          <div className="field">
+            <label htmlFor="photoFile">Headshot</label>
+            <input id="photoFile" type="file" accept="image/jpeg,image/png,image/webp"
+              onChange={onPhoto} />
+            <div className="hint">
+              JPG, PNG or WebP · at least {PHOTO_RULES.minShortSide}px on the shorter side ·
+              under 5MB. It is shown at 250px on your listing, so a small file looks soft.
+            </div>
+            {photo && (
+              <div className="photook">
+                <img src={photo.dataUrl} alt="" />
+                <div>
+                  <b>{photo.name}</b><br />
+                  {photo.width}×{photo.height} · {(photo.size / 1024).toFixed(0)}KB
+                </div>
+              </div>
+            )}
+            {photoNote && <div className="err">{photoNote}</div>}
+            <Err k="photoDataUrl" />
+          </div>
           <div className="field"><label htmlFor="schedulerUrl">Your booking link</label>
             <input id="schedulerUrl" name="schedulerUrl" placeholder="https://calendly.com/you/30min" />
             <div className="hint">
@@ -204,7 +328,7 @@ export default function ApplyForm({
             <Err k="schedulerUrl" /></div>
         </div>
 
-        <h2>6 · Earn on our consumer products <span className="opt">optional</span></h2>
+        <h2>7 · Earn on our consumer products <span className="opt">optional</span></h2>
         <p className="hint">
           Free to join. Recommend the Better Than Bitter™ products to your own clients and earn
           20% — recurring on Divorce Companion ($9.99/mo) and Companion+ ($147/mo), and $45.40
@@ -239,7 +363,7 @@ export default function ApplyForm({
           </div>
         )}
 
-        <h2>7 · How you found us</h2>
+        <h2>8 · How you found us</h2>
         <div className="row">
           <div className="field">
             <label htmlFor="signupPath">Referred by a partner?</label>

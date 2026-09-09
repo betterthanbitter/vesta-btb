@@ -83,6 +83,7 @@ export interface MappedProfessional {
   street?: string; city?: string; state?: string; zip?: string;
   hub?: string; statesLicensed?: string;
   occupation?: string; category: string;
+  specialties?: string; specialtyOther?: string;
   signupPath?: string; partnerName?: string; program?: string;
   groupSlots?: string; groupTimezone?: string; affiliateOptin?: string;
   appliedAt: string;

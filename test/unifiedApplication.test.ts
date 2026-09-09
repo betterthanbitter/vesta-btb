@@ -7,6 +7,7 @@ const good = {
   firstName: 'Marcus', lastName: 'Reyes', email: 'marcus@reyeslaw.com',
   phone: '617-555-0142', profession: 'Attorney', city: 'Newton', state: 'MA',
   tier: 'platinum',
+  specialties: ['Divorce & Family Law Attorney', 'Divorce Mediation'],
 };
 
 describe('the unified application', () => {
@@ -97,5 +98,100 @@ describe('what the form offers', () => {
     for (const p of PROFESSIONS) {
       assert.equal(pricesFor(p).length, 3, `${p} is missing prices`);
     }
+  });
+});
+
+
+describe('specialties', () => {
+  test('at least one is required — otherwise it is a phone book entry', () => {
+    const r = validateUnifiedApplication({ ...good, specialties: [] });
+    assert.equal(r.ok, false);
+    assert.match((r as any).errors.specialties, /at least one/);
+  });
+
+  test('a professional can tick across groups', () => {
+    // An attorney who also mediates, a CDFA who does forensic accounting.
+    const r = validateUnifiedApplication({
+      ...good,
+      specialties: ['Divorce & Family Law Attorney', 'Divorce Mediation', 'QDRO Preparation'],
+    });
+    assert.equal(r.ok, true);
+    assert.equal((r as any).value.specialties.length, 3);
+  });
+
+  test('invented specialties are dropped, not stored', () => {
+    const r = validateUnifiedApplication({
+      ...good, specialties: ['Divorce Mediation', 'Wizardry'],
+    });
+    assert.deepEqual((r as any).value.specialties, ['Divorce Mediation']);
+  });
+
+  test('duplicates collapse', () => {
+    const r = validateUnifiedApplication({
+      ...good, specialties: ['Divorce Mediation', 'Divorce Mediation'],
+    });
+    assert.deepEqual((r as any).value.specialties, ['Divorce Mediation']);
+  });
+
+  test('ticking Other without saying what it is, is refused', () => {
+    const r = validateUnifiedApplication({
+      ...good, specialties: ['Other (please specify)'],
+    });
+    assert.equal(r.ok, false);
+    assert.match((r as any).errors.specialtyOther, /what it is/);
+  });
+
+  test('every group in the taxonomy is reachable', async () => {
+    const { SPECIALTY_GROUPS, ALL_SPECIALTIES } = await import('../src/professionals/specialties.ts');
+    assert.equal(SPECIALTY_GROUPS.length, 8);
+    assert.equal(ALL_SPECIALTIES.length, 75);
+    assert.equal(new Set(ALL_SPECIALTIES).size, 75, 'no duplicates across groups');
+  });
+});
+
+describe('the headshot', () => {
+  const jpeg = (bytes: number[]) =>
+    'data:image/jpeg;base64,' + Buffer.from(bytes).toString('base64');
+  // A real JPEG starts FF D8 FF; padded so the magic-byte sniff has enough.
+  const realJpeg = jpeg([0xff, 0xd8, 0xff, 0xe0, ...Array(64).fill(0x20)]);
+
+  test('a genuine JPEG at a good size is accepted', () => {
+    const r = validateUnifiedApplication({
+      ...good, photoDataUrl: realJpeg, photoWidth: 1200, photoHeight: 1200,
+    });
+    assert.equal(r.ok, true);
+    assert.equal((r as any).value.photo.mime, 'image/jpeg');
+  });
+
+  test('no photo at all is fine', () => {
+    assert.equal(validateUnifiedApplication({ ...good, photoDataUrl: '' }).ok, true);
+  });
+
+  test('a small image is refused, with the numbers', () => {
+    const r = validateUnifiedApplication({
+      ...good, photoDataUrl: realJpeg, photoWidth: 150, photoHeight: 150,
+    });
+    assert.equal(r.ok, false);
+    assert.match((r as any).errors.photoDataUrl, /150×150/);
+    assert.match((r as any).errors.photoDataUrl, /800px/);
+  });
+
+  test('a file that is not an image is refused however it is labelled', () => {
+    // Magic bytes, not the declared type — the browser's label is forgeable.
+    const notAnImage = 'data:image/jpeg;base64,' +
+      Buffer.from('MZ\x90\x00 this is an executable ' + ' '.repeat(40)).toString('base64');
+    const r = validateUnifiedApplication({ ...good, photoDataUrl: notAnImage });
+    assert.equal(r.ok, false);
+    assert.match((r as any).errors.photoDataUrl, /not a JPG, PNG or WebP/);
+  });
+
+  test('an oversized image is refused before it is stored', () => {
+    const huge = 'data:image/jpeg;base64,' +
+      Buffer.from([0xff, 0xd8, 0xff, ...Array(6 * 1024 * 1024).fill(0x20)]).toString('base64');
+    const r = validateUnifiedApplication({
+      ...good, photoDataUrl: huge, photoWidth: 2000, photoHeight: 2000,
+    });
+    assert.equal(r.ok, false);
+    assert.match((r as any).errors.photoDataUrl, /under 5MB/);
   });
 });

@@ -39,7 +39,8 @@ describe('the database layer', () => {
     const tables = rows.map((r) => r.name).filter((n) => !n.startsWith('sqlite_'));
     assert.deepEqual(tables, [
       'consult_intents', 'consult_requests', 'consumers', 'outbox',
-      'professionals', 'referral_assignments', 'referrals', 'sent_ledger',
+      'professional_photos', 'professionals', 'referral_assignments',
+      'referrals', 'sent_ledger',
     ]);
     await db.close();
   });
