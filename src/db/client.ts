@@ -22,6 +22,16 @@ export interface Db {
   exec(sql: string): Promise<void>;
   /** Column names on a table, or an empty list if the table does not exist. */
   tableColumns(table: string): Promise<string[]>;
+  /** 'sqlite' or 'postgres' — for the few places the dialects genuinely differ. */
+  readonly dialect: 'sqlite' | 'postgres';
+  /**
+   * Run `fn` with no other process migrating at the same time.
+   *
+   * Several instances boot at once on a serverless host, and ALTER TABLE takes
+   * an exclusive lock in Postgres — concurrent migrations block each other and
+   * can time out the whole deploy.
+   */
+  withMigrationLock<T>(fn: () => Promise<T>): Promise<T>;
   close(): Promise<void>;
 }
 

@@ -101,7 +101,10 @@ export async function addMissingColumns(db: Db): Promise<AddedColumn[]> {
 
       // PRIMARY KEY cannot be added after the fact either.
       const definition = spec.definition.replace(/\bPRIMARY KEY\b/i, '').trim();
-      await db.exec(`ALTER TABLE ${table} ADD COLUMN ${spec.name} ${definition}`);
+      // Postgres can do this idempotently; SQLite cannot, but the existence
+      // check above plus the migration lock covers it.
+      const ifNotExists = db.dialect === 'postgres' ? 'IF NOT EXISTS ' : '';
+      await db.exec(`ALTER TABLE ${table} ADD COLUMN ${ifNotExists}${spec.name} ${definition}`);
       added.push({ table, name: spec.name });
     }
   }

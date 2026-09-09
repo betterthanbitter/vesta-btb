@@ -62,7 +62,7 @@ export async function migrate(db: Db): Promise<void> {
 
   // CREATE TABLE IF NOT EXISTS leaves an existing table exactly as it was, so
   // anything added to the schema since that table was created is missing.
-  const added = await addMissingColumns(db);
+  const added = await db.withMigrationLock(() => addMissingColumns(db));
   if (added.length) {
     console.log(`[db] added ${added.length} missing columns: ` +
       added.map((c) => `${c.table}.${c.name}`).join(', '));

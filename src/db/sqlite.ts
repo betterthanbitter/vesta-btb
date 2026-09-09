@@ -6,6 +6,7 @@ import type { Db } from './client.ts';
  * run. Used for local development and by the whole test suite.
  */
 export class SqliteDb implements Db {
+  readonly dialect = 'sqlite' as const;
   private readonly db: DatabaseSync;
   private readonly inTransaction: boolean;
 
@@ -55,6 +56,11 @@ export class SqliteDb implements Db {
       'SELECT name FROM pragma_table_info(?)', [table],
     );
     return rows.map((r) => r.name);
+  }
+
+  async withMigrationLock<T>(fn: () => Promise<T>): Promise<T> {
+    // busy_timeout already makes concurrent writers wait their turn.
+    return fn();
   }
 
   async transaction<T>(fn: (tx: Db) => Promise<T>): Promise<T> {

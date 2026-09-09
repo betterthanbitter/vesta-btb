@@ -8,13 +8,16 @@ import { SUPABASE_ROOT_CA } from './supabaseCa.ts';
  * within a few minutes of real traffic.
  */
 export class PostgresDb implements Db {
+  readonly dialect = 'postgres' as const;
   private readonly pool: pg.Pool;
   private readonly client?: pg.PoolClient;
 
   constructor(connectionString: string, pool?: pg.Pool, client?: pg.PoolClient) {
     this.pool = pool ?? new pg.Pool({
       connectionString,
-      max: 5,
+      // Several instances share one database; a small pool each keeps the
+      // total under the server's connection limit.
+      max: 3,
       idleTimeoutMillis: 10_000,
       connectionTimeoutMillis: 10_000,
       ssl: sslOptions(connectionString),
@@ -47,6 +50,19 @@ export class PostgresDb implements Db {
       [table],
     );
     return rows.map((r) => r.column_name);
+  }
+
+  async withMigrationLock<T>(fn: () => Promise<T>): Promise<T> {
+    // An advisory lock on an arbitrary but fixed key. Whoever gets it migrates;
+    // everyone else waits and then finds there is nothing left to do.
+    const client = await this.pool.connect();
+    try {
+      await client.query('SELECT pg_advisory_lock($1)', [4823175]);
+      return await fn();
+    } finally {
+      try { await client.query('SELECT pg_advisory_unlock($1)', [4823175]); } catch { /* releasing on disconnect is fine */ }
+      client.release();
+    }
   }
 
   async transaction<T>(fn: (tx: Db) => Promise<T>): Promise<T> {

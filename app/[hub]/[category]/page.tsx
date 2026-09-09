@@ -15,16 +15,6 @@ import type { PracticeCategory } from '../../../src/pricing/catalog.ts';
  * are still rendered on demand and 404 if nobody is there.
  */
 export const revalidate = 120;
-export const dynamicParams = true;
-
-export async function generateStaticParams() {
-  const seen = new Set<string>();
-  const all = await loadPublishedDirectory(await getDb());
-  return all
-    .filter((r) => r.hub !== 'unplaced')
-    .flatMap((r) => r.allCategories.map((c) => ({ hub: r.hub, category: c })))
-    .filter((p) => !seen.has(`${p.hub}/${p.category}`) && seen.add(`${p.hub}/${p.category}`));
-}
 
 export async function generateMetadata(
   { params }: { params: Promise<{ hub: string; category: string }> },

@@ -10,12 +10,17 @@ import { SPECIALTY_GROUPS } from '../../../src/professionals/specialties.ts';
 import { parseProfileContent } from '../../../src/professionals/profileContent.ts';
 import type { PracticeCategory } from '../../../src/pricing/catalog.ts';
 
+/**
+ * Rendered on demand and cached, rather than pre-rendered at build time.
+ *
+ * generateStaticParams would connect to the database during the build — from
+ * several parallel workers at once — which couples deploying to the database
+ * being up, reachable and not mid-migration. Nothing is gained: these pages
+ * revalidate every two minutes anyway, so a build-time snapshot is stale
+ * almost immediately. The first visitor after a deploy renders the page; the
+ * rest get it from cache.
+ */
 export const revalidate = 120;
-export const dynamicParams = true;
-
-export async function generateStaticParams() {
-  return (await loadPublishedDirectory(await getDb())).map((r) => ({ id: r.id }));
-}
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
