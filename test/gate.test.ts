@@ -51,3 +51,17 @@ describe('where the gate sends you afterwards', () => {
     assert.equal(timingSafeEqual('abc', 'abc'), true);
   });
 });
+
+describe('redirects stay on the visitor’s own hostname', () => {
+  test('the Location header is relative, never absolute', async () => {
+    const { relativeRedirect } = await import('../src/auth/gate.ts');
+    const res = relativeRedirect('/boston-ma/family-law');
+    const location = res.headers.get('location')!;
+    assert.equal(location, '/boston-ma/family-law');
+    // An absolute URL here is the bug: behind Netlify's proxy it carries the
+    // internal per-deploy hostname, the cookie does not exist on it, and the
+    // gate loops forever with nothing shown to the user.
+    assert.ok(!location.startsWith('http'), 'must not be absolute');
+    assert.equal(res.status, 303);
+  });
+});

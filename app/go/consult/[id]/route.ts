@@ -28,7 +28,8 @@ export async function GET(
 
   if (!professional || !link) {
     // No usable scheduler. Send them to the profile rather than nowhere.
-    return NextResponse.redirect(new URL(`/profile/${id}`, req.url), 302);
+    // Relative: req.url is the internal deploy hostname behind Netlify's proxy.
+    return new NextResponse(null, { status: 302, headers: { Location: `/profile/${id}` } });
   }
 
   let visitorKey = req.cookies.get(VISITOR_COOKIE)?.value;

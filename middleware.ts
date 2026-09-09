@@ -31,10 +31,8 @@ export async function middleware(req: NextRequest) {
     }
   }
 
-  const to = req.nextUrl.clone();
-  to.pathname = '/enter';
-  to.search = `?next=${encodeURIComponent(safeNext(pathname + search))}`;
-  return noindex(NextResponse.redirect(to));
+  const to = `/enter?next=${encodeURIComponent(safeNext(pathname + search))}`;
+  return noindex(new NextResponse(null, { status: 307, headers: { Location: to } }));
 }
 
 function noindex(res: NextResponse): NextResponse {

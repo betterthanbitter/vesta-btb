@@ -70,3 +70,19 @@ export function safeNext(raw: string | null | undefined): string {
   if (!raw || !raw.startsWith('/') || raw.startsWith('//')) return '/';
   return raw.slice(0, 300);
 }
+
+/**
+ * A redirect that stays on whatever hostname the visitor is actually using.
+ *
+ * NextResponse.redirect wants an absolute URL, and building one from req.url
+ * is wrong behind a proxy: on Netlify req.url carries the internal per-deploy
+ * hostname (6aa171c8--site.netlify.app), so the visitor is thrown onto a
+ * different origin — where the cookie just set does not exist. The gate then
+ * bounces them back to the password page, forever, with no error shown.
+ *
+ * A relative Location avoids the question entirely. RFC 7231 permits it and
+ * every browser resolves it against the current origin.
+ */
+export function relativeRedirect(path: string, status: 303 | 307 = 303): Response {
+  return new Response(null, { status, headers: { Location: path } });
+}
