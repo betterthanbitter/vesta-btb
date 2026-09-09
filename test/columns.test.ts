@@ -75,3 +75,41 @@ describe('backfilling an older database', () => {
     await db.close();
   });
 });
+
+describe('the professional write list', () => {
+  test('every field on the record is actually persisted', async () => {
+    // A field can be added to the type and to the read mapping and silently
+    // left out of the write list, in which case it is accepted, discarded, and
+    // reads back empty. That happened to headline and profile_content.
+    const { openTestDb } = await import('../src/db/index.ts');
+    const { ProfessionalRepository } = await import('../src/professionals/repository.ts');
+    const db = await openTestDb();
+    const repo = new ProfessionalRepository(db);
+
+    const record = {
+      status: 'published' as const, tier: 'platinum' as const,
+      firstName: 'Test', lastName: 'Person', email: 'roundtrip@example.com',
+      phone: '1', credentials: 'JD', company: 'Firm', bio: 'Bio',
+      photoUrl: '/p.png', website: 'https://w.test', linkedin: 'li',
+      social: 's', socialChannel: 'sc',
+      street: 'St', city: 'Boston', state: 'MA', zip: '02108',
+      hub: 'boston-ma', statesLicensed: 'MA, RI',
+      occupation: 'Attorney', category: 'family-law',
+      specialties: 'Divorce Mediation', specialtyOther: 'Other thing',
+      signupPath: 'direct', partnerName: 'P', program: 'X',
+      groupSlots: 'Tue', groupTimezone: 'ET', affiliateOptin: 'yes',
+      schedulerUrl: 'https://calendly.com/x',
+      headline: 'A headline',
+      profileContent: '{"lede":"a lede"}',
+      appliedAt: '2026-09-09T00:00:00Z',
+    };
+    const { id } = await repo.receiveApplication(record as any);
+    const [back] = (await repo.published()).filter((p) => p.id === id);
+
+    for (const key of Object.keys(record) as (keyof typeof record)[]) {
+      if (key === 'appliedAt') continue;
+      assert.equal((back as any)[key], record[key], `${key} did not survive the round trip`);
+    }
+    await db.close();
+  });
+});

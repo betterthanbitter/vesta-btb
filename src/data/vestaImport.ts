@@ -49,6 +49,8 @@ export interface DirectoryRecord {
   specialtyOther?: string;
   statesLicensed?: string;
   linkedin?: string;
+  headline?: string;
+  profileContent?: string;
   /** True when the live site has no coordinates — invisible on the map today. */
   invisibleOnMap: boolean;
 }

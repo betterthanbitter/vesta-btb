@@ -150,6 +150,15 @@ CREATE TABLE IF NOT EXISTS professionals (
   audience        TEXT,
 
   scheduler_url  TEXT,
+
+  -- One line for the top of their profile, in their own words.
+  headline       TEXT,
+  -- The content that makes a profile worth reading: answered questions, a
+  -- quote, the library, the story. Produced by PAC.MP and stored as JSON
+  -- because the shape is editorial and will keep changing; nothing queries
+  -- inside it, so a column per field would be churn for nothing.
+  profile_content TEXT,
+
   applied_at     TEXT,
   published_at   TEXT,
   created_at     TEXT NOT NULL

@@ -3,6 +3,7 @@ import type { DirectoryRecord } from '../data/vestaImport.ts';
 import { ProfessionalRepository } from './repository.ts';
 import type { PracticeCategory } from '../pricing/catalog.ts';
 import type { Tier } from '../directory/tiers.ts';
+import { countLibrary, parseProfileContent } from './profileContent.ts';
 
 /**
  * The published directory, read from the database.
@@ -29,7 +30,7 @@ export async function loadPublishedDirectory(db: Db): Promise<DirectoryRecord[]>
     phone: p.phone,
     photo: p.photoUrl,
     tier: p.tier as Tier,
-    contentCount: 0,
+    contentCount: countLibrary(parseProfileContent(p.profileContent)),
     webinars: 0,
     podcasts: 0,
     articles: 0,
@@ -39,6 +40,8 @@ export async function loadPublishedDirectory(db: Db): Promise<DirectoryRecord[]>
     specialtyOther: p.specialtyOther,
     statesLicensed: p.statesLicensed,
     linkedin: p.linkedin,
+    headline: p.headline,
+    profileContent: p.profileContent,
     invisibleOnMap: !p.hub,
   }));
 }

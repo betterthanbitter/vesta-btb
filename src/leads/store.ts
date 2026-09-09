@@ -25,6 +25,9 @@ export function getDb(): Promise<Db> {
     const { seedLegacyProfessionals } = await import('../professionals/seed.ts');
     const { added } = await seedLegacyProfessionals(db);
     if (added) console.log(`[db] seeded ${added} legacy professionals`);
+
+    const { seedDemoProfile } = await import('../professionals/demoSeed.ts');
+    if (await seedDemoProfile(db)) console.log('[db] seeded the sample profile');
     return db;
   });
   return dbPromise;

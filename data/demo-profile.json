@@ -1,0 +1,126 @@
+{
+  "_comment": "A fictional professional, so the full profile can be demonstrated without putting invented words in a real person's mouth. Seeded only when DEMO_PROFILE=1.",
+  "firstName": "Dana",
+  "lastName": "Whitfield",
+  "email": "dana.whitfield@sample.vesta.invalid",
+  "phone": "(617) 555-0182",
+  "credentials": "CFP®, CDFA®",
+  "company": "Whitfield Divorce Financial — SAMPLE LISTING",
+  "city": "Boston",
+  "state": "MA",
+  "occupation": "CDFA",
+  "category": "financial-cdfa",
+  "tier": "platinum",
+  "statesLicensed": "MA, RI, NH, CT, NY, VT, ME, NJ, PA, MD, DE, VA, FL",
+  "schedulerUrl": "https://calendly.com/example-vesta/30min",
+  "specialties": "Certified Divorce Financial Analyst (CDFA), Asset & Debt Division Analysis, Executive Compensation / Stock Options, QDRO Preparation, Pension Valuation, Retirement Planning, Tax Planning & Preparation, Financial Planning — Post-Divorce",
+  "headline": "The money questions, answered before you have to ask them.",
+  "profileContent": {
+    "lede": "I help people through divorce make financial decisions they can live with for thirty years — not just get through the settlement. Everything below is my own work, and it is free to read.",
+    "questions": [
+      {
+        "question": "What is the very first financial step to take when facing divorce?",
+        "answer": "Pull your own annual credit report. You may have joint accounts, but you have individual credit — and the report gives you a snapshot of what is actually in your name, including old accounts you have forgotten about. It costs nothing and it is something you can control on day one.",
+        "source": "the webinar “Reading your own numbers”"
+      },
+      {
+        "question": "What documents should I gather before meeting a financial professional?",
+        "answer": "Everything a professional will need, in one place: pension information, Social Security numbers for you and your children, any 529 accounts, life insurance policies, account statements and estate documents. Arriving organized makes you a better client and lowers what you pay someone else to assemble it.",
+        "source": "the document-gathering checklist"
+      },
+      {
+        "question": "Is a CDFA worth hiring if I already have an attorney?",
+        "answer": "Yes, and we do different jobs. Many divorce attorneys do not have the technical language for what I call the quality of money. A CDFA models what a proposed division of assets means for your future, not just today — and many attorneys work alongside one on proposals and analysis.",
+        "source": "the podcast episode “Am I going to be okay?”"
+      },
+      {
+        "question": "Should I fight to keep the family home?",
+        "answer": "Do not assume. Ask for the scenarios to be run: sell and rent, sell and buy in cash, buy with 20% down and finance the rest, or buy in cash and return to renting later. Attachment to the family home is understandable, and it is also the most expensive decision most people make without modelling it first.",
+        "source": "the article “Should I fight to keep the family home?”"
+      }
+    ],
+    "quote": {
+      "text": "Not all assets are equal. A hundred thousand dollars in a 401(k) is not a hundred thousand dollars in cash, and nobody tells you that until it is too late to matter.",
+      "attribution": "Dana Whitfield, CFP®, CDFA®"
+    },
+    "shelves": [
+      {
+        "name": "Webinars",
+        "items": [
+          {
+            "title": "Am I going to be okay? Reading your own numbers",
+            "meta": "58 min · recorded May 2026",
+            "summary": "A walk through the four documents that tell you where you actually stand, and how to read each one without a financial background.",
+            "actions": ["Watch", "Companion PDF", "Share"]
+          },
+          {
+            "title": "RSUs, options and the vesting date problem",
+            "meta": "49 min · recorded February 2026",
+            "summary": "What happens to equity awarded during the marriage that vests after the separation date — and why the answer changes by state.",
+            "actions": ["Watch", "Companion PDF", "Share"]
+          }
+        ]
+      },
+      {
+        "name": "Podcast episodes",
+        "items": [
+          {
+            "title": "“Am I going to be okay?” — taking control of your finances",
+            "meta": "Better Than Bitter™ Divorce Podcast · Season 2, Episode 3 · 46 min",
+            "summary": "Recorded with the Better Than Bitter founder.",
+            "actions": ["Listen", "Transcript", "Share"]
+          },
+          {
+            "title": "The house, the pension, and which one to fight for",
+            "meta": "Season 1, Episode 11 · 39 min",
+            "actions": ["Listen", "Transcript", "Share"]
+          }
+        ]
+      },
+      {
+        "name": "Free downloads",
+        "items": [
+          {
+            "title": "The document-gathering checklist",
+            "meta": "PDF · 4 pages",
+            "summary": "Everything to bring to a first meeting, in the order a professional will ask for it.",
+            "actions": ["Download", "Share"]
+          },
+          {
+            "title": "Full episode transcript — S2E3",
+            "meta": "PDF · 10 pages",
+            "actions": ["Download", "Share"]
+          }
+        ]
+      },
+      {
+        "name": "Written pieces",
+        "items": [
+          {
+            "title": "Is $100,000 in a 401(k) the same as $100,000 in cash?",
+            "meta": "900 words · 4 min read",
+            "actions": ["Read", "Share"]
+          },
+          {
+            "title": "QDROs in plain English",
+            "meta": "1,200 words · 5 min read",
+            "actions": ["Read", "Share"]
+          }
+        ]
+      }
+    ],
+    "stat": {
+      "claim": "Most people accept a settlement without ever seeing what it looks like in ten years. Modelling it costs a fraction of what getting it wrong does.",
+      "source": "From the webinar “Reading your own numbers”, May 2026"
+    },
+    "about": [
+      "I did not plan to do this work. I planned to be a financial planner for families building things — retirement, college funds, a second home.",
+      "Then I sat across from enough people signing settlements they did not understand that it stopped being a side interest. Most had good attorneys. What they did not have was anyone who could tell them what the numbers meant after the decree.",
+      "So I trained as a CDFA, and now that is the whole practice. I work alongside attorneys and mediators, and I am often in the room before either is hired."
+    ],
+    "books": [
+      "The Quality of Money (2025)",
+      "After the Decree: a financial handbook (2023)"
+    ]
+  }
+}

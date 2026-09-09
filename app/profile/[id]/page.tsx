@@ -7,14 +7,14 @@ import { CATEGORY_LABELS } from '../../../src/data/vestaImport.ts';
 import { ENTITLEMENTS } from '../../../src/directory/tiers.ts';
 import { parseSchedulerLink } from '../../../src/directory/schedulerLink.ts';
 import { SPECIALTY_GROUPS } from '../../../src/professionals/specialties.ts';
+import { parseProfileContent } from '../../../src/professionals/profileContent.ts';
 import type { PracticeCategory } from '../../../src/pricing/catalog.ts';
 
 export const revalidate = 120;
 export const dynamicParams = true;
 
 export async function generateStaticParams() {
-  const all = await loadPublishedDirectory(await getDb());
-  return all.map((r) => ({ id: r.id }));
+  return (await loadPublishedDirectory(await getDb())).map((r) => ({ id: r.id }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
@@ -24,53 +24,57 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const where = [r.city, r.state].filter(Boolean).join(', ');
   return {
     title: `${r.name}${r.roleLabel ? `, ${r.roleLabel}` : ''} — ${where} | Vesta`,
-    description: r.bio
-      ? r.bio.slice(0, 155)
-      : `${r.profession ?? 'Divorce professional'} in ${where}, vetted by Vesta.`,
+    description: (r.headline ?? r.bio ?? `${r.profession ?? 'Divorce professional'} in ${where}.`)
+      .slice(0, 155),
   };
-}
-
-/** Specialties, kept in the taxonomy's own grouping so a long list stays readable. */
-function groupSpecialties(chosen: string[]) {
-  return SPECIALTY_GROUPS
-    .map((g) => ({ name: g.name, items: g.items.filter((i) => chosen.includes(i)) }))
-    .filter((g) => g.items.length > 0);
 }
 
 function initials(name: string) {
   return name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]?.toUpperCase()).join('');
 }
 
+function groupSpecialties(chosen: string[]) {
+  return SPECIALTY_GROUPS
+    .map((g) => ({ name: g.name, items: g.items.filter((i) => chosen.includes(i)) }))
+    .filter((g) => g.items.length > 0);
+}
+
 export default async function Profile({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const all = await loadPublishedDirectory(await getDb());
-  const r = all.find((x) => x.id === id);
+  const r = (await loadPublishedDirectory(await getDb())).find((x) => x.id === id);
   if (!r) notFound();
 
   const e = ENTITLEMENTS[r.tier];
+  const c = parseProfileContent(r.profileContent);
   const scheduler = parseSchedulerLink(r.schedulerUrl);
+  const first = r.name.split(' ')[0];
   const where = [r.city, r.state].filter(Boolean).join(', ');
-  const grouped = groupSpecialties(r.specialties);
   const states = (r.statesLicensed ?? '').split(',').map((s) => s.trim()).filter(Boolean);
-  const backToDirectory = r.hub !== 'unplaced' ? `/${r.hub}/${r.category}` : '/';
+  const grouped = groupSpecialties(r.specialties);
+  const library = c.shelves ?? [];
+  const libraryCount = library.reduce((n, s) => n + s.items.length, 0);
+  const back = r.hub !== 'unplaced' ? `/${r.hub}/${r.category}` : '/';
+
+  /* The proof bar shows only numbers that are real. A row of zeroes is worse
+     than no row — it advertises an empty profile. */
+  const proof = [
+    c.questions?.length ? { v: c.questions.length, k: 'Questions answered in full, free' } : null,
+    states.length ? { v: states.length, k: 'States licensed to practice in' } : null,
+    libraryCount ? { v: libraryCount, k: 'Pieces to read, watch and listen to' } : null,
+    grouped.length ? { v: r.specialties.length, k: 'Specialties' } : null,
+    c.books?.length ? { v: c.books.length, k: 'Books published' } : null,
+  ].filter(Boolean).slice(0, 4) as { v: number; k: string }[];
 
   return (
     <>
       <header className="ptop">
         <div className="in">
           <Link href="/" className="logo">VESTA</Link>
-          <div className="pname">
-            {r.name}{r.roleLabel ? <span>, {r.roleLabel}</span> : null}
-          </div>
-          <span className="verified">Vetted by Vesta</span>
+          <div className="pname">{r.name}{r.roleLabel ? <span>, {r.roleLabel}</span> : null}</div>
+          <span className="verified">Verified · Vesta network</span>
           <span className="sp" />
-          <ConsultCta
-            professionalId={r.id}
-            firstName={r.name.split(' ')[0]}
-            schedulerHost={scheduler?.host}
-            sourcePath={`/profile/${r.id}`}
-            variant="primary"
-          />
+          <ConsultCta professionalId={r.id} firstName={first} schedulerHost={scheduler?.host}
+            sourcePath={`/profile/${r.id}`} variant="primary" />
         </div>
       </header>
 
@@ -78,12 +82,24 @@ export default async function Profile({ params }: { params: Promise<{ id: string
         <div className="in">
           <div className="pgrid">
             <div>
-              <div className="eyebrow">{r.profession ?? CATEGORY_LABELS[r.category as PracticeCategory]}</div>
-              <h1>{r.name}</h1>
-              <div className="psub">
-                {r.firm && <>{r.firm} · </>}{where}
+              <div className="eyebrow">
+                {r.profession ?? CATEGORY_LABELS[r.category as PracticeCategory]}
               </div>
-              {r.bio && <p className="plede">{r.bio}</p>}
+              <h1>{r.headline ?? r.name}</h1>
+              {r.headline && <div className="pwho">{r.name}</div>}
+              <div className="psub">{r.firm && <>{r.firm} · </>}{where}</div>
+              {(c.lede ?? r.bio) && <p className="plede">{c.lede ?? r.bio}</p>}
+
+              <div className="hactions">
+                <ConsultCta professionalId={r.id} firstName={first}
+                  schedulerHost={scheduler?.host} sourcePath={`/profile/${r.id}`}
+                  variant="primary" />
+                {c.questions?.length
+                  ? <a className="ghost" href="#answers">Start with the questions</a>
+                  : grouped.length
+                    ? <a className="ghost" href="#specialties">See what {first} handles</a>
+                    : null}
+              </div>
 
               <div className="pfacts">
                 {r.roleLabel && <span className="fact">{r.roleLabel}</span>}
@@ -92,6 +108,7 @@ export default async function Profile({ params }: { params: Promise<{ id: string
                     Licensed in {states.length > 6 ? `${states.length} states` : states.join(', ')}
                   </span>
                 )}
+                {where && <span className="fact">{where}</span>}
                 {r.phone && <span className="fact"><a href={`tel:${r.phone}`}>{r.phone}</a></span>}
                 {r.website && (
                   <span className="fact">
@@ -104,26 +121,65 @@ export default async function Profile({ params }: { params: Promise<{ id: string
             </div>
 
             <div className="pportrait">
-              {r.photo
-                ? <img src={r.photo} alt={r.name} />
+              {r.photo ? <img src={r.photo} alt={r.name} />
                 : <div className="pinitials">{initials(r.name)}</div>}
             </div>
           </div>
         </div>
       </section>
 
-      <div className="wrap" style={{ maxWidth: 1080 }}>
-        <section className="pblock">
-          <div className="stitle">What {r.name.split(' ')[0]} handles</div>
+      {proof.length > 0 && (
+        <div className="proof">
+          <div className="in">
+            {proof.map((p) => (
+              <div className="pf" key={p.k}><div className="v">{p.v}</div><div className="k">{p.k}</div></div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {c.questions?.length ? (
+        <section id="answers" className="pblock">
+          <div className="in">
+            <div className="stitle">Start here</div>
+            <h2>Questions {first} is asked most, answered properly.</h2>
+            <p className="ssub">
+              Not a blog. These are the questions that come up in a first meeting, with the answer
+              they would actually give you. <b>Read them before you decide whether to call.</b>
+            </p>
+            <div className="qa">
+              {c.questions.map((q, i) => (
+                <details key={q.question} open={i === 0}>
+                  <summary>{q.question}</summary>
+                  <div className="ans">
+                    {q.answer}
+                    {q.source && <div className="src">From {q.source}</div>}
+                  </div>
+                </details>
+              ))}
+            </div>
+            {c.quote && (
+              <blockquote className="quote">
+                <p>{c.quote.text}</p>
+                {c.quote.attribution && <cite>{c.quote.attribution}</cite>}
+              </blockquote>
+            )}
+          </div>
+        </section>
+      ) : null}
+
+      <section id="specialties" className="pblock">
+        <div className="in">
+          <div className="stitle">What {first} handles</div>
           {grouped.length === 0 ? (
             <p className="pmuted">
-              No specialties recorded yet. {r.profession ? `Listed as ${r.profession}.` : ''}
+              No specialties recorded yet{r.profession ? ` — listed as ${r.profession}` : ''}.
             </p>
           ) : (
             <>
-              <p className="pintro">
-                The specific matters {r.name.split(' ')[0]} works on — worth reading before you
-                call, so you know whether they are the right fit.
+              <h2>The specific matters {first} works on.</h2>
+              <p className="ssub">
+                Worth reading before you call, so you know whether they are the right fit.
               </p>
               <div className="specshow">
                 {grouped.map((g) => (
@@ -133,47 +189,103 @@ export default async function Profile({ params }: { params: Promise<{ id: string
                   </div>
                 ))}
               </div>
-              {r.specialtyOther && (
-                <p className="pmuted" style={{ marginTop: 12 }}>Also: {r.specialtyOther}</p>
-              )}
+              {r.specialtyOther && <p className="pmuted" style={{ marginTop: 14 }}>Also: {r.specialtyOther}</p>}
             </>
           )}
-        </section>
+        </div>
+      </section>
 
-        {e.contentLibrary && (
-          <section className="pblock">
-            <div className="stitle">Read, watch and listen</div>
-            {r.contentCount === 0 ? (
-              <p className="pmuted">
-                {r.name.split(' ')[0]}’s content library is in production. Webinars, podcast
-                episodes and articles will appear here.
-              </p>
+      {e.contentLibrary && (
+        <section id="library" className="pblock">
+          <div className="in">
+            <div className="stitle">The library</div>
+            {libraryCount === 0 ? (
+              <>
+                <h2>Everything {first} makes, free to read, watch and download.</h2>
+                <p className="pmuted">
+                  {first}’s library is in production. Webinars, podcast episodes, worksheets and
+                  written pieces will appear here as they are published.
+                </p>
+              </>
             ) : (
-              <p className="pintro">{r.contentCount} pieces of content.</p>
+              <>
+                <h2>Everything {first} has made, free to read, watch and download.</h2>
+                {library.map((shelf) => (
+                  <div className="shelf" key={shelf.name}>
+                    <div className="shh">
+                      <h3>{shelf.name}</h3>
+                      <span className="n">{shelf.items.length}</span>
+                    </div>
+                    {shelf.items.map((it) => (
+                      <div className="item" key={it.title}>
+                        <h4>{it.title}</h4>
+                        {it.meta && <div className="m">{it.meta}</div>}
+                        {it.summary && <p>{it.summary}</p>}
+                        {it.actions?.length ? (
+                          <div className="acts">
+                            {it.actions.map((a, i) => (
+                              <button key={a} className={i === 0 ? 'pri' : undefined}>{a}</button>
+                            ))}
+                          </div>
+                        ) : null}
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </>
             )}
-          </section>
-        )}
+          </div>
+        </section>
+      )}
 
-        <section className="pclose">
-          <h2>Talk to {r.name.split(' ')[0]}</h2>
+      {c.stat && (
+        <section className="pblock">
+          <div className="in">
+            <div className="stitle">One number</div>
+            <div className="statbox">
+              <p className="c">{c.stat.claim}</p>
+              {c.stat.source && <div className="s">{c.stat.source}</div>}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {(c.about?.length || c.books?.length) && (
+        <section className="pblock">
+          <div className="in">
+            <div className="stitle">About</div>
+            <h2>Why {first} does this work.</h2>
+            <div className="about">
+              <div>{c.about?.map((p, i) => <p key={i}>{p}</p>)}</div>
+              {c.books?.length ? (
+                <aside className="books">
+                  <h4>Books</h4>
+                  <ul>{c.books.map((b) => <li key={b}>{b}</li>)}</ul>
+                </aside>
+              ) : null}
+            </div>
+          </div>
+        </section>
+      )}
+
+      <section className="pclose">
+        <div className="in">
+          <h2>{c.questions?.length ? 'Read everything first. Then decide.' : `Talk to ${first}.`}</h2>
           <p>
             {scheduler
               ? 'Book a time directly, or ask for one that suits you better.'
-              : `${r.name.split(' ')[0]} arranges consultations directly — leave your details and they will be in touch.`}
+              : `${first} arranges consultations directly — leave your details and they will be in touch.`}
           </p>
           <div className="pctas">
-            <ConsultCta
-              professionalId={r.id}
-              firstName={r.name.split(' ')[0]}
-              schedulerHost={scheduler?.host}
-              sourcePath={`/profile/${r.id}`}
-              variant="primary"
-            />
+            <ConsultCta professionalId={r.id} firstName={first} schedulerHost={scheduler?.host}
+              sourcePath={`/profile/${r.id}`} variant="primary" />
           </div>
-        </section>
+        </div>
+      </section>
 
+      <div className="wrap" style={{ maxWidth: 1080 }}>
         <p className="pback">
-          <Link href={backToDirectory}>
+          <Link href={back}>
             ← All {CATEGORY_LABELS[r.category as PracticeCategory]?.toLowerCase()} in {where}
           </Link>
         </p>
