@@ -540,3 +540,71 @@ a.ghost { text-decoration: none; display: inline-flex; align-items: center; }
   border-radius: 8px; }
 .applycard input[type=file] { width: 100%; font: inherit; font-size: 14px; padding: 10px;
   border: 1px dashed var(--line2); border-radius: 10px; background: #fff; }
+.chip.muted { color: var(--ink3); background: #fff; }
+
+/* ── public profile ───────────────────────────────────────────────────── */
+.ptop { position: sticky; top: 0; z-index: 50; background: rgba(255,255,255,.96);
+  backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+.ptop .in { max-width: 1080px; margin: 0 auto; padding: 0 24px; min-height: 64px;
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.ptop .pname { font-weight: 750; font-size: 15.5px; letter-spacing: -.015em; }
+.ptop .pname span { color: var(--ink3); font-weight: 600; }
+.verified { font-size: 11px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+  border: 1px solid var(--br); background: var(--soft); color: var(--acc2);
+  border-radius: 99px; padding: 4px 11px; white-space: nowrap; }
+
+.phero { background: linear-gradient(180deg, #fff 0%, var(--soft) 100%);
+  border-bottom: 1px solid var(--line); }
+.phero .in { max-width: 1080px; margin: 0 auto; padding: 46px 24px 40px; }
+.pgrid { display: grid; grid-template-columns: 1fr 260px; gap: 40px; align-items: start; }
+.eyebrow { font-size: 12px; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--acc); font-weight: 750; }
+.phero h1 { font-size: clamp(30px, 4.2vw, 44px); line-height: 1.08; letter-spacing: -.03em;
+  margin: 10px 0 8px; }
+.psub { font-size: 15.5px; color: var(--ink2); margin-bottom: 18px; }
+.plede { font-size: 17px; line-height: 1.6; color: var(--ink2); max-width: 56ch; margin: 0 0 22px; }
+.pfacts { display: flex; flex-wrap: wrap; gap: 8px; }
+.fact { font-size: 13px; font-weight: 600; color: var(--ink2); background: #fff;
+  border: 1px solid var(--line2); border-radius: 8px; padding: 7px 13px; }
+.fact a { color: var(--acc); text-decoration: none; }
+.fact a:hover { text-decoration: underline; }
+.pportrait img { width: 100%; aspect-ratio: 1; object-fit: cover; object-position: center top;
+  border-radius: 16px; border: 1px solid var(--br); display: block; }
+.pinitials { width: 100%; aspect-ratio: 1; border-radius: 16px; display: flex;
+  align-items: center; justify-content: center; font-size: 58px; font-weight: 750; color: #fff;
+  background: linear-gradient(140deg, var(--acc) 0%, var(--teal) 100%); letter-spacing: -.03em; }
+
+.pblock { padding: 40px 0; border-bottom: 1px solid var(--line); }
+.stitle { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink3);
+  font-weight: 750; margin-bottom: 12px; }
+.pintro { font-size: 16px; color: var(--ink2); max-width: 62ch; margin: 0 0 22px; line-height: 1.55; }
+.pmuted { font-size: 15px; color: var(--ink3); max-width: 62ch; line-height: 1.6; margin: 0; }
+
+.specshow { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 22px; }
+.specshowgroup h3 { font-size: 13px; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--acc2); margin: 0 0 10px; padding-bottom: 7px; border-bottom: 2px solid var(--soft); }
+.specshowgroup ul { margin: 0; padding: 0; list-style: none; }
+.specshowgroup li { font-size: 14.6px; color: var(--ink); line-height: 1.45;
+  padding: 7px 0 7px 27px; position: relative; }
+/* A check rather than a bullet: this is a list of things they do, not a list
+   of topics, and the tick says so at a glance. */
+.specshowgroup li::before { content: "✓"; position: absolute; left: 0; top: 6px;
+  color: var(--teal); font-weight: 800; font-size: 14px; line-height: 1.5; }
+
+.pclose { background: var(--acc); color: #fff; border-radius: 16px; padding: 40px 34px;
+  text-align: center; margin: 40px 0 26px; }
+.pclose h2 { color: #fff; margin: 0 0 10px; font-size: 26px; letter-spacing: -.025em; }
+.pclose p { font-size: 16.5px; opacity: .92; max-width: 52ch; margin: 0 auto 24px; line-height: 1.55; }
+.pctas { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.pclose .prof { background: #fff; color: var(--acc2); }
+.pclose .prof:hover { background: var(--soft); }
+.pclose .ghost { background: transparent; color: #fff; border-color: rgba(255,255,255,.5); }
+.pclose .ghost:hover { background: rgba(255,255,255,.12); color: #fff; border-color: #fff; }
+.pback { font-size: 14px; padding-bottom: 40px; }
+.pback a { color: var(--acc); text-decoration: none; font-weight: 650; }
+.pback a:hover { text-decoration: underline; }
+
+@media (max-width: 860px) {
+  .pgrid { grid-template-columns: 1fr; }
+  .pportrait { max-width: 200px; }
+}

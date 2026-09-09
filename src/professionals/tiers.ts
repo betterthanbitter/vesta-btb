@@ -73,7 +73,7 @@ export const TIER_SUMMARIES: TierSummary[] = [
       'Your listing in the Vesta directory — name, credentials, firm, photo and contact',
       'Your own booking link on your listing, so people can schedule with you directly',
       'Your lead dashboard, free — every enquiry, with the concierge’s notes',
-      'Searchable by city and speciality',
+      'Searchable by city and specialty',
     ],
     notIncluded: ['No produced content', 'No bio or content library on your listing'],
   },
@@ -97,13 +97,13 @@ export const TIER_SUMMARIES: TierSummary[] = [
     tagline: 'Be the only one.',
     includes: [
       'Everything in Premium',
-      'The exclusive seat for your speciality in your city — no competitor appears above you',
+      'The exclusive seat for your specialty in your city — no competitor appears above you',
       'A two-minute introduction video on your listing',
       'Host live Vesta events in your hub',
       'Your own Content Hub, hosted, on your domain — hosting included at this level',
       'Priority placement on every page you appear on',
     ],
-    scarcity: 'One per speciality, per city. If the seat is taken, we will tell you before you pay.',
+    scarcity: 'One per specialty, per city. If the seat is taken, we will tell you before you pay.',
   },
 ];
 

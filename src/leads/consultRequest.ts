@@ -64,7 +64,7 @@ export function validateConsultRequest(input: Partial<ConsultRequestInput>): {
       message: message || undefined,
       // Never trust a path from the client as a redirect target; it is stored
       // for attribution only and must stay relative.
-      sourcePath: sanitisePath(input.sourcePath),
+      sourcePath: sanitizePath(input.sourcePath),
     },
   };
 }
@@ -82,7 +82,7 @@ function isPlausibleEmail(value: string): boolean {
   return domain.includes('.') && !domain.startsWith('.') && !domain.endsWith('.');
 }
 
-function sanitisePath(raw: string | undefined): string {
+function sanitizePath(raw: string | undefined): string {
   if (!raw) return '/';
   // Anything absolute, protocol-relative, or containing a scheme is discarded.
   if (!raw.startsWith('/') || raw.startsWith('//')) return '/';

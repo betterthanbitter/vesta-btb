@@ -44,7 +44,7 @@ describe('how Platinum is actually constructed', () => {
     'therapists-wellness-other': 99,
   };
 
-  test('Platinum = current Vesta price + the content programme', () => {
+  test('Platinum = current Vesta price + the content program', () => {
     const exceptions: string[] = [];
     for (const [band, p] of Object.entries(PRICING)) {
       const implied = p.current + CONTENT_PRICE[band];

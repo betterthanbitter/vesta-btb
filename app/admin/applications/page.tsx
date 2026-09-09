@@ -17,7 +17,7 @@ function Card({ p }: { p: ProfessionalRow }) {
     ['Phone', p.phone],
     ['Location', [p.city, p.state].filter(Boolean).join(', ') || undefined],
     ['Licensed in', p.statesLicensed],
-    ['Programme', p.program],
+    ['Program', p.program],
     ['Came via', p.partnerName ? `${p.partnerName} (reseller)` : 'Direct'],
     ['Group slots', p.groupSlots],
   ].filter((f): f is [string, string] => Boolean(f[1]));

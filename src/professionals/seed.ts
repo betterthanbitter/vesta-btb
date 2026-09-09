@@ -29,7 +29,8 @@ export async function seedLegacyProfessionals(db: Db): Promise<{ added: number; 
     const email = usableEmail(r.email) ?? `legacy-${r.id}@needs-email.vesta.invalid`;
     if (known.has(email)) { skipped++; continue; }
 
-    await repo.receiveApplication({
+    try {
+      await repo.receiveApplication({
       status: r.hub === 'unplaced' ? 'approved' : 'published',
       tier: r.tier,
       firstName: r.name.split(' ')[0] ?? r.name,
@@ -50,9 +51,14 @@ export async function seedLegacyProfessionals(db: Db): Promise<{ added: number; 
       occupation: r.roleLabel || undefined,
       schedulerUrl: r.schedulerUrl,
       appliedAt: new Date().toISOString(),
-    } as any);
-    known.add(email);
-    added++;
+      } as any);
+      known.add(email);
+      added++;
+    } catch {
+      // Another process seeded this one first. The unique index on email is
+      // what makes that safe, and losing the race is not an error.
+      skipped++;
+    }
   }
 
   return { added, skipped };

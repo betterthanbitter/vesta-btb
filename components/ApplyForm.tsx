@@ -118,7 +118,7 @@ export default function ApplyForm({
           </p>
           <p className="lede">
             <b>Nothing is charged yet.</b> If you applied for Platinum and the seat for your
-            speciality in your city has already gone, we will tell you before you pay anything.
+            specialty in your city has already gone, we will tell you before you pay anything.
           </p>
         </div>
       </div>
@@ -134,7 +134,7 @@ export default function ApplyForm({
         <h1>Join the network.</h1>
         <p className="lede">
           Vesta is a directory of interviewed, vetted divorce professionals — and the content
-          programme that puts your expertise in front of the people looking for it. Every
+          program that puts your expertise in front of the people looking for it. Every
           application is reviewed; nothing is charged until you are accepted.
         </p>
 
@@ -265,7 +265,7 @@ export default function ApplyForm({
             and are how consumers filter.</p>
         )}
 
-        <h2>5 · Where you practise</h2>
+        <h2>5 · Where you practice</h2>
         <div className="row">
           <div className="field"><label htmlFor="street">Street</label>
             <input id="street" name="street" autoComplete="street-address" /></div>
@@ -279,7 +279,7 @@ export default function ApplyForm({
             <input id="zip" name="zip" /></div>
         </div>
         <div className="field">
-          <label>States you can practise in</label>
+          <label>States you can practice in</label>
           <div className="ticks">
             {US_STATES.map((s) => (
               <label key={s} className={states.includes(s) ? 'tick on' : 'tick'}>
@@ -381,7 +381,7 @@ export default function ApplyForm({
         </button>
         <p className="privacy">
           Every application is reviewed and every professional interviewed. Nothing is charged
-          until you are accepted, and if the Platinum seat for your speciality in your city has
+          until you are accepted, and if the Platinum seat for your specialty in your city has
           gone we will tell you before you pay.
         </p>
       </form>

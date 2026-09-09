@@ -34,6 +34,11 @@ export async function loadPublishedDirectory(db: Db): Promise<DirectoryRecord[]>
     podcasts: 0,
     articles: 0,
     schedulerUrl: p.schedulerUrl,
+    profession: p.occupation,
+    specialties: (p.specialties ?? '').split(',').map((x) => x.trim()).filter(Boolean),
+    specialtyOther: p.specialtyOther,
+    statesLicensed: p.statesLicensed,
+    linkedin: p.linkedin,
     invisibleOnMap: !p.hub,
   }));
 }

@@ -4,7 +4,7 @@ import ReviewNav from '../components/ReviewNav.tsx';
 
 export const metadata = {
   title: 'Vesta — Find a Divorce Professional',
-  description: 'Interviewed and vetted divorce professionals, by city and speciality.',
+  description: 'Interviewed and vetted divorce professionals, by city and specialty.',
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

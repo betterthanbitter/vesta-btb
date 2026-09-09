@@ -42,6 +42,13 @@ export interface DirectoryRecord {
   introVideo?: string;
   /** The professional's own booking page. Validated before it reaches an href. */
   schedulerUrl?: string;
+  /** How they describe themselves — "Attorney", "Mediator". Shown in the directory. */
+  profession?: string;
+  /** What they actually handle. Shown on the profile, not the directory card. */
+  specialties: string[];
+  specialtyOther?: string;
+  statesLicensed?: string;
+  linkedin?: string;
   /** True when the live site has no coordinates — invisible on the map today. */
   invisibleOnMap: boolean;
 }
@@ -168,6 +175,9 @@ export function loadDirectory(dataDir = join(process.cwd(), 'data')): DirectoryR
       webinars: overrides[String(p.id)]?.webinars ?? 0,
       podcasts: overrides[String(p.id)]?.podcasts ?? 0,
       articles: overrides[String(p.id)]?.articles ?? 0,
+      // The legacy export has no specialties; they arrive with applications.
+      specialties: [],
+      profession: roleLabel || undefined,
       introVideo: overrides[String(p.id)]?.introVideo,
       schedulerUrl: overrides[String(p.id)]?.schedulerUrl,
       invisibleOnMap: !g,

@@ -140,7 +140,7 @@ CREATE TABLE IF NOT EXISTS professionals (
   program        TEXT,            -- PAC.MP | CCMP
   group_slots    TEXT,            -- CCMP: the three timeslots offered
   group_timezone TEXT,
-  -- Affiliate programme, from the same application. A professional who also
+  -- Affiliate program, from the same application. A professional who also
   -- recommends the consumer products earns on them; keeping it on one form
   -- means they are not asked for their name twice.
   affiliate_optin TEXT,

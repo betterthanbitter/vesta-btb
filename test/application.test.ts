@@ -36,7 +36,7 @@ describe('an application from the live form', () => {
     assert.equal(mapApplication(submission).status, 'applied');
   });
 
-  test('the email is normalised, so one person is one record', () => {
+  test('the email is normalized, so one person is one record', () => {
     assert.equal(mapApplication(submission).email, 'marcus@reyeslaw.com');
   });
 
@@ -67,7 +67,7 @@ describe('an application from the live form', () => {
     );
   });
 
-  test('both content programmes arrive at Premium', () => {
+  test('both content programs arrive at Premium', () => {
     assert.equal(mapApplication(submission).tier, 'premium');
     assert.equal(
       mapApplication({ ...submission, program: 'Coach Co-Op Marketing Partnership (CCMP)',
@@ -76,7 +76,7 @@ describe('an application from the live form', () => {
     );
   });
 
-  test('no programme means Standard, not nothing', () => {
+  test('no program means Standard, not nothing', () => {
     assert.equal(mapApplication({ ...submission, program: '' }).tier, 'standard');
   });
 

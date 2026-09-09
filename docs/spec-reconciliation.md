@@ -61,7 +61,7 @@ content". Premium is "give up the concierge and the events, keep only content"**
 - **Standard**: $25 flat (strategy) vs $29–$49 by band (table).
 - **Content hub**: $2,995 setup + $99/mo (strategy Part 16) vs $2,999 once +
   $19/mo, free at Platinum (prototype screen 4).
-- **Content programme**: $177/mo (prototype screen 4) vs $295/$195/$99/$249
+- **Content program**: $177/mo (prototype screen 4) vs $295/$195/$99/$249
   (strategy and table).
 
 ## 5. The exclusivity ceiling
@@ -128,5 +128,5 @@ exactly the entity signal Part 13 is trying to concentrate.
 **The synthesis:** page density should be driven by *content*, not by
 professional headcount. A city × category page with one professional who has a
 full content library is a legitimate page. A page with no professional and no
-content should not exist. That makes the content programme the fix for the
+content should not exist. That makes the content program the fix for the
 thin-page problem — and ties the SEO case directly to the thing being sold.

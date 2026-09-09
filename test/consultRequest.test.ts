@@ -35,7 +35,7 @@ describe('the consult request form', () => {
     }
   });
 
-  test('normalises the email so the same person is one contact in the CRM', () => {
+  test('normalizes the email so the same person is one contact in the CRM', () => {
     const r = validateConsultRequest({ ...good, email: '  Sarah@Example.COM ' });
     assert.equal((r as any).value.email, 'sarah@example.com');
   });

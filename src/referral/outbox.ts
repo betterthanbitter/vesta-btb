@@ -19,7 +19,7 @@ export interface OutboxEntry {
   /**
    * Stable identity of this intent. Derived from the facts, never from a
    * clock or a random value, so that replaying the same real-world event
-   * produces the same key and is recognised as a duplicate.
+   * produces the same key and is recognized as a duplicate.
    */
   dedupKey: string;
   kind: OutboxKind;

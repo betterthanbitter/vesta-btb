@@ -39,8 +39,8 @@ function Platinum({
   return (
     <div className="card plat" data-frame={frame}>
       <div className="ribbon">
-        Platinum Partner
-        <span className="only">The only {catLabel} partner in {place}</span>
+        Platinum Member
+        <span className="only">The only one in {catLabel} for {place}</span>
       </div>
       <div className="pbody">
         <div className="mediacol">
@@ -68,9 +68,15 @@ function Platinum({
           <div className="pfirm">{r.firm ? `${r.firm} · ` : ''}{place}</div>
           {r.bio && <p className="pbio">{r.bio}</p>}
           <div className="chips">
-            {r.allCategories.map((c) => (
-              <span className="chip" key={c}>{CATEGORY_LABELS[c]}</span>
-            ))}
+            {/* The profession, not the category. What they call themselves is
+                more use to a consumer scanning a page than the heading that
+                page already sits under. Specialties live on the profile. */}
+            {r.profession && <span className="chip">{r.profession}</span>}
+            {r.specialties.length > 0 && (
+              <span className="chip muted">
+                {r.specialties.length} {r.specialties.length === 1 ? 'specialty' : 'specialties'}
+              </span>
+            )}
             <span className="chip ev">★ Hosts live Vesta events</span>
           </div>
           <ContentStrip r={r} />
@@ -106,7 +112,12 @@ function Premium({ r, place }: { r: DirectoryRecord; place: string }) {
           <div className="pfirm">{r.firm ? `${r.firm} · ` : ''}{place}</div>
           {r.bio && <p className="pbio">{r.bio}</p>}
           <div className="chips">
-            {r.allCategories.map((c) => <span className="chip" key={c}>{CATEGORY_LABELS[c]}</span>)}
+            {r.profession && <span className="chip">{r.profession}</span>}
+            {r.specialties.length > 0 && (
+              <span className="chip muted">
+                {r.specialties.length} {r.specialties.length === 1 ? 'specialty' : 'specialties'}
+              </span>
+            )}
           </div>
           <ContentStrip r={r} />
         </div>
@@ -127,7 +138,9 @@ function Premium({ r, place }: { r: DirectoryRecord; place: string }) {
 function Listings({ rows, place }: { rows: DirectoryRecord[]; place: string }) {
   return (
     <div className="lwrap">
-      <div className="lhead">Also in {place} — {rows.length} listed</div>
+      <div className="lhead">
+        Standard Members in {place} — {rows.length}
+      </div>
       {rows.map((r) => (
         <div className="lrow" key={r.id}>
           {r.photo
@@ -135,7 +148,7 @@ function Listings({ rows, place }: { rows: DirectoryRecord[]; place: string }) {
             : <div className="lini">{initials(r.name)}</div>}
           <div>
             <div className="ln">{r.name}</div>
-            {r.roleLabel && <div className="lc">{r.roleLabel}</div>}
+            <div className="lc">{r.profession || r.roleLabel}</div>
           </div>
           <div className="lf">{r.firm || <span style={{ color: 'var(--ink3)' }}>—</span>}</div>
           <div className="lh">{place}</div>

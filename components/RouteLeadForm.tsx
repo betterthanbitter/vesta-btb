@@ -128,7 +128,7 @@ export default function RouteLeadForm({
           </select>
         </div>
         <div className="field">
-          <label htmlFor="fcat">Filter by speciality</label>
+          <label htmlFor="fcat">Filter by specialty</label>
           <select id="fcat" value={category} onChange={(e) => setCategory(e.target.value)}>
             <option value="">Any</option>
             {categories.map(([k, v]) => <option key={k} value={k}>{v}</option>)}

@@ -158,7 +158,7 @@ export function groupsForProfession(profession: string): string[] {
 }
 
 /** Keep only specialties that are really on the list. */
-export function sanitiseSpecialties(input: string[] | string | undefined): string[] {
+export function sanitizeSpecialties(input: string[] | string | undefined): string[] {
   const raw = Array.isArray(input)
     ? input
     : String(input ?? '').split(',').map((s) => s.trim());

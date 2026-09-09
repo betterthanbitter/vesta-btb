@@ -6,15 +6,15 @@
  * is a second front door rather than an edit to the first.
  *
  * What is different here: the professional chooses a directory tier rather
- * than a content programme, supplies their own booking link, and can opt into
- * the product affiliate programme in the same pass.
+ * than a content program, supplies their own booking link, and can opt into
+ * the product affiliate program in the same pass.
  */
 
 import { parseSchedulerLink } from '../directory/schedulerLink.ts';
 import {
   PROFESSION_CATEGORY, PROFESSIONS, type Profession, type TierKey,
 } from './tiers.ts';
-import { sanitiseSpecialties, SPECIALTY_NEEDING_DETAIL } from './specialties.ts';
+import { sanitizeSpecialties, SPECIALTY_NEEDING_DETAIL } from './specialties.ts';
 import { decodePhoto, PhotoError, type DecodedPhoto } from './photo.ts';
 
 export interface UnifiedApplicationInput {
@@ -102,7 +102,7 @@ export function validateUnifiedApplication(
   // At least one specialty. Without it a listing says "Attorney" and nothing
   // about what they actually do, which is the difference between a directory
   // and a phone book.
-  const specialties = sanitiseSpecialties(input.specialties);
+  const specialties = sanitizeSpecialties(input.specialties);
   if (specialties.length === 0) {
     errors.specialties = 'Please tick at least one thing you do.';
   }

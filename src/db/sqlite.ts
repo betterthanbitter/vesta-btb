@@ -16,6 +16,24 @@ export class SqliteDb implements Db {
       // Referential integrity is off by default in SQLite, which quietly
       // permits assignments pointing at referrals that do not exist.
       this.db.exec('PRAGMA foreign_keys = ON');
+
+      // Next builds pages in parallel worker processes, all of which open this
+      // same file. The default journal gives one writer and an instant
+      // "database is locked" for everyone else.
+      //
+      // busy_timeout goes FIRST. Switching to WAL itself needs a brief
+      // exclusive lock, so without a timeout already in force the second
+      // worker to reach this line fails on the switch rather than waiting for
+      // it. Neither pragma matters in production, which is Postgres.
+      this.db.exec('PRAGMA busy_timeout = 10000');
+      if (path !== ':memory:') {
+        try {
+          this.db.exec('PRAGMA journal_mode = WAL');
+        } catch {
+          // Another process is mid-switch. WAL is a property of the file, so
+          // whoever wins sets it for everyone and this one can carry on.
+        }
+      }
     }
   }
 

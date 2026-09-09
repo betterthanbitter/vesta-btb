@@ -22,7 +22,7 @@ const CONTENT_PRICE: Record<string, number> = {
 };
 
 const ASSUMPTIONS = {
-  /** Share of the 78 who buy the content programme at all. */
+  /** Share of the 78 who buy the content program at all. */
   attachRate: 1.0,
   /** Merger model's blended production cost per enrolled professional. */
   contentCostPerPro: 65,
@@ -39,7 +39,7 @@ const contentMrr = BANDS.reduce(
 const enrolled = TOTAL_IN_NETWORK * ASSUMPTIONS.attachRate;
 const contentCost = enrolled * ASSUMPTIONS.contentCostPerPro;
 
-console.log(`${TOTAL_IN_NETWORK} professionals; ${Math.round(enrolled)} take the content programme\n`);
+console.log(`${TOTAL_IN_NETWORK} professionals; ${Math.round(enrolled)} take the content program\n`);
 
 console.log('PATH A — Vesta as a reseller partner, no merger');
 const partnerCut = contentMrr * ASSUMPTIONS.resellerOngoingShare;
@@ -50,7 +50,7 @@ console.log(`  less production cost            ${money(-contentCost).padStart(9)
 console.log(`  NET TO BTB                      ${money(aNet).padStart(9)}/mo   ${money(aNet * 12)}/yr`);
 console.log(`  one-off: partner keeps month 1  ${money(-contentMrr).padStart(9)}`);
 console.log('  acquires: nothing. no cost base, no employees, no directory.');
-console.log('  repeatable: yes — the same programme points at any network.\n');
+console.log('  repeatable: yes — the same program points at any network.\n');
 
 console.log('PATH B — merge');
 const directory = revenueIfAllOn('platinum'); // Platinum = current + content

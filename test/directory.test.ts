@@ -23,7 +23,7 @@ describe('what a tier actually buys', () => {
     assert.equal(e.exclusiveSeat, false);
   });
 
-  test('Premium is the content programme — library yes, video and events no', () => {
+  test('Premium is the content program — library yes, video and events no', () => {
     const e = ENTITLEMENTS.premium;
     assert.equal(e.contentLibrary, true, 'PAC.MP / CCMP content renders on the listing');
     assert.equal(e.communityPlacement, true);

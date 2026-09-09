@@ -32,7 +32,7 @@ export class ProfessionalRepository {
    * Record an application.
    *
    * Matched on email, because a professional who applies twice — for a second
-   * programme, or because they were unsure the first went through — is one
+   * program, or because they were unsure the first went through — is one
    * person. Re-applying never demotes someone already published: an existing
    * status and tier are left alone and only the details are refreshed.
    */

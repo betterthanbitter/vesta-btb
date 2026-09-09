@@ -44,7 +44,7 @@ describe('the unified application', () => {
     assert.equal(validateUnifiedApplication({ ...good, schedulerUrl: '' }).ok, true);
   });
 
-  test('joining the affiliate programme without a PayPal address is refused', () => {
+  test('joining the affiliate program without a PayPal address is refused', () => {
     // Commissions are paid by PayPal; without one we could not pay them.
     const r = validateUnifiedApplication({ ...good, affiliateOptin: 'on' });
     assert.equal(r.ok, false);
@@ -81,7 +81,7 @@ describe('what the form offers', () => {
     assert.deepEqual(realtor.map((p) => p.monthly), [29, 99, 349]);
   });
 
-  test('divorce coaches are priced on their own programme', () => {
+  test('divorce coaches are priced on their own program', () => {
     // CCMP, not band three — a distinction the strategy document is explicit
     // about and which the form must not flatten.
     assert.deepEqual(pricesFor('Divorce Coach').map((p) => p.monthly), [29, 249, 474]);

@@ -65,7 +65,7 @@ export const OCCUPATION_TO_CATEGORY: Record<string, string> = {
   'Other professional service': 'coaching-therapy',
 };
 
-/** Both content programmes place a professional at Premium. */
+/** Both content programs place a professional at Premium. */
 export const PROGRAM_TO_TIER: Record<string, 'standard' | 'premium' | 'platinum'> = {
   'Professional Authority Co-Op Marketing Partnership (PAC.MP)': 'premium',
   'PAC.MP': 'premium',
