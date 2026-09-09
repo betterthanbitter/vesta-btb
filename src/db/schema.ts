@@ -40,7 +40,9 @@ CREATE TABLE IF NOT EXISTS referrals (
   category     TEXT NOT NULL,
   mode         TEXT NOT NULL,
   routed_at    TEXT NOT NULL,
-  closed_at    TEXT
+  closed_at    TEXT,
+  -- What the consumer wrote in the form, if anything.
+  message      TEXT
 );
 CREATE INDEX IF NOT EXISTS referrals_consumer ON referrals (consumer_id);
 

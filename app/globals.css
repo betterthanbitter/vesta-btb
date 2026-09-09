@@ -288,3 +288,111 @@ a.ghost { text-decoration: none; display: inline-flex; align-items: center; }
 .gatecard button:disabled { opacity: .6; cursor: default; }
 .gateerr { margin-top: 10px; font-size: 13.4px; font-weight: 600; color: #a3271b; }
 .gatefoot { font-size: 12.3px; color: var(--ink3); margin: 18px 0 0; line-height: 1.55; }
+
+/* professional hub + back office */
+.hubtop { background: var(--acc); color: #fff; }
+.hubtop .in { max-width: 1180px; margin: 0 auto; padding: 0 24px; height: 62px;
+  display: flex; align-items: center; gap: 16px; }
+.hubtop .logo { color: #fff; text-decoration: none; }
+.hubwho { font-size: 13px; font-weight: 650; opacity: .8; letter-spacing: .04em;
+  text-transform: uppercase; }
+.hubname { font-size: 14.5px; font-weight: 650; }
+.tierbadge { font-size: 10.5px; font-weight: 800; letter-spacing: .09em; text-transform: uppercase;
+  border-radius: 99px; padding: 4px 11px; background: rgba(255,255,255,.18);
+  border: 1px solid rgba(255,255,255,.3); }
+.tierbadge.t-platinum { background: var(--brand-gold); color: #3a2c05; border-color: transparent; }
+
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 26px; }
+.stats > div { background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+  padding: 16px 18px; }
+.stats b { display: block; font-size: 27px; font-weight: 750; letter-spacing: -.03em;
+  line-height: 1; color: var(--acc); }
+.stats span { display: block; font-size: 12.5px; color: var(--ink3); margin-top: 6px; }
+.stats > div[data-warn] { border-color: var(--gold-br); background: var(--gold-bg); }
+.stats > div[data-warn] b { color: var(--gold); }
+
+.sect { font-size: 12px; font-weight: 780; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--ink3); margin: 26px 0 10px; }
+
+.lead { background: var(--card); border: 1px solid var(--line); border-radius: 13px;
+  padding: 17px 20px; margin-bottom: 11px; display: flex; gap: 18px; align-items: flex-start;
+  flex-wrap: wrap; }
+.lead[data-cold] { border-color: var(--gold-br); background: #fffdf7; }
+.leadmain { flex: 1; min-width: 260px; }
+.leadtop { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; margin-bottom: 5px; }
+.leadname { font-size: 16.5px; font-weight: 700; letter-spacing: -.015em; }
+.leadmeta { font-size: 13px; color: var(--ink3); }
+.leadmeta a { color: var(--acc); }
+.leadmsg { margin: 10px 0 0; font-size: 14px; color: var(--ink2); line-height: 1.55;
+  background: var(--bg); border-left: 3px solid var(--br); border-radius: 0 8px 8px 0;
+  padding: 10px 14px; white-space: pre-wrap; }
+.leadactions { display: flex; gap: 8px; flex-wrap: wrap; }
+.leadactions button { background: #fff; border: 1px solid var(--line2); color: var(--ink2);
+  border-radius: 9px; padding: 9px 14px; font-size: 13.4px; font-weight: 650; }
+.leadactions button:hover { border-color: var(--acc); color: var(--acc); }
+.leadactions button.won { background: var(--acc); border-color: var(--acc); color: #fff; }
+.leadactions button.won:hover { background: var(--acc2); color: #fff; }
+.leadnudge { flex-basis: 100%; font-size: 12.4px; color: var(--gold); }
+
+.pill { font-size: 11px; font-weight: 750; letter-spacing: .05em; text-transform: uppercase;
+  border-radius: 99px; padding: 3px 9px; background: var(--bg); border: 1px solid var(--line2);
+  color: var(--ink3); }
+.pill-routed { background: var(--soft); border-color: var(--br); color: var(--acc2); }
+.pill-contacted, .pill-consulted { background: #eef6fb; border-color: #c5ddec; color: #17566f; }
+.pill-retained { background: var(--ok-bg); border-color: var(--ok-br); color: var(--ok); }
+.pill-cold { background: var(--gold-bg); border-color: var(--gold-br); color: var(--gold); }
+.pill-shared { text-transform: none; letter-spacing: 0; font-weight: 600; }
+
+.routeform { background: var(--card); border: 1px solid var(--br); border-radius: 14px;
+  padding: 22px 24px; margin-bottom: 26px; }
+.routeform h2 { font-size: 17px; letter-spacing: -.02em; margin: 0 0 16px; }
+.routeform .row { display: flex; gap: 14px; flex-wrap: wrap; align-items: flex-end; }
+.routeform .row > .field { flex: 1; min-width: 210px; }
+.routeform select { width: 100%; font: inherit; font-size: 15px; border: 1px solid var(--line2);
+  border-radius: 10px; padding: 11px 13px; background: #fff; }
+.routeform .submit { width: auto; padding: 12px 22px; margin-top: 0; }
+.prolist { border: 1px solid var(--line); border-radius: 11px; max-height: 260px;
+  overflow-y: auto; background: var(--bg); }
+.prorow { display: flex; align-items: center; gap: 11px; padding: 10px 14px;
+  border-bottom: 1px solid var(--line); background: #fff; cursor: pointer; font-size: 14px; }
+.prorow:last-child { border-bottom: none; }
+.prorow:hover { background: var(--soft); }
+.proname { font-weight: 650; }
+.prometa { color: var(--ink3); font-size: 12.6px; margin-left: auto; }
+.prolist .none { padding: 18px; text-align: center; color: var(--ink3); font-size: 13.5px; }
+
+/* ── Platinum frame options ───────────────────────────────────────────────
+   The frame is what separates a Platinum listing at a glance, before anyone
+   reads the ribbon. Set data-frame on .card.plat to switch.
+   All four use colours sampled from vestadivorce.com.                      */
+
+/* A — Gold. The sunburst gold from the logo mark. The strongest "this one is
+   different" signal, and the convention people already read as premium. */
+.plat[data-frame="gold"] {
+  border: 2px solid var(--brand-gold);
+  box-shadow: 0 4px 20px rgba(255,201,31,.20);
+}
+.plat[data-frame="gold"] .ribbon {
+  background: linear-gradient(90deg, var(--acc) 0%, var(--teal) 100%);
+}
+
+/* B — Teal. The brand's secondary. Calmer than gold, unmistakably Vesta. */
+.plat[data-frame="teal"] {
+  border: 2px solid var(--teal);
+  box-shadow: 0 4px 20px rgba(0,152,168,.18);
+}
+
+/* C — Navy. The wordmark colour. Most serious and least decorative; reads as
+   authority rather than promotion, which may suit a divorce audience. */
+.plat[data-frame="navy"] {
+  border: 2px solid var(--acc);
+  box-shadow: 0 4px 20px rgba(12,71,119,.18);
+}
+
+/* D — Aqua edge. A thick left-hand bar in the sunburst aqua rather than a full
+   border. Quietest of the four; marks the card without boxing it in. */
+.plat[data-frame="edge"] {
+  border: 1px solid var(--line);
+  border-left: 6px solid var(--mint);
+  box-shadow: 0 4px 18px rgba(12,71,119,.10);
+}

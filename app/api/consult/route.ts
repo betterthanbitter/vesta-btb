@@ -1,9 +1,19 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { randomUUID } from 'node:crypto';
 import { loadDirectory } from '../../../src/data/vestaImport.ts';
 import { validateConsultRequest } from '../../../src/leads/consultRequest.ts';
-import { getConsultRequestStore } from '../../../src/leads/store.ts';
+import { getDb } from '../../../src/leads/store.ts';
+import { LeadRepository } from '../../../src/db/leadRepository.ts';
+import type { Professional } from '../../../src/referral/types.ts';
 
+/**
+ * A consult request becomes a referral.
+ *
+ * It used to land in its own table, which meant a form submission and a
+ * concierge referral were different things with different screens. They are
+ * the same thing — someone who wants to talk to a professional — so both go
+ * through the referral model, get stages, appear on the same dashboard, and
+ * are chased by the same cold-lead sweep.
+ */
 export async function POST(req: NextRequest) {
   let body: unknown;
   try {
@@ -13,24 +23,44 @@ export async function POST(req: NextRequest) {
   }
 
   const result = validateConsultRequest(body as any);
-  if (!result.ok) {
-    return NextResponse.json({ errors: result.errors }, { status: 422 });
-  }
+  if (!result.ok) return NextResponse.json({ errors: result.errors }, { status: 422 });
 
-  // The professional must exist. Otherwise this endpoint is a way to write
-  // arbitrary rows into the lead table.
-  const professional = loadDirectory().find((r) => r.id === result.value.professionalId);
-  if (!professional) {
-    return NextResponse.json({ message: 'Unknown professional.' }, { status: 404 });
-  }
+  const record = loadDirectory().find((r) => r.id === result.value.professionalId);
+  if (!record) return NextResponse.json({ message: 'Unknown professional.' }, { status: 404 });
+
+  const [firstName, ...rest] = result.value.name.trim().split(/\s+/);
+  const professional: Professional = {
+    id: record.id,
+    email: record.email ?? `${record.id}@placeholder.invalid`,
+    firstName: record.name.split(' ')[0],
+    lastName: record.name.split(' ').slice(1).join(' '),
+    firm: record.firm,
+    hub: record.hub,
+    category: record.category,
+    tier: record.tier,
+  };
 
   try {
-    const store = await getConsultRequestStore();
-    await store.record({
-      ...result.value,
-      id: randomUUID(),
-      at: new Date().toISOString(),
+    const repo = new LeadRepository(await getDb());
+    const consumer = await repo.upsertConsumer({
+      email: result.value.email,
+      firstName: firstName ?? result.value.name,
+      lastName: rest.join(' '),
+      hub: record.hub,
+      categoryNeeded: record.category,
     });
+    // Already in touch with this professional? Do not create a second lead.
+    const open = await repo.findOpenReferral(consumer.id, professional.id);
+    if (open) {
+      if (result.value.message) await repo.appendMessage(open, result.value.message);
+    } else {
+      await repo.route({
+        consumer,
+        professionals: [professional],
+        mode: 'direct',
+        message: result.value.message,
+      });
+    }
   } catch (err) {
     console.error('[consult-request] failed to record', err);
     return NextResponse.json(

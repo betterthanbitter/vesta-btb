@@ -29,10 +29,15 @@ function ContentStrip({ r }: { r: DirectoryRecord }) {
   );
 }
 
-function Platinum({ r, catLabel, place }: { r: DirectoryRecord; catLabel: string; place: string }) {
+/** Which Platinum frame the directory uses. One place to change it. */
+export const PLATINUM_FRAME: 'gold' | 'teal' | 'navy' | 'edge' = 'gold';
+
+function Platinum({
+  r, catLabel, place, frame = PLATINUM_FRAME,
+}: { r: DirectoryRecord; catLabel: string; place: string; frame?: string }) {
   const scheduler = parseSchedulerLink(r.schedulerUrl);
   return (
-    <div className="card plat">
+    <div className="card plat" data-frame={frame}>
       <div className="ribbon">
         Platinum Partner
         <span className="only">The only {catLabel} partner in {place}</span>
@@ -79,10 +84,6 @@ function Platinum({ r, catLabel, place }: { r: DirectoryRecord; catLabel: string
           schedulerHost={scheduler?.host}
           sourcePath={`/${r.hub}/${r.category}`}
         />
-        <div className="sp" />
-        <div className="tierlab" style={{ padding: 0 }}>
-          Video introduction, full content library, live event host
-        </div>
       </div>
     </div>
   );
@@ -118,8 +119,6 @@ function Premium({ r, place }: { r: DirectoryRecord; place: string }) {
           schedulerHost={scheduler?.host}
           sourcePath={`/${r.hub}/${r.category}`}
         />
-        <div className="sp" />
-        <div className="tierlab" style={{ padding: 0 }}>Photo, bio and content library</div>
       </div>
     </div>
   );
@@ -145,6 +144,8 @@ function Listings({ rows, place }: { rows: DirectoryRecord[]; place: string }) {
   );
 }
 
+export { Platinum, Premium };
+
 export default function DirectoryResults({
   records, category, place,
 }: { records: DirectoryRecord[]; category: PracticeCategory; place: string }) {
@@ -168,11 +169,6 @@ export default function DirectoryResults({
           {records.length} professional{records.length === 1 ? '' : 's'}
         </span>
       </div>
-      <p className="rnote">
-        Listings are ordered by level of participation.{' '}
-        <b>Platinum partners are limited to one per category in each city hub</b> — everyone else
-        is listed underneath.
-      </p>
 
       {records.length === 0 && (
         <div className="empty">
