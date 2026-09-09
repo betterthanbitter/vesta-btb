@@ -38,8 +38,8 @@ describe('the database layer', () => {
     );
     const tables = rows.map((r) => r.name).filter((n) => !n.startsWith('sqlite_'));
     assert.deepEqual(tables, [
-      'consult_intents', 'consult_requests', 'consumers',
-      'outbox', 'referral_assignments', 'referrals', 'sent_ledger',
+      'consult_intents', 'consult_requests', 'consumers', 'outbox',
+      'professionals', 'referral_assignments', 'referrals', 'sent_ledger',
     ]);
     await db.close();
   });
@@ -80,5 +80,35 @@ describe('the database layer', () => {
       ['nope', 'marcus', 'new', '2026-09-08T00:00:00Z'],
     ), 'foreign keys must be enforced');
     await db.close();
+  });
+});
+
+describe('splitting the schema into statements', () => {
+  test('a semicolon inside a trailing comment does not cut a statement in half', async () => {
+    const { splitStatements } = await import('../src/db/index.ts');
+    const sql = `
+      CREATE TABLE t (
+        a TEXT,   -- comma separated; a professional may cover many
+        b TEXT
+      );
+      CREATE INDEX i ON t (a);
+    `;
+    const stmts = splitStatements(sql);
+    assert.equal(stmts.length, 2);
+    for (const s of stmts) {
+      const opens = (s.match(/\(/g) ?? []).length;
+      const closes = (s.match(/\)/g) ?? []).length;
+      assert.equal(opens, closes, `unbalanced brackets in: ${s}`);
+    }
+  });
+
+  test('every statement in the real schema has balanced brackets', async () => {
+    const { splitStatements } = await import('../src/db/index.ts');
+    const { SCHEMA_SQL } = await import('../src/db/schema.ts');
+    for (const s of splitStatements(SCHEMA_SQL)) {
+      const opens = (s.match(/\(/g) ?? []).length;
+      const closes = (s.match(/\)/g) ?? []).length;
+      assert.equal(opens, closes, `unbalanced: ${s.slice(0, 80)}`);
+    }
   });
 });

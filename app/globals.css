@@ -432,3 +432,17 @@ a.ghost { text-decoration: none; display: inline-flex; align-items: center; }
   border-left: 3px solid var(--mint); padding-left: 12px; line-height: 1.55; }
 .leadmsglabel { display: block; font-size: 10.5px; font-weight: 780; letter-spacing: .09em;
   text-transform: uppercase; color: var(--ink3); margin-bottom: 5px; }
+
+.decide { display: flex; align-items: flex-end; gap: 8px; flex-wrap: wrap; }
+.decide label { display: flex; flex-direction: column; gap: 5px; font-size: 11px;
+  font-weight: 750; letter-spacing: .08em; text-transform: uppercase; color: var(--ink3); }
+.decide select { font: inherit; font-size: 14px; border: 1px solid var(--line2);
+  border-radius: 9px; padding: 8px 11px; background: #fff; color: var(--ink); }
+.decide button { background: #fff; border: 1px solid var(--line2); color: var(--ink2);
+  border-radius: 9px; padding: 9px 15px; font-size: 13.4px; font-weight: 650; }
+.decide button.won { background: var(--acc); border-color: var(--acc); color: #fff; }
+.decide button.won:disabled { opacity: .45; cursor: not-allowed; }
+.decide button.dead { color: var(--ink3); border-style: dashed; }
+.pill-applied { background: var(--gold-bg); border-color: var(--gold-br); color: var(--gold); }
+.pill-published { background: var(--ok-bg); border-color: var(--ok-br); color: var(--ok); }
+.pill-declined { background: #f4f4f6; border-color: #dcdce2; color: #7c7c88; }

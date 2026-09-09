@@ -85,3 +85,20 @@ export async function routeLead(formData: FormData) {
   revalidatePath('/admin');
   revalidatePath('/hub/leads');
 }
+
+/** Approve or decline an application, and set the tier while doing it. */
+export async function decideApplication(formData: FormData) {
+  const { ProfessionalRepository } = await import('../src/professionals/repository.ts');
+  const id = String(formData.get('id'));
+  const decision = String(formData.get('decision'));
+  const tier = String(formData.get('tier') || '') || undefined;
+
+  const repo = new ProfessionalRepository(await getDb());
+  if (decision === 'publish') await repo.setStatus(id, 'published', tier);
+  else if (decision === 'approve') await repo.setStatus(id, 'approved', tier);
+  else if (decision === 'decline') await repo.setStatus(id, 'declined');
+  else throw new Error(`Unknown decision "${decision}".`);
+
+  revalidatePath('/admin/applications');
+  revalidatePath('/admin');
+}

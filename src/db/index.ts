@@ -60,11 +60,22 @@ export async function migrate(db: Db): Promise<void> {
   }
 }
 
-/** Split on semicolons that end a statement, ignoring those inside comments. */
-function splitStatements(sql: string): string[] {
+/**
+ * Split the schema into individual statements.
+ *
+ * Comments are stripped to end-of-line BEFORE splitting, not just whole
+ * comment lines. A trailing comment containing a semicolon — "-- comma
+ * separated; a professional may cover many" — otherwise cuts the statement in
+ * half, and SQLite reports it as "incomplete input", which points nowhere near
+ * the actual cause.
+ */
+export function splitStatements(sql: string): string[] {
   return sql
     .split('\n')
-    .filter((line) => !line.trim().startsWith('--'))
+    .map((line) => {
+      const comment = line.indexOf('--');
+      return comment === -1 ? line : line.slice(0, comment);
+    })
     .join('\n')
     .split(';')
     .map((s) => s.trim())

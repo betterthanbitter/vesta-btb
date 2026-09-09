@@ -96,6 +96,57 @@ CREATE TABLE IF NOT EXISTS sent_ledger (
 );
 CREATE INDEX IF NOT EXISTS ledger_review ON sent_ledger (state);
 
+-- Professionals.
+--
+-- Fed by the application form at btbresellerapplication.netlify.app, and
+-- seeded from the legacy WP Store Locator export. Nothing reaches the public
+-- directory until status = 'published', because every application is reviewed
+-- and vetted — an approval step that must exist in the data, not only in
+-- somebody's inbox.
+CREATE TABLE IF NOT EXISTS professionals (
+  id             TEXT PRIMARY KEY,
+  status         TEXT NOT NULL,   -- applied | approved | published | declined
+  tier           TEXT NOT NULL,   -- standard | premium | platinum
+
+  first_name     TEXT NOT NULL,
+  last_name      TEXT NOT NULL DEFAULT '',
+  email          TEXT NOT NULL,
+  phone          TEXT,
+  credentials    TEXT,            -- JD, CDFA®, CDLP — its own field at last
+  company        TEXT,            -- the firm the live directory never captured
+  bio            TEXT,
+  photo_url      TEXT,
+  website        TEXT,
+  linkedin       TEXT,
+  social         TEXT,
+  social_channel TEXT,
+
+  street         TEXT,
+  city           TEXT,
+  state          TEXT,
+  zip            TEXT,
+  hub            TEXT,            -- derived from city + state
+  states_licensed TEXT,           -- comma separated; a professional may cover many
+
+  occupation     TEXT,            -- as chosen on the application
+  category       TEXT NOT NULL,   -- the consumer-facing category it rolls up to
+
+  -- Where the application came from, and what it was for.
+  signup_path    TEXT,            -- reseller | direct
+  partner_name   TEXT,            -- the reseller who placed them, for commission
+  program        TEXT,            -- PAC.MP | CCMP
+  group_slots    TEXT,            -- CCMP: the three timeslots offered
+  group_timezone TEXT,
+  affiliate_optin TEXT,
+
+  scheduler_url  TEXT,
+  applied_at     TEXT,
+  published_at   TEXT,
+  created_at     TEXT NOT NULL
+);
+CREATE UNIQUE INDEX IF NOT EXISTS professionals_email ON professionals (email);
+CREATE INDEX IF NOT EXISTS professionals_listing ON professionals (status, hub, category);
+
 -- Someone clicked through to a professional's own scheduler.
 CREATE TABLE IF NOT EXISTS consult_intents (
   id               TEXT PRIMARY KEY,
