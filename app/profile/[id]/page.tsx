@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import ExpandableBio from '../../../components/ExpandableBio.tsx';
 import LeadCapture from '../../../components/LeadCapture.tsx';
+import { companionOffer } from '../../../src/products/companionOffer.ts';
 import LibrarySections from '../../../components/LibrarySections.tsx';
 import SocialLinksRow from '../../../components/SocialLinks.tsx';
 import { loadPublishedDirectory } from '../../../src/professionals/directory.ts';
@@ -254,6 +255,7 @@ export default async function Profile({ params }: { params: Promise<{ id: string
               sourcePath={`/profile/${r.id}`}
               website={site}
               phone={r.phone}
+              offer={companionOffer() ?? undefined}
             />
           </div>
         </div>

@@ -16,7 +16,7 @@ import { useState } from 'react';
  * however complete the form was.
  */
 export default function LeadCapture({
-  professionalId, firstName, schedulerHost, sourcePath, website, phone,
+  professionalId, firstName, schedulerHost, sourcePath, website, phone, offer,
 }: {
   professionalId: string;
   firstName: string;
@@ -26,6 +26,8 @@ export default function LeadCapture({
   /** Shown only after the form is sent — linking earlier loses the lead. */
   website?: string;
   phone?: string;
+  /** The Better Than Bitter community offer — a channel's affiliate link where one is set. */
+  offer?: { href: string };
 }) {
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
@@ -86,6 +88,16 @@ export default function LeadCapture({
               </a>
             )}
             {phone && <a href={`tel:${phone}`}>Call {phone}</a>}
+          </div>
+        )}
+        {offer && (
+          <div className="companion">
+            <div className="compkicker">Better Than Bitter™</div>
+            <h4>Activate Your FREE Access to Our Better Than Bitter Divorce Community Today</h4>
+            <p>Divorce Companion + Support Groups — Unlimited Access To Any of Our Group Sessions</p>
+            <a className="compbtn" href={offer.href} target="_blank" rel="noopener noreferrer">
+              Start Your 7 Day FREE Trial
+            </a>
           </div>
         )}
       </div>

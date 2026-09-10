@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import LeadCapture from '../../../components/LeadCapture.tsx';
+import { companionOffer } from '../../../src/products/companionOffer.ts';
 import { loadPublishedDirectory } from '../../../src/professionals/directory.ts';
 import { getDb } from '../../../src/leads/store.ts';
 import { parseSchedulerLink } from '../../../src/directory/schedulerLink.ts';
@@ -70,6 +71,7 @@ export default async function ConsultPage({
           sourcePath={back}
           website={r.website && !isLegacyVestaUrl(r.website) ? toHttpsUrl(r.website) : undefined}
           phone={r.phone}
+          offer={companionOffer() ?? undefined}
         />
       </div>
     </>
