@@ -4,6 +4,7 @@ import { CATEGORY_LABELS } from '../src/data/vestaImport.ts';
 import { ENTITLEMENTS, type Tier } from '../src/directory/tiers.ts';
 import { orderForPage } from '../src/directory/pageModel.ts';
 import ScheduleCta from './ScheduleCta.tsx';
+import IntroVideo from './IntroVideo.tsx';
 import type { PracticeCategory } from '../src/pricing/catalog.ts';
 
 function initials(name: string) {
@@ -57,14 +58,7 @@ function Media({ r, video }: { r: DirectoryRecord; video: boolean }) {
   if (video) {
     return (
       <div className="mediacol">
-        <div className="vid mediafill">
-          {r.photo && <img className="vposter" src={r.photo} alt="" />}
-          <div className="play"><i /></div>
-          <div className="vlab">
-            <span>Meet {r.name.split(' ')[0]}</span>
-            {r.introVideo && <span className="vdur">{r.introVideo}</span>}
-          </div>
-        </div>
+        <IntroVideo name={r.name} photo={r.photo} duration={r.introVideo} className="mediafill" />
       </div>
     );
   }

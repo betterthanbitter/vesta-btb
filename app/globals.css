@@ -829,3 +829,7 @@ a.ghost { text-decoration: none; display: inline-flex; align-items: center; }
 .specline li::before { content: "\2713"; position: absolute; left: 0; top: 0; width: 18px;
   height: 18px; margin-top: 2px; border-radius: 4px; background: var(--teal); color: #fff;
   font-size: 12px; font-weight: 800; line-height: 18px; text-align: center; }
+
+/* Platinum's introduction video in the profile hero: square, like the photo it
+   replaces, so the hero keeps its shape at every level.                      */
+.pvid { width: 100%; aspect-ratio: 1; border-radius: 14px; border: 1px solid var(--br); }

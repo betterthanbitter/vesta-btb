@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import ExpandableBio from '../../../components/ExpandableBio.tsx';
 import LeadCapture from '../../../components/LeadCapture.tsx';
+import IntroVideo from '../../../components/IntroVideo.tsx';
 import { companionOffer } from '../../../src/products/companionOffer.ts';
 import LibrarySections from '../../../components/LibrarySections.tsx';
 import SocialLinksRow from '../../../components/SocialLinks.tsx';
@@ -61,18 +62,8 @@ export default async function Profile({ params }: { params: Promise<{ id: string
   // Shown as one horizontal line of checks in the hero, in the order recorded.
   const specialtyList = [...r.specialties, ...(r.specialtyOther ? [r.specialtyOther] : [])];
   const library = c.shelves ?? [];
-  const libraryCount = library.reduce((n, s) => n + s.items.length, 0);
   const back = r.hub !== 'unplaced' ? `/${r.hub}/${r.category}` : '/';
 
-  /* The proof bar shows only numbers that are real. A row of zeroes is worse
-     than no row — it advertises an empty profile. */
-  const proof = [
-    c.questions?.length ? { v: c.questions.length, k: 'Questions answered in full, free' } : null,
-    states.length ? { v: states.length, k: 'States licensed to practice in' } : null,
-    libraryCount ? { v: libraryCount, k: 'Pieces to read, watch and listen to' } : null,
-    specialtyList.length ? { v: specialtyList.length, k: 'Specialties' } : null,
-    c.books?.length ? { v: c.books.length, k: 'Books published' } : null,
-  ].filter(Boolean).slice(0, 4) as { v: number; k: string }[];
 
   return (
     <>
@@ -126,22 +117,16 @@ export default async function Profile({ params }: { params: Promise<{ id: string
             </div>
 
             <div className="pportrait">
-              {r.photo ? <img src={r.photo} alt={r.name} />
-                : <div className="pinitials">{initials(r.name)}</div>}
+              {e.introVideo
+                ? <IntroVideo name={r.name} photo={r.photo} duration={r.introVideo} className="pvid" />
+                : r.photo
+                  ? <img src={r.photo} alt={r.name} />
+                  : <div className="pinitials">{initials(r.name)}</div>}
             </div>
           </div>
         </div>
       </section>
 
-      {proof.length > 0 && (
-        <div className="proof">
-          <div className="in">
-            {proof.map((p) => (
-              <div className="pf" key={p.k}><div className="v">{p.v}</div><div className="k">{p.k}</div></div>
-            ))}
-          </div>
-        </div>
-      )}
 
       {c.questions?.length ? (
         <section id="answers" className="pblock">
