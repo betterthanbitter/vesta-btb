@@ -55,7 +55,8 @@ export default async function Profile({ params }: { params: Promise<{ id: string
 
   const e = ENTITLEMENTS[r.tier];
   const c = parseProfileContent(r.profileContent);
-  const scheduler = parseSchedulerLink(r.schedulerUrl);
+  // Instant Book is Platinum and Premium only; Standard gets the consult form alone.
+  const scheduler = e.instantBook ? parseSchedulerLink(r.schedulerUrl) : null;
   const social = parseSocialLinks(r.socialLinks);
   const first = r.name.split(' ')[0];
   const where = [r.city, r.state].filter(Boolean).join(', ');

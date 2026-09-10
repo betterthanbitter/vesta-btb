@@ -4,6 +4,7 @@ import LeadCapture from '../../../components/LeadCapture.tsx';
 import { loadPublishedDirectory } from '../../../src/professionals/directory.ts';
 import { getDb } from '../../../src/leads/store.ts';
 import { parseSchedulerLink } from '../../../src/directory/schedulerLink.ts';
+import { ENTITLEMENTS } from '../../../src/directory/tiers.ts';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { robots: { index: false, follow: false } };
@@ -30,7 +31,7 @@ export default async function ConsultPage({
   const r = (await loadPublishedDirectory(await getDb())).find((x) => x.id === id);
   if (!r) notFound();
 
-  const scheduler = parseSchedulerLink(r.schedulerUrl);
+  const scheduler = ENTITLEMENTS[r.tier].instantBook ? parseSchedulerLink(r.schedulerUrl) : null;
   const first = r.name.split(' ')[0];
   const where = [r.city, r.state].filter(Boolean).join(', ');
   const back = from && from.startsWith('/') && !from.startsWith('//') ? from : `/profile/${r.id}`;

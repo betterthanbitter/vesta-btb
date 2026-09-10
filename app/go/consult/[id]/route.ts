@@ -3,6 +3,7 @@ import { randomUUID } from 'node:crypto';
 import { loadPublishedDirectory } from '../../../../src/professionals/directory.ts';
 import { getDb } from '../../../../src/leads/store.ts';
 import { parseSchedulerLink } from '../../../../src/directory/schedulerLink.ts';
+import { ENTITLEMENTS } from '../../../../src/directory/tiers.ts';
 import { recordConsultIntent } from '../../../../src/leads/consultIntent.ts';
 import { getConsultIntentStore } from '../../../../src/leads/store.ts';
 
@@ -25,7 +26,10 @@ export async function GET(
   const { id } = await params;
 
   const professional = (await loadPublishedDirectory(await getDb())).find((r) => r.id === id);
-  const link = parseSchedulerLink(professional?.schedulerUrl);
+  // Enforced here too, not only by hiding the button: a Standard listing's
+  // scheduler is never reachable by URL.
+  const link = professional && ENTITLEMENTS[professional.tier].instantBook
+    ? parseSchedulerLink(professional.schedulerUrl) : null;
 
   if (!professional || !link) {
     // No usable scheduler. Send them to the profile rather than nowhere.

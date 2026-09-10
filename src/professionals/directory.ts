@@ -12,6 +12,19 @@ import { countLibrary, parseProfileContent } from './profileContent.ts';
  * in the back office appears on the public site — one system rather than two
  * sources of truth that slowly disagree.
  */
+/**
+ * Imported bios end with the old site's link text and contact lines — "Click
+ * here to learn more about Lisa Email: … Tel: …". The link goes nowhere now,
+ * and a phone number or email in the bio lets a consumer skip the consult
+ * form, which is the one place a lead is captured. Everything from the first
+ * of those markers on is dropped.
+ */
+export function cleanBio(bio: string | undefined): string {
+  if (!bio) return '';
+  const cut = bio.search(/\bClick here\b|\bEmail:\s|\bTel:\s|\bPhone:\s/i);
+  return (cut === -1 ? bio : bio.slice(0, cut)).replace(/[ \t]+/g, ' ').trim();
+}
+
 export async function loadPublishedDirectory(db: Db): Promise<DirectoryRecord[]> {
   const rows = await new ProfessionalRepository(db).published();
   return rows.map((p) => ({
@@ -19,7 +32,7 @@ export async function loadPublishedDirectory(db: Db): Promise<DirectoryRecord[]>
     name: [p.firstName, p.lastName].filter(Boolean).join(' '),
     roleLabel: p.credentials ?? '',
     firm: p.company ?? '',
-    bio: p.bio ?? '',
+    bio: cleanBio(p.bio),
     city: p.city ?? '',
     state: p.state ?? '',
     hub: p.hub ?? 'unplaced',

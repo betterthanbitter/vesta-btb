@@ -21,6 +21,8 @@ export interface Entitlements {
   introVideo: boolean;
   /** Broadcasts, featured posts, Resource Library placement. */
   communityPlacement: boolean;
+  /** Instant Book button after the consult form, straight to their own scheduler. */
+  instantBook: boolean;
   /** May host live Vesta events. */
   hostsEvents: boolean;
   /** Holds the exclusive seat for their category in their hub. */
@@ -42,6 +44,7 @@ export const ENTITLEMENTS: Record<Tier, Entitlements> = {
     contentLibrary: false,
     introVideo: false,
     communityPlacement: false,
+    instantBook: false,
     hostsEvents: false,
     exclusiveSeat: false,
     hubHostingIncluded: false,
@@ -52,6 +55,7 @@ export const ENTITLEMENTS: Record<Tier, Entitlements> = {
     photo: true,
     contentLibrary: true,
     communityPlacement: true,
+    instantBook: true,
     introVideo: false,
     hostsEvents: false,
     exclusiveSeat: false,
@@ -63,6 +67,7 @@ export const ENTITLEMENTS: Record<Tier, Entitlements> = {
     photo: true,
     contentLibrary: true,
     communityPlacement: true,
+    instantBook: true,
     introVideo: true,
     hostsEvents: true,
     exclusiveSeat: true,

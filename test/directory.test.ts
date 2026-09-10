@@ -41,7 +41,7 @@ describe('what a tier actually buys', () => {
     // A photograph is not one of them. Everyone gets a face; Premium buys the
     // bio, the content library and the community placement.
     assert.deepEqual(whatUpgradingAdds('standard', 'premium'),
-      ['contentLibrary', 'communityPlacement']);
+      ['contentLibrary', 'communityPlacement', 'instantBook']);
     assert.deepEqual(whatUpgradingAdds('premium', 'platinum'),
       ['introVideo', 'hostsEvents', 'exclusiveSeat', 'hubHostingIncluded']);
   });
@@ -145,5 +145,41 @@ describe('which pages exist', () => {
     ], (t) => ENTITLEMENTS[t].placementWeight);
 
     assert.deepEqual(ordered.map((p) => p.id), ['plat', 'prem-lots', 'prem-few', 'std']);
+  });
+});
+
+
+describe('the spec for the three levels', () => {
+  test('Instant Book is Platinum and Premium only', () => {
+    assert.equal(ENTITLEMENTS.platinum.instantBook, true);
+    assert.equal(ENTITLEMENTS.premium.instantBook, true);
+    assert.equal(ENTITLEMENTS.standard.instantBook, false);
+  });
+
+  test('the content library (webinars, podcasts, articles) is Platinum and Premium only', () => {
+    assert.equal(ENTITLEMENTS.platinum.contentLibrary, true);
+    assert.equal(ENTITLEMENTS.premium.contentLibrary, true);
+    assert.equal(ENTITLEMENTS.standard.contentLibrary, false);
+  });
+
+  test('every level shows a photo', () => {
+    for (const t of ['platinum', 'premium', 'standard'] as const) {
+      assert.equal(ENTITLEMENTS[t].photo, true, t);
+    }
+  });
+});
+
+describe('imported bios', () => {
+  test('the old site link text and contact lines are dropped', async () => {
+    const { cleanBio } = await import('../src/professionals/directory.ts');
+    const bio = 'Lisa is a partner in Boston. She has two children. Click here to learn more ' +
+      'about Lisa Email: l@example.com Tel: 617.555.0100 Click here to learn more about the team';
+    assert.equal(cleanBio(bio), 'Lisa is a partner in Boston. She has two children.');
+  });
+
+  test('a bio without those markers is untouched', async () => {
+    const { cleanBio } = await import('../src/professionals/directory.ts');
+    assert.equal(cleanBio('Attorney-mediator in Newton.'), 'Attorney-mediator in Newton.');
+    assert.equal(cleanBio(undefined), '');
   });
 });

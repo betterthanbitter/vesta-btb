@@ -24,7 +24,7 @@ const SECTIONS = [
     empty: 'Guest episodes on the Better Than Bitter™ Divorce Podcast, recorded with the founder.',
   },
   {
-    title: 'Resources & Articles',
+    title: 'Articles & Resources',
     icon: '📝',
     matches: ['free downloads', 'written pieces', 'articles', 'resources', 'downloads'],
     empty: 'Worksheets, checklists and written pieces — free to read and download, no sign-up.',

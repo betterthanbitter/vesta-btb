@@ -11,12 +11,9 @@ function initials(name: string) {
 }
 
 /**
- * The content strip.
- *
- * Counts are real, and today they are zero because nothing has been produced
- * yet. The buttons still render live rather than greyed out: a paying member's
- * listing should look like the finished article when the page is being shown
- * to someone, and a row of dimmed controls reads as broken rather than empty.
+ * The content strip. Counts are real (zero until content is produced) but the
+ * buttons render live: a paying member's listing should look finished when the
+ * page is being shown to someone.
  */
 function ContentStrip({ r }: { r: DirectoryRecord }) {
   const kinds = [
@@ -35,6 +32,84 @@ function ContentStrip({ r }: { r: DirectoryRecord }) {
   );
 }
 
+/**
+ * The description on a directory card: eight lines for Platinum and Premium,
+ * two for Standard, then "More…" to the full profile — where the same text
+ * opens in place. The card stays a card instead of a biography.
+ */
+function Description({ r, lines }: { r: DirectoryRecord; lines: 2 | 8 }) {
+  if (!r.bio) return null;
+  const flow = r.bio.replace(/\s*\n+\s*/g, ' ');
+  return (
+    <div className="pdesc">
+      <p className={`pbio clamp${lines}`}>{flow}</p>
+      <Link className="moretext" href={`/profile/${r.id}`}>More…</Link>
+    </div>
+  );
+}
+
+/**
+ * The picture. One fixed size for all three levels — video for Platinum, photo
+ * for Premium and Standard — so a Standard member is not visibly smaller, and
+ * a long description cannot stretch the image down the page.
+ */
+function Media({ r, video }: { r: DirectoryRecord; video: boolean }) {
+  if (video) {
+    return (
+      <div className="mediacol">
+        <div className="vid mediafill">
+          {r.photo && <img className="vposter" src={r.photo} alt="" />}
+          <div className="play"><i /></div>
+          <div className="vlab">
+            <span>Meet {r.name.split(' ')[0]}</span>
+            {r.introVideo && <span className="vdur">{r.introVideo}</span>}
+          </div>
+        </div>
+      </div>
+    );
+  }
+  return (
+    <div className="mediacol">
+      {r.photo
+        ? <img className="avatar mediafill" src={r.photo} alt={r.name} />
+        : <div className="avatar mediafill">{initials(r.name)}</div>}
+    </div>
+  );
+}
+
+function Heading({ r, place }: { r: DirectoryRecord; place: string }) {
+  return (
+    <>
+      <div className="pn">{r.name}</div>
+      {r.roleLabel && <div className="pcr">{r.roleLabel}</div>}
+      <div className="pfirm">{r.firm ? `${r.firm} · ` : ''}{place}</div>
+    </>
+  );
+}
+
+function Chips({ r, events }: { r: DirectoryRecord; events?: boolean }) {
+  return (
+    <div className="chips">
+      {r.profession && <span className="chip">{r.profession}</span>}
+      {r.specialties.length > 0 && (
+        <span className="chip muted">
+          {r.specialties.length} {r.specialties.length === 1 ? 'specialty' : 'specialties'}
+        </span>
+      )}
+      {events && <span className="chip ev">★ Hosts live Vesta events</span>}
+    </div>
+  );
+}
+
+function Footer({ r }: { r: DirectoryRecord }) {
+  return (
+    <div className="pfoot">
+      <Link className="prof" href={`/profile/${r.id}`}>View full profile →</Link>
+      <ScheduleCta professionalId={r.id} from={`/${r.hub}/${r.category}`} variant="ghost" />
+    </div>
+  );
+}
+
 /** Which Platinum frame the directory uses. One place to change it. */
 export const PLATINUM_FRAME: 'gold' | 'teal' | 'navy' | 'edge' = 'gold';
 
@@ -45,49 +120,15 @@ function Platinum({
     <div className="card plat" data-frame={frame}>
       <div className="ribbon">Platinum Member</div>
       <div className="pbody">
-        <div className="mediacol">
-          {r.introVideo ? (
-            <div className="vid mediafill">
-              {/* A poster frame goes here once one exists; the portrait crop is
-                  deliberate, so the face is large on the page. */}
-              {r.photo && <img className="vposter" src={r.photo} alt="" />}
-              <div className="play"><i /></div>
-              <div className="vlab">
-                <span>Meet {r.name.split(' ')[0]}</span>
-                <span className="vdur">{r.introVideo}</span>
-              </div>
-            </div>
-          ) : (
-            <div className="vid vempty mediafill">
-              Introduction video not produced yet — included at Platinum
-            </div>
-          )}
-          <div className="vcap">Video introduction — Platinum only</div>
-        </div>
+        <Media r={r} video />
         <div>
-          <div className="pn">{r.name}</div>
-          {r.roleLabel && <div className="pcr">{r.roleLabel}</div>}
-          <div className="pfirm">{r.firm ? `${r.firm} · ` : ''}{place}</div>
-          {r.bio && <p className="pbio">{r.bio}</p>}
-          <div className="chips">
-            {/* The profession, not the category. What they call themselves is
-                more use to a consumer scanning a page than the heading that
-                page already sits under. Specialties live on the profile. */}
-            {r.profession && <span className="chip">{r.profession}</span>}
-            {r.specialties.length > 0 && (
-              <span className="chip muted">
-                {r.specialties.length} {r.specialties.length === 1 ? 'specialty' : 'specialties'}
-              </span>
-            )}
-            <span className="chip ev">★ Hosts live Vesta events</span>
-          </div>
+          <Heading r={r} place={place} />
+          <Description r={r} lines={8} />
+          <Chips r={r} events />
           <ContentStrip r={r} />
         </div>
       </div>
-      <div className="pfoot">
-        <Link className="prof" href={`/profile/${r.id}`}>View full profile →</Link>
-        <ScheduleCta professionalId={r.id} from={`/${r.hub}/${r.category}`} variant="ghost" />
-      </div>
+      <Footer r={r} />
     </div>
   );
 }
@@ -97,63 +138,37 @@ function Premium({ r, place }: { r: DirectoryRecord; place: string }) {
     <div className="card prem">
       <div className="tierlab">Premium Member</div>
       <div className="pbody">
-        <div className="mediacol">
-          {r.photo
-            ? <img className="avatar mediafill" src={r.photo} alt={r.name} />
-            : <div className="avatar mediafill">{initials(r.name)}</div>}
-        </div>
+        <Media r={r} video={false} />
         <div>
-          <div className="pn">{r.name}</div>
-          {r.roleLabel && <div className="pcr">{r.roleLabel}</div>}
-          <div className="pfirm">{r.firm ? `${r.firm} · ` : ''}{place}</div>
-          {r.bio && <p className="pbio">{r.bio}</p>}
-          <div className="chips">
-            {r.profession && <span className="chip">{r.profession}</span>}
-            {r.specialties.length > 0 && (
-              <span className="chip muted">
-                {r.specialties.length} {r.specialties.length === 1 ? 'specialty' : 'specialties'}
-              </span>
-            )}
-          </div>
+          <Heading r={r} place={place} />
+          <Description r={r} lines={8} />
+          <Chips r={r} />
           <ContentStrip r={r} />
         </div>
       </div>
-      <div className="pfoot">
-        <Link className="prof" href={`/profile/${r.id}`}>View profile →</Link>
-        <ScheduleCta professionalId={r.id} from={`/${r.hub}/${r.category}`} variant="ghost" />
-      </div>
+      <Footer r={r} />
     </div>
   );
 }
 
-function Listings({ rows, place }: { rows: DirectoryRecord[]; place: string }) {
+function Standard({ r, place }: { r: DirectoryRecord; place: string }) {
   return (
-    <div className="lwrap">
-      <div className="lhead">
-        Standard Members in {place} — {rows.length}
-      </div>
-      {rows.map((r) => (
-        <div className="lrow" key={r.id}>
-          {r.photo
-            ? <img className="lphoto" src={r.photo} alt={r.name} loading="lazy" />
-            : <div className="lini">{initials(r.name)}</div>}
-          <div>
-            <div className="ln">{r.name}</div>
-            <div className="lc">{r.profession || r.roleLabel}</div>
-          </div>
-          <div className="lf">{r.firm || <span style={{ color: 'var(--ink3)' }}>—</span>}</div>
-          <div className="lh">{place}</div>
-          <div className="lctas">
-            <Link className="llink" href={`/profile/${r.id}`}>Profile</Link>
-            <ScheduleCta professionalId={r.id} from={`/${r.hub}/${r.category}`} variant="link" />
-          </div>
+    <div className="card std">
+      <div className="tierlab">Standard Member</div>
+      <div className="pbody">
+        <Media r={r} video={false} />
+        <div>
+          <Heading r={r} place={place} />
+          <Description r={r} lines={2} />
+          <Chips r={r} />
         </div>
-      ))}
+      </div>
+      <Footer r={r} />
     </div>
   );
 }
 
-export { Platinum, Premium };
+export { Platinum, Premium, Standard };
 
 export default function DirectoryResults({
   records, category, place,
@@ -205,7 +220,7 @@ export default function DirectoryResults({
       )}
 
       {premium.map((r) => <Premium key={r.id} r={r} place={place} />)}
-      {standard.length > 0 && <Listings rows={standard} place={place} />}
+      {standard.map((r) => <Standard key={r.id} r={r} place={place} />)}
     </>
   );
 }
