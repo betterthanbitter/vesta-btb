@@ -10,7 +10,6 @@ import { getDb } from '../../../src/leads/store.ts';
 import { CATEGORY_LABELS, isLegacyVestaUrl } from '../../../src/data/vestaImport.ts';
 import { ENTITLEMENTS } from '../../../src/directory/tiers.ts';
 import { parseSchedulerLink } from '../../../src/directory/schedulerLink.ts';
-import { SPECIALTY_GROUPS } from '../../../src/professionals/specialties.ts';
 import { parseProfileContent } from '../../../src/professionals/profileContent.ts';
 import { parseSocialLinks, toHttpsUrl } from '../../../src/professionals/social.ts';
 import type { PracticeCategory } from '../../../src/pricing/catalog.ts';
@@ -43,12 +42,6 @@ function initials(name: string) {
   return name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]?.toUpperCase()).join('');
 }
 
-function groupSpecialties(chosen: string[]) {
-  return SPECIALTY_GROUPS
-    .map((g) => ({ name: g.name, items: g.items.filter((i) => chosen.includes(i)) }))
-    .filter((g) => g.items.length > 0);
-}
-
 export default async function Profile({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const r = (await loadPublishedDirectory(await getDb())).find((x) => x.id === id);
@@ -65,7 +58,8 @@ export default async function Profile({ params }: { params: Promise<{ id: string
   const first = r.name.split(' ')[0];
   const where = [r.city, r.state].filter(Boolean).join(', ');
   const states = (r.statesLicensed ?? '').split(',').map((s) => s.trim()).filter(Boolean);
-  const grouped = groupSpecialties(r.specialties);
+  // Shown as one horizontal line of checks in the hero, in the order recorded.
+  const specialtyList = [...r.specialties, ...(r.specialtyOther ? [r.specialtyOther] : [])];
   const library = c.shelves ?? [];
   const libraryCount = library.reduce((n, s) => n + s.items.length, 0);
   const back = r.hub !== 'unplaced' ? `/${r.hub}/${r.category}` : '/';
@@ -76,7 +70,7 @@ export default async function Profile({ params }: { params: Promise<{ id: string
     c.questions?.length ? { v: c.questions.length, k: 'Questions answered in full, free' } : null,
     states.length ? { v: states.length, k: 'States licensed to practice in' } : null,
     libraryCount ? { v: libraryCount, k: 'Pieces to read, watch and listen to' } : null,
-    grouped.length ? { v: r.specialties.length, k: 'Specialties' } : null,
+    specialtyList.length ? { v: specialtyList.length, k: 'Specialties' } : null,
     c.books?.length ? { v: c.books.length, k: 'Books published' } : null,
   ].filter(Boolean).slice(0, 4) as { v: number; k: string }[];
 
@@ -111,9 +105,7 @@ export default async function Profile({ params }: { params: Promise<{ id: string
                 <a className="prof" href="#talk">Schedule Free Consult</a>
                 {c.questions?.length
                   ? <a className="ghost" href="#answers">Start with the questions</a>
-                  : grouped.length
-                    ? <a className="ghost" href="#specialties">See what {first} handles</a>
-                    : null}
+                  : null}
               </div>
 
               <div className="pfacts">
@@ -125,6 +117,12 @@ export default async function Profile({ params }: { params: Promise<{ id: string
                 )}
                 {where && <span className="fact">{where}</span>}
               </div>
+
+              {specialtyList.length > 0 && (
+                <ul id="specialties" className="specline" aria-label={`What ${first} handles`}>
+                  {specialtyList.map((item) => <li key={item}>{item}</li>)}
+                </ul>
+              )}
             </div>
 
             <div className="pportrait">
@@ -176,34 +174,6 @@ export default async function Profile({ params }: { params: Promise<{ id: string
       ) : null}
 
       <LibrarySections first={first} shelves={library} showLibrary={e.contentLibrary} />
-
-      <section id="specialties" className="pblock">
-        <div className="in">
-          <div className="stitle">What {first} handles</div>
-          {grouped.length === 0 ? (
-            <p className="pmuted">
-              No specialties recorded yet{r.profession ? ` — listed as ${r.profession}` : ''}.
-            </p>
-          ) : (
-            <>
-              <h2>The specific matters {first} works on.</h2>
-              <p className="ssub">
-                Worth reading before you call, so you know whether they are the right fit.
-              </p>
-              <div className="specshow">
-                {grouped.map((g) => (
-                  <div className="specshowgroup" key={g.name}>
-                    <h3>{g.name}</h3>
-                    <ul>{g.items.map((i) => <li key={i}>{i}</li>)}</ul>
-                  </div>
-                ))}
-              </div>
-              {r.specialtyOther && <p className="pmuted" style={{ marginTop: 14 }}>Also: {r.specialtyOther}</p>}
-            </>
-          )}
-        </div>
-      </section>
-
 
       {c.stat && (
         <section className="pblock">

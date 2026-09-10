@@ -1,0 +1,9 @@
+{
+  "_comment": "Specialties for legacy listings, keyed by WordPress id, supplied by Tania on 2026-09-10. Applied on every startup, including production, so they appear without any setting. Legacy records have no other source of specialties; once specialties are editable in the back office, this must only fill empty ones.",
+  "13893": [
+    "Family Law",
+    "Divorce Negotiation",
+    "Divorce Litigation",
+    "Trust & Estate Planning"
+  ]
+}

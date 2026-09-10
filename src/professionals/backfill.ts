@@ -73,5 +73,21 @@ export async function backfillLegacyProfessionals(db: Db): Promise<{ updated: nu
       updated++;
     }
   }
+  // Specialties supplied for legacy listings. Written as given — they are the
+  // owner's own words, not necessarily taxonomy entries — and only when they
+  // differ, so a second run changes nothing.
+  const overrides: Record<string, unknown> = read('specialty-overrides.json');
+  for (const [wpId, list] of Object.entries(overrides)) {
+    if (wpId.startsWith('_') || !Array.isArray(list)) continue;
+    const value = list.map((x) => String(x).trim()).filter(Boolean).join(', ');
+    if (!value) continue;
+    const r = await db.run(
+      'UPDATE professionals SET specialties = ? WHERE email = ?' +
+      " AND (specialties IS NULL OR specialties <> ?)",
+      [value, `legacy-${wpId}@needs-email.vesta.invalid`, value],
+    );
+    updated += r.changes;
+  }
+
   return { updated };
 }

@@ -86,3 +86,27 @@ describe('bringing an old production database up to date', () => {
     }
   });
 });
+
+describe('supplied specialties for legacy listings', () => {
+  test('they are applied as given, replacing earlier example values', async () => {
+    const db = await openTestDb();
+    const id = await insert(db, '13893', { specialties: 'Divorce & Family Law Attorney, Old Example' });
+    await backfillLegacyProfessionals(db);
+    const [row] = await db.query<any>('SELECT specialties FROM professionals WHERE id = ?', [id]);
+    assert.equal(row.specialties,
+      'Family Law, Divorce Negotiation, Divorce Litigation, Trust & Estate Planning');
+    await db.close();
+  });
+
+  test('a second run changes nothing', async () => {
+    const db = await openTestDb();
+    await insert(db, '13893', {});
+    await backfillLegacyProfessionals(db);
+    const second = await backfillLegacyProfessionals(db);
+    const [row] = await db.query<any>(
+      "SELECT specialties FROM professionals WHERE email = 'legacy-13893@needs-email.vesta.invalid'");
+    assert.ok(row.specialties.startsWith('Family Law'));
+    assert.equal(second.updated, 0);
+    await db.close();
+  });
+});
