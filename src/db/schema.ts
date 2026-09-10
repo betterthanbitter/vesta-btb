@@ -156,6 +156,9 @@ CREATE TABLE IF NOT EXISTS professionals (
   -- Social channels as JSON: the list changes, nothing queries inside it, and
   -- a migration per network would be churn.
   social_links   TEXT,
+  -- The old vestadivorce.com page this professional's copy came from. Never
+  -- linked to; kept so a redirect map can send that URL to the new profile.
+  legacy_url     TEXT,
   -- The content that makes a profile worth reading: answered questions, a
   -- quote, the library, the story. Produced by PAC.MP and stored as JSON
   -- because the shape is editorial and will keep changing; nothing queries

@@ -66,6 +66,7 @@ export async function seedLegacyProfessionals(db: Db): Promise<{ added: number; 
       category: r.category,
       occupation: r.roleLabel || undefined,
       schedulerUrl: r.schedulerUrl,
+      legacyUrl: r.legacyUrl,
       appliedAt: new Date().toISOString(),
       } as any);
       known.add(email);

@@ -228,3 +228,18 @@ export function hubsWithCounts(records: DirectoryRecord[]) {
   }
   return [...map.values()].sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
 }
+
+
+/**
+ * The one-line excerpt each legacy record was first seeded with, by WordPress id.
+ * Used to tell a bio nobody has touched from one that has been edited since.
+ */
+export function loadLegacyExcerpts(dataDir = join(process.cwd(), 'data')): Map<string, string> {
+  const raw: any[] = JSON.parse(readFileSync(join(dataDir, 'wpsl_raw.json'), 'utf8'));
+  return new Map(raw.map((r) => [String(r.id), stripTags(r.content?.rendered ?? '')]));
+}
+
+/** True for a link into the old site, which the new directory must never send people to. */
+export function isLegacyVestaUrl(url: string | undefined | null): boolean {
+  return Boolean(url && /(^|\.|\/\/)vestadivorce\.com/i.test(url));
+}

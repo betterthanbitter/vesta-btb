@@ -9,6 +9,7 @@ export interface ProfessionalRow extends MappedProfessional {
   headline?: string;
   profileContent?: string;
   socialLinks?: string;
+  legacyUrl?: string;
 }
 
 const COLUMNS: Array<[keyof MappedProfessional | 'schedulerUrl', string]> = [
@@ -25,7 +26,7 @@ const COLUMNS: Array<[keyof MappedProfessional | 'schedulerUrl', string]> = [
   ['groupSlots', 'group_slots'], ['groupTimezone', 'group_timezone'],
   ['affiliateOptin', 'affiliate_optin'], ['schedulerUrl', 'scheduler_url'],
   ['headline', 'headline'], ['profileContent', 'profile_content'],
-  ['socialLinks', 'social_links'],
+  ['socialLinks', 'social_links'], ['legacyUrl', 'legacy_url'],
   ['appliedAt', 'applied_at'],
 ];
 
@@ -122,6 +123,7 @@ function toRow(r: any): ProfessionalRow {
     headline: r.headline ?? undefined,
     profileContent: r.profile_content ?? undefined,
     socialLinks: r.social_links ?? undefined,
+    legacyUrl: r.legacy_url ?? undefined,
     appliedAt: r.applied_at ?? r.created_at, publishedAt: r.published_at ?? undefined,
   };
 }

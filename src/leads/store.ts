@@ -26,6 +26,12 @@ export function getDb(): Promise<Db> {
     const { added } = await seedLegacyProfessionals(db);
     if (added) console.log(`[db] seeded ${added} legacy professionals`);
 
+    // A database seeded before the legacy import keeps the old values unless
+    // they are brought forward — which is exactly the production database.
+    const { backfillLegacyProfessionals } = await import('../professionals/backfill.ts');
+    const { updated } = await backfillLegacyProfessionals(db);
+    if (updated) console.log(`[db] brought ${updated} legacy professionals up to date`);
+
     const { seedDemoProfile } = await import('../professionals/demoSeed.ts');
     if (await seedDemoProfile(db)) console.log('[db] seeded the sample profile');
     return db;

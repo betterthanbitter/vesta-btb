@@ -6,7 +6,7 @@ import LibrarySections from '../../../components/LibrarySections.tsx';
 import SocialLinksRow from '../../../components/SocialLinks.tsx';
 import { loadPublishedDirectory } from '../../../src/professionals/directory.ts';
 import { getDb } from '../../../src/leads/store.ts';
-import { CATEGORY_LABELS } from '../../../src/data/vestaImport.ts';
+import { CATEGORY_LABELS, isLegacyVestaUrl } from '../../../src/data/vestaImport.ts';
 import { ENTITLEMENTS } from '../../../src/directory/tiers.ts';
 import { parseSchedulerLink } from '../../../src/directory/schedulerLink.ts';
 import { SPECIALTY_GROUPS } from '../../../src/professionals/specialties.ts';
@@ -117,7 +117,7 @@ export default async function Profile({ params }: { params: Promise<{ id: string
                 )}
                 {where && <span className="fact">{where}</span>}
                 {r.phone && <span className="fact"><a href={`tel:${r.phone}`}>{r.phone}</a></span>}
-                {r.website && (
+                {r.website && !isLegacyVestaUrl(r.website) && (
                   <span className="fact">
                     <a href={r.website} target="_blank" rel="noopener noreferrer nofollow">
                       {r.website.replace(/^https?:\/\//, '').replace(/\/$/, '')}
