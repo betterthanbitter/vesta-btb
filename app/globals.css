@@ -836,3 +836,53 @@ a.ghost { text-decoration: none; display: inline-flex; align-items: center; }
 /* Platinum's introduction video in the profile hero: square, like the photo it
    replaces, so the hero keeps its shape at every level.                      */
 .pvid { width: 100%; aspect-ratio: 1; border-radius: 14px; border: 1px solid var(--br); }
+
+/* ── Client testimonials ─────────────────────────────────────────────────
+   Amber for stars rather than the brand gold, which fails contrast as text. */
+.stars { color: #e3a008; letter-spacing: 2px; font-size: 17px; line-height: 1; }
+.stars .off { color: var(--line2); }
+.tsummary { display: flex; align-items: center; gap: 10px; font-size: 15px; color: var(--ink2);
+  margin: -8px 0 22px; }
+.tsummary b { font-size: 21px; color: var(--ink); letter-spacing: -.02em; }
+.tgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+.tcard { margin: 0; background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+  padding: 20px 22px; display: flex; flex-direction: column; gap: 12px; }
+.tcard blockquote { margin: 0; font-size: 15.5px; line-height: 1.62; color: var(--ink2); }
+.tcard figcaption { margin-top: auto; display: flex; flex-direction: column; gap: 2px;
+  font-size: 13px; color: var(--ink3); }
+.tcard figcaption b { font-size: 14.4px; color: var(--ink); }
+.tnote { font-size: 12.6px; color: var(--ink3); margin: 18px 0 0; }
+
+/* The review form */
+.starrow { display: flex; align-items: center; gap: 12px; }
+.starpick { display: flex; gap: 2px; }
+.starpick button { background: none; border: none; padding: 0 2px; font-size: 34px; line-height: 1;
+  color: var(--line2); cursor: pointer; transition: color .1s; }
+.starpick button.on { color: #e3a008; }
+.starpick button:focus-visible { outline: 2px solid var(--acc); border-radius: 4px; }
+.starword { font-size: 14px; font-weight: 650; color: var(--ink2); }
+.capture fieldset { border: none; padding: 0; margin: 0 0 14px; }
+.capture legend { display: block; padding: 0; font-size: 11px; font-weight: 750; letter-spacing: .09em;
+  text-transform: uppercase; color: var(--ink3); margin-bottom: 8px; }
+.capture label.choice { display: flex; align-items: center; gap: 9px; text-transform: none;
+  letter-spacing: 0; font-size: 14.5px; font-weight: 500; color: var(--ink2); margin: 0 0 8px;
+  cursor: pointer; }
+.capture label.consent { align-items: flex-start; margin: 4px 0 18px; font-weight: 600; color: var(--ink); }
+.capture label.consent .hint { display: block; font-weight: 400; }
+.capture input[type=radio], .capture input[type=checkbox] { width: 17px; height: 17px; padding: 0;
+  margin: 0; flex: none; accent-color: var(--acc); }
+.capture label.consent input { margin-top: 2px; }
+
+/* On the dashboards */
+.reviewline { margin-top: 10px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px;
+  font-size: 13px; color: var(--ink3); }
+.reviewurl a { color: var(--acc); word-break: break-all; }
+.pill-review-asked { background: var(--soft); border-color: var(--br); color: var(--acc2); }
+.pill-review-pending { background: var(--gold-bg); border-color: var(--gold-br); color: var(--gold); }
+.pill-review-published { background: var(--ok-bg); border-color: var(--ok-br); color: var(--ok); }
+.pill-review-declined, .pill-review-private { background: #f4f4f6; border-color: #dcdce2; color: #6c6c78; }
+.linkbtn { background: none; border: none; padding: 0; font: inherit; font-size: 13.4px;
+  font-weight: 700; color: var(--acc); cursor: pointer; }
+.linkbtn:hover { text-decoration: underline; }
+.tqintro { font-size: 13.6px; color: var(--ink2); line-height: 1.5; max-width: 76ch; margin: -4px 0 12px; }
+.tstars { color: #e3a008; letter-spacing: 1px; font-size: 15px; }

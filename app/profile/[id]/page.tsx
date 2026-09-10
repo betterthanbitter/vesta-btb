@@ -5,6 +5,8 @@ import LeadCapture from '../../../components/LeadCapture.tsx';
 import IntroVideo from '../../../components/IntroVideo.tsx';
 import { companionOffer } from '../../../src/products/companionOffer.ts';
 import LibrarySections from '../../../components/LibrarySections.tsx';
+import Testimonials from '../../../components/Testimonials.tsx';
+import { TestimonialRepository } from '../../../src/testimonials/repository.ts';
 import SocialLinksRow from '../../../components/SocialLinks.tsx';
 import { loadPublishedDirectory } from '../../../src/professionals/directory.ts';
 import { getDb } from '../../../src/leads/store.ts';
@@ -49,6 +51,7 @@ export default async function Profile({ params }: { params: Promise<{ id: string
   if (!r) notFound();
 
   const e = ENTITLEMENTS[r.tier];
+  const testimonials = await new TestimonialRepository(await getDb()).published(r.id);
   const c = parseProfileContent(r.profileContent);
   // Instant Book is Platinum and Premium only; Standard gets the consult form alone.
   const scheduler = e.instantBook ? parseSchedulerLink(r.schedulerUrl) : null;
@@ -159,6 +162,8 @@ export default async function Profile({ params }: { params: Promise<{ id: string
       ) : null}
 
       <LibrarySections first={first} shelves={library} showLibrary={e.contentLibrary} />
+
+      <Testimonials first={first} items={testimonials} />
 
       {c.stat && (
         <section className="pblock">

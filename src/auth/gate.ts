@@ -86,3 +86,19 @@ export function safeNext(raw: string | null | undefined): string {
 export function relativeRedirect(path: string, status: 303 | 307 = 303): Response {
   return new Response(null, { status, headers: { Location: path } });
 }
+
+/**
+ * The one thing a stranger may reach while the preview is locked: a hired
+ * client's review link, and the endpoint its form posts to.
+ *
+ * The link arrives by email and cannot come with the preview password; the
+ * unguessable token in it is the access control. Only GET on the page — a
+ * POST to any page is how Next runs server actions, including the back
+ * office's, so allowing one here would open a way round the gate.
+ */
+export function isPublicReviewRequest(method: string, pathname: string): boolean {
+  if ((method === 'GET' || method === 'HEAD') && /^\/review\/[A-Za-z0-9_-]{32}$/.test(pathname)) {
+    return true;
+  }
+  return method === 'POST' && pathname === '/api/review';
+}

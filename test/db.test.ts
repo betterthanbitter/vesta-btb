@@ -40,7 +40,7 @@ describe('the database layer', () => {
     assert.deepEqual(tables, [
       'consult_intents', 'consult_requests', 'consumers', 'outbox',
       'professional_photos', 'professionals', 'referral_assignments',
-      'referrals', 'sent_ledger',
+      'referrals', 'review_requests', 'sent_ledger', 'testimonials',
     ]);
     await db.close();
   });

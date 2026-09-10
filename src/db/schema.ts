@@ -214,4 +214,40 @@ CREATE TABLE IF NOT EXISTS consult_requests (
   at              TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS requests_professional ON consult_requests (professional_id, at);
+
+-- Testimonials.
+--
+-- A review link is made when a professional marks a lead "hired", and only
+-- then. The token is the whole of the access control: unguessable, one per
+-- hire, and good for exactly one testimonial. That is what lets the profile
+-- say every testimonial comes from a verified client.
+CREATE TABLE IF NOT EXISTS review_requests (
+  token           TEXT PRIMARY KEY,
+  referral_id     TEXT NOT NULL REFERENCES referrals (id),
+  professional_id TEXT NOT NULL,
+  created_at      TEXT NOT NULL
+);
+CREATE UNIQUE INDEX IF NOT EXISTS review_requests_assignment
+  ON review_requests (referral_id, professional_id);
+
+-- Nothing here is public until Vesta approves it, and nothing is public at
+-- all unless the client agreed. The name shown is fixed when they submit, in
+-- the form they chose, so a later change to the consumer record cannot put a
+-- full name on something they wrote as "Sarah M.".
+CREATE TABLE IF NOT EXISTS testimonials (
+  id              TEXT PRIMARY KEY,
+  token           TEXT NOT NULL REFERENCES review_requests (token),
+  referral_id     TEXT NOT NULL,
+  professional_id TEXT NOT NULL,
+  rating          INTEGER NOT NULL,   -- 1 to 5
+  liked           TEXT NOT NULL,
+  display_name    TEXT NOT NULL,
+  publish_consent INTEGER NOT NULL,   -- 1 or 0
+  status          TEXT NOT NULL,      -- pending, published, declined, private
+  submitted_at    TEXT NOT NULL,
+  decided_at      TEXT
+);
+CREATE UNIQUE INDEX IF NOT EXISTS testimonials_token ON testimonials (token);
+CREATE INDEX IF NOT EXISTS testimonials_listing
+  ON testimonials (professional_id, status, submitted_at);
 `;

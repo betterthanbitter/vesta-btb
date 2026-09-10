@@ -102,3 +102,31 @@ export async function decideApplication(formData: FormData) {
   revalidatePath('/admin/applications');
   revalidatePath('/admin');
 }
+
+/** Publish or decline a client testimonial. Vesta's decision, never automatic. */
+export async function decideTestimonial(formData: FormData) {
+  const { TestimonialRepository } = await import('../src/testimonials/repository.ts');
+  const id = String(formData.get('id'));
+  const decision = String(formData.get('decision'));
+  if (decision !== 'published' && decision !== 'declined') {
+    throw new Error(`Unknown decision "${decision}".`);
+  }
+  const professionalId = await new TestimonialRepository(await getDb()).decide(id, decision);
+  revalidatePath('/admin');
+  revalidatePath('/hub/leads');
+  if (professionalId) revalidatePath(`/profile/${professionalId}`);
+}
+
+/**
+ * A testimonial link for a client hired before testimonials existed. New
+ * hires get theirs automatically.
+ */
+export async function requestTestimonialLink(formData: FormData) {
+  const { TestimonialRepository } = await import('../src/testimonials/repository.ts');
+  const { siteOrigin } = await import('../src/testimonials/testimonial.ts');
+  await new TestimonialRepository(await getDb()).request(
+    String(formData.get('referralId')), String(formData.get('professionalId')), siteOrigin(),
+  );
+  revalidatePath('/admin');
+  revalidatePath('/hub/leads');
+}

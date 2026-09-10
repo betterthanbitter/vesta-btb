@@ -5,6 +5,13 @@ import { type DeliveryEngine } from './port.ts';
 export interface SequenceMap {
   consumerAfterRouting: string;
   professionalNewLead: string;
+  /**
+   * Asks a hired client for a testimonial, after REVIEW_ASK_AFTER_DAYS, with
+   * a reminder. Optional until the sequence exists in the delivery engine;
+   * without it the ask waits in the outbox and the concierge can send the
+   * link by hand from the back office.
+   */
+  testimonialRequest?: string;
 }
 
 export interface DispatchReport {
@@ -63,6 +70,12 @@ export class Dispatcher {
             break;
           case 'referral.closed':
             await this.handleClosed(entry, report);
+            break;
+          case 'testimonial.requested':
+            await this.handleTestimonialRequested(entry, report);
+            break;
+          case 'testimonial.received':
+            await this.handleTestimonialReceived(entry, report);
             break;
         }
       } catch {
@@ -149,6 +162,32 @@ export class Dispatcher {
     const { contactId } = await this.engine.upsertContact({ email: p.consumerEmail ?? '' });
     await this.engine.stopSequence(contactId, this.sequences.consumerAfterRouting);
     await this.engine.setFields(contactId, { referral_status: 'closed' });
+    report.delivered++;
+  }
+
+  private async handleTestimonialRequested(entry: OutboxEntry, report: DispatchReport): Promise<void> {
+    const seq = this.sequences.testimonialRequest;
+    if (!seq) return;
+    const p = entry.payload as any;
+    const { contactId } = await this.idempotent(() =>
+      this.engine.upsertContact({ email: p.consumerEmail, firstName: p.consumerFirstName }),
+    );
+    await this.idempotent(() => this.engine.setFields(contactId, {
+      review_url: p.reviewUrl,
+      review_professional: p.professionalName,
+      review_ask_after_days: p.askAfterDays,
+      review_status: 'asked',
+    }));
+    await this.guardedSequenceStart(`${entry.dedupKey}:seq:${seq}`, contactId, seq, report);
+  }
+
+  private async handleTestimonialReceived(entry: OutboxEntry, report: DispatchReport): Promise<void> {
+    const seq = this.sequences.testimonialRequest;
+    if (!seq) return;
+    const p = entry.payload as any;
+    const { contactId } = await this.engine.upsertContact({ email: p.consumerEmail });
+    await this.engine.stopSequence(contactId, seq);
+    await this.engine.setFields(contactId, { review_status: 'received' });
     report.delivered++;
   }
 

@@ -5,6 +5,8 @@ import { Outbox, flushOutbox } from '../referral/outbox.ts';
 import { ReferralService } from '../referral/referralService.ts';
 import type { Consumer, Professional, Referral, RoutingMode, Stage } from '../referral/types.ts';
 import { type ConsumerProfile, PROFILE_COLUMNS } from '../leads/consumerProfile.ts';
+import { requestTestimonial } from '../testimonials/repository.ts';
+import { siteOrigin, type TestimonialStatus } from '../testimonials/testimonial.ts';
 
 /**
  * One lead, as both dashboards need to see it.
@@ -45,6 +47,11 @@ export interface LeadView {
   shortlistSize: number;
   /** Whole days since anything last happened on it. */
   daysSinceActivity: number;
+  /**
+   * The testimonial ask, once the lead is hired. No status yet means the
+   * client has been asked and has not answered.
+   */
+  review?: { token: string; status?: TestimonialStatus; rating?: number };
 }
 
 export class LeadRepository {
@@ -207,6 +214,9 @@ export class LeadRepository {
           payload: { referralId, retainedBy: professionalId, at },
           createdAt: at,
         });
+        // Hired is the one moment we know this person was a client. Make the
+        // review link now, in the same transaction, so every hire has one.
+        await requestTestimonial(tx, { referralId, professionalId, at, origin: siteOrigin() });
       }
     });
   }
@@ -227,10 +237,14 @@ export class LeadRepository {
               c.stage_of_divorce, c.length_of_marriage, c.has_children, c.children_ages,
               c.home_status, c.owns_business, c.asset_range, c.professionals_wanted,
               c.lead_source, c.questions,
+              rr.token AS review_token, t.status AS review_status, t.rating AS review_rating,
               (SELECT COUNT(*) FROM referral_assignments x WHERE x.referral_id = r.id) AS shortlist
        FROM referral_assignments a
        JOIN referrals r ON r.id = a.referral_id
        JOIN consumers c ON c.id = r.consumer_id
+       LEFT JOIN review_requests rr
+              ON rr.referral_id = a.referral_id AND rr.professional_id = a.professional_id
+       LEFT JOIN testimonials t ON t.token = rr.token
        ${where}
        ORDER BY r.routed_at DESC`,
       params,
@@ -266,6 +280,13 @@ export class LeadRepository {
       },
       shortlistSize: Number(r.shortlist),
       daysSinceActivity: Math.floor((now - Date.parse(r.stage_changed_at)) / 86_400_000),
+      review: r.review_token
+        ? {
+            token: r.review_token,
+            status: r.review_status ?? undefined,
+            rating: r.review_rating == null ? undefined : Number(r.review_rating),
+          }
+        : undefined,
     }));
   }
 

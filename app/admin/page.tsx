@@ -1,4 +1,7 @@
 import Link from 'next/link';
+import { headers } from 'next/headers';
+import { decideTestimonial } from '../actions.ts';
+import { TestimonialRepository } from '../../src/testimonials/repository.ts';
 import LeadCard from '../../components/LeadCard.tsx';
 import RouteLeadForm from '../../components/RouteLeadForm.tsx';
 import { getDb } from '../../src/leads/store.ts';
@@ -14,6 +17,13 @@ export default async function BackOffice() {
   const repo = new LeadRepository(await getDb());
   const leads = await repo.all();
   const needingReview = await repo.ledger().needingReview();
+  const toApprove = await new TestimonialRepository(await getDb()).pending();
+
+  // Testimonial links are shown as this site's own address, whichever host
+  // the concierge is using.
+  const h = await headers();
+  const host = h.get('x-forwarded-host') ?? h.get('host');
+  const origin = host ? `${h.get('x-forwarded-proto') ?? 'https'}://${host}` : undefined;
 
   const nameOf = (id: string) => directory.find((d) => d.id === id)?.name ?? id;
   const open = leads.filter(
@@ -75,6 +85,46 @@ export default async function BackOffice() {
           hubs={hubsWithCounts(directory).map((h) => ({ value: h.hub, label: h.label }))}
         />
 
+        {toApprove.length > 0 && (
+          <>
+            <h2 className="sect">Testimonials to approve</h2>
+            <p className="tqintro">
+              Approve or decline on what is written — another person’s name, details of the case,
+              anything abusive or off-topic. Not on the stars: publishing only the good ones would
+              mislead the people reading them.
+            </p>
+            {toApprove.map((t) => (
+              <div className="lead" key={t.id}>
+                <div className="leadmain">
+                  <div className="leadtop">
+                    <span className="leadname">{t.displayName}</span>
+                    <span className="tstars" role="img" aria-label={`Rated ${t.rating} out of 5`}>
+                      {'★'.repeat(t.rating)}
+                    </span>
+                  </div>
+                  <div className="leadmeta">
+                    About <b>{nameOf(t.professionalId)}</b> · {new Date(t.submittedAt)
+                      .toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}
+                  </div>
+                  <p className="leadmsg">{t.liked}</p>
+                </div>
+                <div className="leadactions">
+                  <form action={decideTestimonial}>
+                    <input type="hidden" name="id" value={t.id} />
+                    <input type="hidden" name="decision" value="published" />
+                    <button type="submit" className="won">Publish</button>
+                  </form>
+                  <form action={decideTestimonial}>
+                    <input type="hidden" name="id" value={t.id} />
+                    <input type="hidden" name="decision" value="declined" />
+                    <button type="submit" className="dead">Decline</button>
+                  </form>
+                </div>
+              </div>
+            ))}
+          </>
+        )}
+
         <h2 className="sect">All leads</h2>
         {leads.length === 0 && (
           <div className="empty"><b>Nothing yet.</b><br />
@@ -82,7 +132,7 @@ export default async function BackOffice() {
         )}
         {leads.map((l) => (
           <LeadCard key={`${l.referralId}:${l.professionalId}`} lead={l}
-            showWho={`with ${nameOf(l.professionalId)}`} />
+            showWho={`with ${nameOf(l.professionalId)}`} reviewOrigin={origin} />
         ))}
       </div>
     </>

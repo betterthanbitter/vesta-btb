@@ -1,5 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { GATE_COOKIE, safeNext, timingSafeEqual, verifyToken } from './src/auth/gate.ts';
+import {
+  GATE_COOKIE, isPublicReviewRequest, safeNext, timingSafeEqual, verifyToken,
+} from './src/auth/gate.ts';
 
 /**
  * Keeps the preview private.
@@ -16,6 +18,9 @@ export async function middleware(req: NextRequest) {
 
   // The password page itself must stay reachable, or there is no way in.
   if (pathname === '/enter' || pathname === '/api/enter') return NextResponse.next();
+
+  // A hired client's testimonial link, which cannot carry the password.
+  if (isPublicReviewRequest(req.method, pathname)) return noindex(NextResponse.next());
 
   if (await verifyToken(req.cookies.get(GATE_COOKIE)?.value, password)) {
     return noindex(NextResponse.next());

@@ -13,7 +13,11 @@ export type OutboxKind =
   | 'assignment.stage_changed'
   | 'referral.closed'
   /** Nothing has happened for a week. Ontraport starts the nurture. */
-  | 'referral.went_cold';
+  | 'referral.went_cold'
+  /** A professional marked the lead hired. Ask the client how it went. */
+  | 'testimonial.requested'
+  /** The client answered. Stop asking. */
+  | 'testimonial.received';
 
 export interface OutboxEntry {
   /**

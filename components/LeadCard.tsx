@@ -1,4 +1,4 @@
-import { advanceLead } from '../app/actions.ts';
+import { advanceLead, requestTestimonialLink } from '../app/actions.ts';
 import type { LeadView } from '../src/db/leadRepository.ts';
 import { STAGE_LABELS, type Stage } from '../src/referral/types.ts';
 import { nextStages } from '../src/referral/stateMachine.ts';
@@ -60,7 +60,53 @@ function Brief({ lead }: { lead: LeadView }) {
   );
 }
 
-export default function LeadCard({ lead, showWho }: { lead: LeadView; showWho?: string }) {
+const REVIEW_LABELS: Record<string, string> = {
+  asked: 'Testimonial requested',
+  pending: 'Testimonial waiting for approval',
+  published: 'Testimonial published',
+  declined: 'Testimonial not published',
+  private: 'Private feedback received',
+};
+
+/**
+ * Where the testimonial ask has got to, on a hired lead. The back office also
+ * gets the link itself, so the concierge can send it by hand until the
+ * delivery engine does.
+ */
+function ReviewLine({ lead, origin }: { lead: LeadView; origin?: string }) {
+  if (lead.stage !== 'hired') return null;
+  const r = lead.review;
+
+  if (!r) {
+    if (!origin) return null;
+    return (
+      <form action={requestTestimonialLink} className="reviewline">
+        <input type="hidden" name="referralId" value={lead.referralId} />
+        <input type="hidden" name="professionalId" value={lead.professionalId} />
+        <button type="submit" className="linkbtn">Create a testimonial link for this client</button>
+      </form>
+    );
+  }
+
+  const status = r.status ?? 'asked';
+  const url = origin ? `${origin}/review/${r.token}` : null;
+  return (
+    <div className="reviewline">
+      <span className={`pill pill-review-${status}`}>
+        {REVIEW_LABELS[status]}{r.rating ? ` · ${'★'.repeat(r.rating)}` : ''}
+      </span>
+      {url && !r.status && (
+        <span className="reviewurl">
+          Link for the client: <a href={url} target="_blank" rel="noopener noreferrer">{url}</a>
+        </span>
+      )}
+    </div>
+  );
+}
+
+export default function LeadCard({
+  lead, showWho, reviewOrigin,
+}: { lead: LeadView; showWho?: string; reviewOrigin?: string }) {
   const actions = nextStages(lead.stage);
   const isNew = lead.stage === 'new';
   const cold = lead.daysSinceActivity >= 7 && actions.length > 0;
@@ -95,6 +141,8 @@ export default function LeadCard({ lead, showWho }: { lead: LeadView; showWho?: 
             {lead.message}
           </p>
         )}
+
+        <ReviewLine lead={lead} origin={reviewOrigin} />
       </div>
 
       {actions.length > 0 && (
