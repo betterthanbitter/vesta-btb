@@ -12,13 +12,16 @@
  * tracked. Affiliate tracking and payouts stay in Circle.
  */
 
-/** Better Than Bitter's own trial link, used when no channel link is set. */
 /**
- * Circle's own sign-up for the community. The empty invitation_token is where
- * a channel partner's token goes — that is how Circle credits the channel.
+ * The Divorce Companion+ checkout on Circle, where the 7-day free trial starts —
+ * so the "Start Your 7 Day FREE Trial" button lands exactly where it promises.
+ *
+ * For a channel partner, COMPANION_TRIAL_URL is set to their own affiliate
+ * version of a link like this one. Its parameters are kept exactly as given,
+ * whatever Circle names them, so the channel is still credited.
  */
 export const DEFAULT_COMPANION_TRIAL_URL =
-  'https://login.circle.so/sign_up?request_host=community.betterthanbitter.coach&user%5Binvitation_token%5D#email';
+  'https://community.betterthanbitter.coach/checkout/divorce-companion-plus';
 
 export interface CompanionOffer {
   href: string;

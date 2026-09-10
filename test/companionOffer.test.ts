@@ -35,14 +35,12 @@ describe('the community offer after a consult request', () => {
   });
 });
 
-describe('the Circle sign-up link', () => {
-  test('keeps everything Circle needs, and adds only the tracking', () => {
+describe('channel partner links', () => {
+  test('by default the button goes to the Divorce Companion+ checkout', () => {
     const u = new URL(companionOffer(undefined)!.href);
-    assert.equal(u.hostname, 'login.circle.so');
-    assert.equal(u.pathname, '/sign_up');
-    assert.equal(u.searchParams.get('request_host'), 'community.betterthanbitter.coach');
-    assert.ok(u.searchParams.has('user[invitation_token]'), 'the token slot must survive');
-    assert.equal(u.hash, '#email', 'the fragment Circle uses to focus the email field');
+    assert.equal(u.hostname, 'community.betterthanbitter.coach');
+    assert.equal(u.pathname, '/checkout/divorce-companion-plus');
+    assert.equal(u.searchParams.get('utm_source'), 'vesta-directory', 'and adds only the tracking');
   });
 
   test('a channel’s invitation token is carried through untouched', () => {
