@@ -31,8 +31,15 @@ export async function middleware(req: NextRequest) {
     }
   }
 
-  const to = `/enter?next=${encodeURIComponent(safeNext(pathname + search))}`;
-  return noindex(new NextResponse(null, { status: 307, headers: { Location: to } }));
+  // Absolute, built from nextUrl — not relative. Netlify's edge runtime parses
+  // a middleware redirect's Location with no base and throws "Invalid URL" on
+  // a relative one. nextUrl carries the hostname the visitor actually used,
+  // unlike req.url inside a serverless function, which is why /api/enter stays
+  // relative and this does not. Both halves are proven on Netlify.
+  const to = req.nextUrl.clone();
+  to.pathname = '/enter';
+  to.search = `?next=${encodeURIComponent(safeNext(pathname + search))}`;
+  return noindex(NextResponse.redirect(to, 307));
 }
 
 function noindex(res: NextResponse): NextResponse {
