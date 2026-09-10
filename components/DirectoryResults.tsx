@@ -120,9 +120,9 @@ function Platinum({
     <div className="card plat" data-frame={frame}>
       <div className="ribbon">Platinum Member</div>
       <div className="pbody">
+        <div className="phead"><Heading r={r} place={place} /></div>
         <Media r={r} video />
-        <div>
-          <Heading r={r} place={place} />
+        <div className="pmain">
           <Description r={r} lines={8} />
           <Chips r={r} events />
           <ContentStrip r={r} />
@@ -138,9 +138,9 @@ function Premium({ r, place }: { r: DirectoryRecord; place: string }) {
     <div className="card prem">
       <div className="tierlab">Premium Member</div>
       <div className="pbody">
+        <div className="phead"><Heading r={r} place={place} /></div>
         <Media r={r} video={false} />
-        <div>
-          <Heading r={r} place={place} />
+        <div className="pmain">
           <Description r={r} lines={8} />
           <Chips r={r} />
           <ContentStrip r={r} />
@@ -156,9 +156,9 @@ function Standard({ r, place }: { r: DirectoryRecord; place: string }) {
     <div className="card std">
       <div className="tierlab">Standard Member</div>
       <div className="pbody">
+        <div className="phead"><Heading r={r} place={place} /></div>
         <Media r={r} video={false} />
-        <div>
-          <Heading r={r} place={place} />
+        <div className="pmain">
           <Description r={r} lines={2} />
           <Chips r={r} />
         </div>

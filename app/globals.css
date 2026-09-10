@@ -782,3 +782,27 @@ a.ghost { text-decoration: none; display: inline-flex; align-items: center; }
 .moretext { font-size: 14px; font-weight: 700; color: var(--acc); text-decoration: none; }
 .moretext:hover { text-decoration: underline; }
 .biowrap .plede.clamp8 { margin-bottom: 6px; }
+
+/* ── Photo top-aligned with the first line of the description ─────────────
+   Name/credentials sit in a row of their own; the photo and the description
+   start together on the row beneath, which centers the photo in the card.  */
+.pbody { grid-template-areas: ". head" "media body"; row-gap: 8px; column-gap: 24px; }
+.pbody > .phead { grid-area: head; }
+.pbody > .mediacol { grid-area: media; }
+.pbody > .pmain { grid-area: body; }
+
+.pgrid { grid-template-areas: "head ." "body photo"; row-gap: 0; column-gap: 44px; }
+.pgrid > .phhead { grid-area: head; }
+.pgrid > .phbody { grid-area: body; }
+.pgrid > .pportrait { grid-area: photo; }
+
+@media (max-width: 900px) {
+  .pbody { grid-template-areas: "head" "media" "body"; }
+  .pgrid { grid-template-areas: "head" "photo" "body"; row-gap: 18px; }
+}
+
+/* After the consult form: their own website and phone, now that the lead is in. */
+.capafter { display: flex; flex-direction: column; gap: 8px; margin-top: 16px;
+  padding-top: 16px; border-top: 1px solid var(--line); }
+.capafter a { color: var(--acc); font-weight: 650; text-decoration: none; font-size: 14.5px; }
+.capafter a:hover { text-decoration: underline; }

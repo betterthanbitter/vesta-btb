@@ -5,6 +5,8 @@ import { loadPublishedDirectory } from '../../../src/professionals/directory.ts'
 import { getDb } from '../../../src/leads/store.ts';
 import { parseSchedulerLink } from '../../../src/directory/schedulerLink.ts';
 import { ENTITLEMENTS } from '../../../src/directory/tiers.ts';
+import { isLegacyVestaUrl } from '../../../src/data/vestaImport.ts';
+import { toHttpsUrl } from '../../../src/professionals/social.ts';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { robots: { index: false, follow: false } };
@@ -66,6 +68,8 @@ export default async function ConsultPage({
           firstName={first}
           schedulerHost={scheduler?.host}
           sourcePath={back}
+          website={r.website && !isLegacyVestaUrl(r.website) ? toHttpsUrl(r.website) : undefined}
+          phone={r.phone}
         />
       </div>
     </>

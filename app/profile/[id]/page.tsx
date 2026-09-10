@@ -11,7 +11,7 @@ import { ENTITLEMENTS } from '../../../src/directory/tiers.ts';
 import { parseSchedulerLink } from '../../../src/directory/schedulerLink.ts';
 import { SPECIALTY_GROUPS } from '../../../src/professionals/specialties.ts';
 import { parseProfileContent } from '../../../src/professionals/profileContent.ts';
-import { parseSocialLinks } from '../../../src/professionals/social.ts';
+import { parseSocialLinks, toHttpsUrl } from '../../../src/professionals/social.ts';
 import type { PracticeCategory } from '../../../src/pricing/catalog.ts';
 
 /**
@@ -58,6 +58,9 @@ export default async function Profile({ params }: { params: Promise<{ id: string
   // Instant Book is Platinum and Premium only; Standard gets the consult form alone.
   const scheduler = e.instantBook ? parseSchedulerLink(r.schedulerUrl) : null;
   const social = parseSocialLinks(r.socialLinks);
+  // Their own site and phone are shown only after the consult form is sent.
+  // Validated: this value came from an application form.
+  const site = r.website && !isLegacyVestaUrl(r.website) ? toHttpsUrl(r.website) : undefined;
   const first = r.name.split(' ')[0];
   const where = [r.city, r.state].filter(Boolean).join(', ');
   const states = (r.statesLicensed ?? '').split(',').map((s) => s.trim()).filter(Boolean);
@@ -91,13 +94,16 @@ export default async function Profile({ params }: { params: Promise<{ id: string
       <section className="phero">
         <div className="in">
           <div className="pgrid">
-            <div>
+            <div className="phhead">
               <div className="eyebrow">
                 {r.profession ?? CATEGORY_LABELS[r.category as PracticeCategory]}
               </div>
               <h1>{r.headline ?? r.name}</h1>
               {r.headline && <div className="pwho">{r.name}</div>}
               <div className="psub">{r.firm && <>{r.firm} · </>}{where}</div>
+            </div>
+
+            <div className="phbody">
               {(c.lede ?? r.bio) && <ExpandableBio text={c.lede ?? r.bio} name={r.name} />}
 
               <div className="hactions">
@@ -117,14 +123,6 @@ export default async function Profile({ params }: { params: Promise<{ id: string
                   </span>
                 )}
                 {where && <span className="fact">{where}</span>}
-                {r.phone && <span className="fact"><a href={`tel:${r.phone}`}>{r.phone}</a></span>}
-                {r.website && !isLegacyVestaUrl(r.website) && (
-                  <span className="fact">
-                    <a href={r.website} target="_blank" rel="noopener noreferrer nofollow">
-                      {r.website.replace(/^https?:\/\//, '').replace(/\/$/, '')}
-                    </a>
-                  </span>
-                )}
               </div>
             </div>
 
@@ -254,6 +252,8 @@ export default async function Profile({ params }: { params: Promise<{ id: string
               firstName={first}
               schedulerHost={scheduler?.host}
               sourcePath={`/profile/${r.id}`}
+              website={site}
+              phone={r.phone}
             />
           </div>
         </div>

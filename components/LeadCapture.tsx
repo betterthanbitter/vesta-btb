@@ -16,13 +16,16 @@ import { useState } from 'react';
  * however complete the form was.
  */
 export default function LeadCapture({
-  professionalId, firstName, schedulerHost, sourcePath,
+  professionalId, firstName, schedulerHost, sourcePath, website, phone,
 }: {
   professionalId: string;
   firstName: string;
   /** Absent when the professional has no booking link. */
   schedulerHost?: string;
   sourcePath: string;
+  /** Shown only after the form is sent — linking earlier loses the lead. */
+  website?: string;
+  phone?: string;
 }) {
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
@@ -74,6 +77,16 @@ export default function LeadCapture({
             {firstName} will be in touch to arrange a time. If you have not heard back within a
             couple of days, Vesta’s concierge team will check in with them.
           </p>
+        )}
+        {(website || phone) && (
+          <div className="capafter">
+            {website && (
+              <a href={website} target="_blank" rel="noopener noreferrer nofollow">
+                Visit {firstName}’s website →
+              </a>
+            )}
+            {phone && <a href={`tel:${phone}`}>Call {phone}</a>}
+          </div>
         )}
       </div>
     );
