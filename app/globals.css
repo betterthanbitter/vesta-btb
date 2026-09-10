@@ -564,7 +564,10 @@ a.ghost { text-decoration: none; display: inline-flex; align-items: center; }
   margin: 12px 0 10px; max-width: 17ch; }
 .pwho { font-size: 16px; font-weight: 700; color: var(--ink); margin-bottom: 2px; }
 .psub { font-size: 15px; color: var(--ink3); margin-bottom: 18px; }
-.plede { font-size: 18.5px; line-height: 1.55; color: var(--ink2); max-width: 52ch; margin: 0 0 24px; }
+/* Same size, line height and color as the section subheaders (.ssub). The
+   prototype used a larger lede for a single positioning line; this slot now
+   holds an eight-line bio, where that size reads as shouting. */
+.plede { font-size: 16.5px; line-height: 1.55; color: var(--ink2); max-width: 58ch; margin: 0 0 24px; }
 .hactions { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 22px; align-items: center; }
 .hactions .ghost { text-decoration: none; display: inline-flex; align-items: center;
   background: #fff; border: 1px solid var(--line2); color: var(--acc); border-radius: 9px;
@@ -754,7 +757,7 @@ a.ghost { text-decoration: none; display: inline-flex; align-items: center; }
 .caplink:hover { text-decoration: underline; }
 .lctas { display: flex; gap: 12px; align-items: center; white-space: nowrap; }
 
-.biowrap { max-width: 52ch; margin-bottom: 24px; }
+.biowrap { max-width: 58ch; margin-bottom: 24px; }
 .biowrap .plede { margin-bottom: 12px; }
 .biorest { font-size: 16.5px; line-height: 1.6; color: var(--ink2); margin: 0 0 12px; }
 .biomore { background: none; border: none; padding: 0; font: inherit; font-size: 15.5px;
